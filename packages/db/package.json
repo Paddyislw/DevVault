@@ -10,10 +10,14 @@
     "db:studio": "npx prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.2",
-    "prisma": "^6.19.2"
+    "@prisma/client": "^5.22.0",
+    "prisma": "^5.22.0"
   },
   "devDependencies": {
-    "@types/node": "^25.2.3"
+    "@types/node": "^25.2.3",
+    "tsx": "^4.21.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

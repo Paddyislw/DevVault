@@ -1,0 +1,1 @@
+1-To run prisma studio and see tables - npx prisma studio

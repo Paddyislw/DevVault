@@ -1,15 +1,120 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ────────────────────────────────────────────
+
+enum WorkspaceType {
+  PERSONAL
+  WORK
+  CUSTOM
+}
+
+enum TaskPriority {
+  P1
+  P2
+  P3
+  P4
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+enum AttachmentType {
+  CODE
+  IMAGE
+  LINK
+  FILE
+}
+
+// ─── USER ─────────────────────────────────────────────
+
+model User {
+  id                  String      @id @default(cuid())
+  telegramId          String      @unique
+  name                String?
+  email               String?
+  masterPasswordHash  String?
+  aiSettings          Json        @default("{}")
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  workspaces          Workspace[]
+
+  @@map("users")
+}
+
+// ─── WORKSPACE ────────────────────────────────────────
+
+model Workspace {
+  id          String        @id @default(cuid())
+  userId      String
+  name        String
+  slug        String
+  color       String        @default("#4a9eed")
+  icon        String?
+  isDefault   Boolean       @default(false)
+  type        WorkspaceType @default(CUSTOM)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks       Task[]
+
+  @@unique([userId, slug])
+  @@map("workspaces")
+}
+
+// ─── TASK ─────────────────────────────────────────────
+
+model Task {
+  id            String        @id @default(cuid())
+  workspaceId   String
+  title         String
+  description   String?
+  priority      TaskPriority  @default(P4)
+  status        TaskStatus    @default(TODO)
+  dueDate       DateTime?
+  isBacklog     Boolean       @default(false)
+  isSomeday     Boolean       @default(false)
+  position      Int           @default(0)
+  parentTaskId  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  workspace     Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  parentTask    Task?         @relation("Subtasks", fields: [parentTaskId], references: [id])
+  subtasks      Task[]        @relation("Subtasks")
+  attachments   TaskAttachment[]
+
+  @@index([workspaceId, status])
+  @@index([workspaceId, dueDate])
+  @@index([parentTaskId])
+  @@map("tasks")
+}
+
+// ─── TASK ATTACHMENT ──────────────────────────────────
+
+model TaskAttachment {
+  id        String          @id @default(cuid())
+  taskId    String
+  type      AttachmentType
+  content   String?
+  language  String?
+  url       String?
+  fileName  String?
+  createdAt DateTime        @default(now())
+
+  task      Task            @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("task_attachments")
 }
