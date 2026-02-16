@@ -1,6 +1,11 @@
-import { prisma } from "@devvault/db";
+import { prisma, Prisma, User, Workspace } from "@devvault/db";
 
-export async function findOrCreateUser(telegramId: string, name: string) {
+type UserWithWorkspaces = User & { workspaces: Workspace[] };
+
+export async function findOrCreateUser(
+  telegramId: string,
+  name: string,
+): Promise<UserWithWorkspaces> {
   // Check if user already exists
   const existing = await prisma.user.findUnique({
     where: { telegramId },
@@ -43,8 +48,9 @@ export async function findOrCreateUser(telegramId: string, name: string) {
   return user;
 }
 
-
-export async function findUserByTelegramId(telegramId: string) {
+export async function findUserByTelegramId(
+  telegramId: string,
+): Promise<UserWithWorkspaces | null> {
   return await prisma.user.findUnique({
     where: { telegramId },
     include: { workspaces: true },
