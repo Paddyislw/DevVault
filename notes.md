@@ -55,3 +55,26 @@ prisma migrate dev — Development mode. It generates the SQL migration file, ap
 prisma migrate deploy — Production mode. It ONLY applies existing migration files that haven't been run yet. No generating, no resetting, no prompts. You run this when deploying to Railway/Vercel where your production database lives.
 Think of it like git: migrate dev is like working on a branch and committing freely. migrate deploy is like pushing to main — it only applies what's already been committed.
 For now, you'll always use migrate dev. You won't touch deploy until Week 10+ when you're deploying to production.
+
+
+10-In any component, you can do:
+tsx"use client";
+import { useSession } from "next-auth/react";
+
+export function Header() {
+  const { data: session, status } = useSession();
+
+  if (status === "loading") return <p>Loading...</p>;
+  if (!session) return <p>Not logged in</p>;
+
+  return <p>Hello, {session.user.name}!</p>;  // "Hello, Pradyum!"
+}
+useSession() is basically asking: "Is there a valid cookie right now? If yes, what's inside it?"
+status can be three things:
+
+"loading" — still checking the cookie
+"authenticated" — cookie found, user is logged in, session has the data
+"unauthenticated" — no cookie, user needs to log in
+
+What Each File Does — Simplified
+FilePlain Englishauth.ts"Here's how to verify Telegram logins and what data to put in the cookie"[...nextauth]/route.ts"NextAuth, please handle all requests to /api/auth/*"session-provider.tsx"Wrap the app so every component can call useSession()"telegram-login.tsx"Load Telegram's button and when clicked, send the data to NextAuth"

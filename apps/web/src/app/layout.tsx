@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import { Sidebar } from "@/components/layout/sidebar";
+import { SessionProvider } from "@/components/providers/session-provider";
 import "./globals.css";
+import AuthGate from "@/components/layout/authgate";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,10 +29,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
-        <div className="flex h-screen overflow-hidden">
-          <Sidebar />
-          <main className="flex-1 overflow-y-auto">{children}</main>
-        </div>
+        <SessionProvider>
+          <AuthGate>{children}</AuthGate>
+        </SessionProvider>
       </body>
     </html>
   );
