@@ -1,7 +1,6 @@
 import { Bot } from "grammy";
 import "dotenv/config";
 import { findOrCreateUser, findUserByTelegramId } from "./services/user";
-import { prisma } from "@devvault/db";
 
 const bot = new Bot(process.env.BOT_TOKEN!);
 

@@ -4,36 +4,36 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-DevVault is a TypeScript monorepo using Turborepo and npm. It combines a Next.js web application, a Telegram bot, and shared packages for database, types, and utilities.
+DevVault is a TypeScript monorepo using Turborepo and pnpm. It combines a Next.js web application, a Telegram bot, and shared packages for database, types, and utilities.
 
 ## Commands
 
 ### Development
 ```bash
-npm run dev              # Run all apps in development mode
+pnpm dev                 # Run all apps in development mode
 turbo dev --filter=web   # Run only the web app
 turbo dev --filter=bot   # Run only the bot
 ```
 
 ### Build
 ```bash
-npm run build            # Build all apps and packages
-turbo build --filter=web  # Build specific app
+pnpm build               # Build all apps and packages
+turbo build --filter=web # Build specific app
 ```
 
 ### Linting & Type Checking
 ```bash
-npm run lint             # Lint entire monorepo
-npm run check-types      # Type check all packages
-npm run format           # Format code with Prettier
+pnpm lint                # Lint entire monorepo
+pnpm check-types         # Type check all packages
+pnpm format              # Format code with Prettier
 ```
 
 ### Database (packages/db)
 ```bash
-npm run db:generate      # Generate Prisma client
-npm run db:migrate       # Run migrations
-npm run db:push          # Push schema changes
-npm run db:studio        # Open Prisma Studio
+pnpm db:generate         # Generate Prisma client
+pnpm db:migrate          # Run migrations
+pnpm db:push             # Push schema changes
+pnpm db:studio           # Open Prisma Studio
 ```
 
 ## Architecture
@@ -67,5 +67,5 @@ Required in `.env` (see `.env.example`):
 - **Frontend**: Next.js 14, React 18, Tailwind CSS
 - **Bot**: grammy (Telegram)
 - **Database**: PostgreSQL with Prisma
-- **Build**: Turborepo with npm workspaces
+- **Build**: Turborepo with pnpm workspaces
 - **Node**: >=18 required
