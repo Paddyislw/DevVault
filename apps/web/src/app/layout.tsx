@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { SessionProvider } from "@/components/providers/session-provider";
 import "./globals.css";
 import AuthGate from "@/components/layout/authgate";
+import { Providers } from "./provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -30,7 +31,9 @@ export default function RootLayout({
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
         <SessionProvider>
-          <AuthGate>{children}</AuthGate>
+          <AuthGate>
+            <Providers>{children}</Providers>
+          </AuthGate>
         </SessionProvider>
       </body>
     </html>

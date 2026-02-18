@@ -20,5 +20,8 @@
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
+  },
+  "exports": {
+    ".": "./src/index.ts"
   }
 }

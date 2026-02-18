@@ -91,3 +91,42 @@ FilePlain Englishauth.ts"Here's how to verify Telegram logins and what data to p
    <TRPCProvider>
    {children}
    </TRPCProvider>
+
+   12-Before writing any query, ask these questions in order:
+
+5. Security first — who owns this data?
+   Always start your where clause with ownership. Before any other filter:
+   tswhere: { workspace: { userId: ctx.session.user.id } }
+   If you forget this, any user can access any data. Make it a reflex.
+6. What do I actually need back?
+
+A single record → findFirst / findUnique
+A list of records → findMany
+Just a number → count
+Aggregated/grouped data → groupBy
+Does the DB exist? → findFirst + throw if null
+
+The mistake you made was reaching for findFirst + JS filtering when the data was already aggregated — that's a sign you need groupBy or count. 3. Should the DB do this or should JS do this?
+Rule of thumb:
+
+If you're about to write .filter(), .map(), or .reduce() on query results — stop. Can the DB do this instead?
+
+DB is always faster for filtering, counting, grouping. JS filtering is fine for small transformations on already-fetched data. 4. What's the minimum data I need?
+Don't fetch entire rows when you only need counts or specific fields. Use select or \_count:
+tsselect: { id: true, title: true } // not include: { everything: true }
+
+```
+
+**5. What shape do I want back?**
+Think about what the frontend needs before writing the query. Work backwards from the UI.
+
+---
+
+## The mental checklist (paste this somewhere):
+```
+
+1. Auth — is userId in the where clause?
+2. Operation — findFirst / findMany / count / groupBy?
+3. Filtering — DB or JS? (prefer DB)
+4. Data — minimum fields needed (select)?
+5. Shape — what does the frontend actually need?
