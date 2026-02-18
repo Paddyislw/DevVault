@@ -20,28 +20,25 @@ Child has:    parentId String              ← the real DB column
 Parent has:   children Child[]             ← the reverse side
 ```
 
-
-5-To migrate a db use this command 
+5-To migrate a db use this command
 cd packages/db
 npx prisma migrate dev --name add_all_content_and_activity_tables
-
 
 6-1. How to identify one-to-many vs many-to-many by syntax
 One-to-many — you see a foreign key field on the child:
 prisma// Task belongs to ONE workspace
-workspaceId  String                    // ← real column in DB
-workspace    Workspace @relation(fields: [workspaceId], references: [id])
+workspaceId String // ← real column in DB
+workspace Workspace @relation(fields: [workspaceId], references: [id])
 
 // Workspace has MANY tasks
-tasks        Task[]
-
+tasks Task[]
 
 7-Many-to-many — you see arrays on BOTH sides, no foreign key field anywhere:
 prisma// Task has MANY tags
-tags    Tag[]
+tags Tag[]
 
 // Tag has MANY tasks
-tasks   Task[]
+tasks Task[]
 
 8-Pattern: both sides have ModelName[]. No fieldId, no @relation(fields: [...]). Prisma sees this and automatically creates a hidden join table.
 Quick cheat sheet:
@@ -49,25 +46,23 @@ Quick cheat sheet:
 See fieldId String + @relation(fields: ...) → one-to-many
 See [] on both sides, no FK field → many-to-many
 
-
 9-9:58 AMdev tells Prisma which mode to run the migration in. Prisma has two migration commands:
 prisma migrate dev — Development mode. It generates the SQL migration file, applies it to your database, AND re-runs prisma generate to update the client. If there are conflicts, it'll offer to reset the database. Only use this locally.
 prisma migrate deploy — Production mode. It ONLY applies existing migration files that haven't been run yet. No generating, no resetting, no prompts. You run this when deploying to Railway/Vercel where your production database lives.
 Think of it like git: migrate dev is like working on a branch and committing freely. migrate deploy is like pushing to main — it only applies what's already been committed.
 For now, you'll always use migrate dev. You won't touch deploy until Week 10+ when you're deploying to production.
 
-
 10-In any component, you can do:
 tsx"use client";
 import { useSession } from "next-auth/react";
 
 export function Header() {
-  const { data: session, status } = useSession();
+const { data: session, status } = useSession();
 
-  if (status === "loading") return <p>Loading...</p>;
-  if (!session) return <p>Not logged in</p>;
+if (status === "loading") return <p>Loading...</p>;
+if (!session) return <p>Not logged in</p>;
 
-  return <p>Hello, {session.user.name}!</p>;  // "Hello, Pradyum!"
+return <p>Hello, {session.user.name}!</p>; // "Hello, Pradyum!"
 }
 useSession() is basically asking: "Is there a valid cookie right now? If yes, what's inside it?"
 status can be three things:
@@ -77,4 +72,22 @@ status can be three things:
 "unauthenticated" — no cookie, user needs to log in
 
 What Each File Does — Simplified
-FilePlain Englishauth.ts"Here's how to verify Telegram logins and what data to put in the cookie"[...nextauth]/route.ts"NextAuth, please handle all requests to /api/auth/*"session-provider.tsx"Wrap the app so every component can call useSession()"telegram-login.tsx"Load Telegram's button and when clicked, send the data to NextAuth"
+FilePlain Englishauth.ts"Here's how to verify Telegram logins and what data to put in the cookie"[...nextauth]/route.ts"NextAuth, please handle all requests to /api/auth/\*"session-provider.tsx"Wrap the app so every component can call useSession()"telegram-login.tsx"Load Telegram's button and when clicked, send the data to NextAuth"
+
+11- tRPC = function call over network
+
+1. router (router = backend ka controller)
+   export const userRouter = router({
+   getUser: publicProcedure.query(() => {})
+   });
+2. procedure (procedure = actual endpoint)
+   publicProcedure.query()
+   publicProcedure.mutation()
+   query → read
+   mutation → write
+3. client (frontend caller)
+   api.user.getUser.useQuery()
+4. provider (React ko connect karta)
+   <TRPCProvider>
+   {children}
+   </TRPCProvider>

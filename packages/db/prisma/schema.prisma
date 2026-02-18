@@ -23,10 +23,32 @@ enum TaskPriority {
 }
 
 enum TaskStatus {
-  TODO
-  IN_PROGRESS
-  DONE
-  CANCELLED
+  TODO // Committed, not started
+  BACKLOG // "Someday maybe" — not committed to yet
+  UP_NEXT // Queued for today/this session — committed but not started
+  IN_PROGRESS // Actively working on right now
+  BLOCKED // Can't proceed — needs blocker field
+  IN_REVIEW // PR open / waiting for feedback / sent to someone
+  DONE // Shipped
+  CANCELLED // Won't do — kept for history
+}
+
+model CustomStatus {
+  id          String     @id @default(cuid())
+  workspaceId String
+  name        String // "Needs Design", "Waiting on Client", etc.
+  color       String // hex — user picks from a palette
+  icon        String? // optional emoji or lucide icon name
+  position    Int // order in the status list
+  baseStatus  TaskStatus // maps to a built-in for logic purposes
+  // e.g. "Needs Design" → IN_REVIEW
+  // so standup generator still works
+  createdAt   DateTime   @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  tasks     Task[]
+
+  @@unique([workspaceId, name])
 }
 
 enum AttachmentType {
@@ -150,7 +172,7 @@ model Workspace {
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   tasks        Task[]
   tags         Tag[]
   snippets     Snippet[]
@@ -161,6 +183,7 @@ model Workspace {
   envSets      EnvSet[]
   apiEndpoints ApiEndpoint[]
   reminders    Reminder[]
+  CustomStatus CustomStatus[]
 
   @@unique([userId, slug]) //userid + slug should be personal
   @@map("workspaces")
@@ -169,25 +192,27 @@ model Workspace {
 // ─── TASK ─────────────────────────────────────────────
 
 model Task {
-  id           String       @id @default(cuid())
-  workspaceId  String
-  title        String
-  description  String?
-  priority     TaskPriority @default(P4)
-  status       TaskStatus   @default(TODO)
-  dueDate      DateTime?
-  isBacklog    Boolean      @default(false)
-  isSomeday    Boolean      @default(false)
-  position     Int          @default(0)
-  parentTaskId String?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id             String       @id @default(cuid())
+  workspaceId    String
+  title          String
+  description    String?
+  priority       TaskPriority @default(P4)
+  status         TaskStatus   @default(TODO)
+  dueDate        DateTime?
+  isBacklog      Boolean      @default(false)
+  isSomeday      Boolean      @default(false)
+  position       Int          @default(0)
+  parentTaskId   String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  customStatusId String?
 
-  workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  parentTask  Task?            @relation("Subtasks", fields: [parentTaskId], references: [id])
-  subtasks    Task[]           @relation("Subtasks")
-  attachments TaskAttachment[]
-  tags Tag[]
+  workspace    Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  parentTask   Task?            @relation("Subtasks", fields: [parentTaskId], references: [id])
+  subtasks     Task[]           @relation("Subtasks")
+  attachments  TaskAttachment[]
+  tags         Tag[]
+  customStatus CustomStatus?    @relation(fields: [customStatusId], references: [id])
 
   @@index([workspaceId, status])
   @@index([workspaceId, dueDate])
