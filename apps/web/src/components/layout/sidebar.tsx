@@ -36,23 +36,24 @@ export function Sidebar() {
   return (
     <TooltipProvider delayDuration={0}>
       <aside
-        className={`flex h-screen flex-col border-r border-border-default bg-surface-0 transition-[width] duration-150 ${
+        className={`flex h-screen flex-col border-r border-border-default bg-surface-1 transition-[width] duration-150 ${
           collapsed ? "w-[52px]" : "w-[220px]"
         }`}
       >
         {/* ── Brand ── */}
         <div className="flex h-[52px] items-center gap-2.5 px-3">
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent text-[11px] font-bold text-accent-foreground">
-            D
+          {/* Logo mark */}
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-border-default bg-surface-0">
+            <div className="h-2 w-2 rounded-full bg-accent" />
           </div>
           {!collapsed && (
-            <span className="text-[13px] font-semibold tracking-tight text-text-primary">
+            <span className="font-display text-[13px] tracking-widest text-text-primary">
               DevVault
             </span>
           )}
         </div>
 
-        <Separator className="bg-border-subtle" />
+      
 
         {/* ── Navigation ── */}
         <nav className="flex-1 space-y-0.5 p-2">
@@ -100,7 +101,7 @@ export function Sidebar() {
           />
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="flex w-full items-center gap-3 rounded-md px-2.5 py-[7px] text-[13px] text-text-ghost transition-colors duration-150 hover:bg-surface-2/50 hover:text-text-secondary"
+            className="flex w-full items-center gap-3 rounded-md px-2.5 py-[7px] text-[13px] text-text-ghost transition-colors duration-150 hover:bg-surface-2 hover:text-text-secondary"
           >
             {collapsed ? (
               <PanelLeft size={16} strokeWidth={1.5} />

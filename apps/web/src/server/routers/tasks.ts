@@ -118,6 +118,7 @@ export const tasksRouter = router({
           subtasks: {
             select: { id: true, title: true, status: true },
           },
+          workspace: { select: { id: true, name: true, color: true } },
         },
       });
 
@@ -138,6 +139,7 @@ export const tasksRouter = router({
         include: {
           attachments: true,
           subtasks: true,
+          workspace: { select: { id: true, name: true, color: true } },
         },
       });
 

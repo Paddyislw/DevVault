@@ -38,5 +38,6 @@ yarn-error.log*
 *.pem
 
 notes.md
+CONTEXT.md
 
 todo.txt

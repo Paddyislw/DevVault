@@ -1,6 +1,7 @@
 import { TelegramLogin } from "@/components/auth/telegram-login";
 
 export default function LoginPage() {
+  console.log('NEXT_PUBLIC_BOT_USERNAME',process.env.NEXT_PUBLIC_BOT_USERNAME)
   return (
     <div className="flex min-h-screen items-center justify-center bg-surface-0">
       <div className="w-full max-w-sm px-8">
