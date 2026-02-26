@@ -1,40 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRight, AlertCircle } from "lucide-react";
+import { ChevronRight, AlertCircle, Pencil } from "lucide-react";
 import { TaskStatusBadge } from "./Taskstatusbadge";
 import { TaskDetail } from "./Taskdetail";
+import type { RouterOutputs } from "@/lib/trpc";
 
-
-interface Task {
-  id: string;
-  title: string;
-  description: string | null;
-  status: string;
-  priority: string;
-  dueDate: Date | null;
-  isBacklog: boolean;
-  isSomeday: boolean;
-  workspace: { id: string; name: string; color: string };
-  attachments: Array<{
-    id: string;
-    type: "CODE" | "IMAGE" | "LINK" | "FILE";
-    content: string | null;
-    language: string | null;
-    url: string | null;
-    fileName: string | null;
-  }>;
-  subtasks: Array<{ id: string; title: string; status: string }>;
-}
+type Task = RouterOutputs["tasks"]["list"][number];
 
 interface TaskRowProps {
   task: Task;
   onComplete: (id: string, completed: boolean) => void;
+  onEdit: (task: Task) => void;
 }
 
-function isOverdue(dueDate: Date | null, status: string): boolean {
+function isOverdue(dueDate: string | Date | null, status: string) {
   if (!dueDate || status === "DONE" || status === "CANCELLED") return false;
-  return new Date(dueDate) < new Date(new Date().setHours(0, 0, 0, 0));
+  return new Date(dueDate) < new Date(new Date().toDateString());
 }
 
 function formatDueDate(dueDate: Date | null): string {
@@ -50,7 +32,7 @@ function formatDueDate(dueDate: Date | null): string {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-export function TaskRow({ task, onComplete }: TaskRowProps) {
+export function TaskRow({ task, onComplete, onEdit }: TaskRowProps) {
   const [expanded, setExpanded] = useState(false);
   const isDone = task.status === "DONE";
   const overdue = isOverdue(task.dueDate, task.status);
@@ -76,7 +58,13 @@ export function TaskRow({ task, onComplete }: TaskRowProps) {
         >
           {isDone && (
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <path d="M2 5l2.5 2.5L8 3" stroke="var(--success)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M2 5l2.5 2.5L8 3"
+                stroke="var(--success)"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           )}
         </button>
@@ -84,9 +72,7 @@ export function TaskRow({ task, onComplete }: TaskRowProps) {
         {/* Title */}
         <span
           className={`flex-1 truncate text-[13px] ${
-            isDone
-              ? "text-text-ghost line-through"
-              : "text-text-primary"
+            isDone ? "text-text-ghost line-through" : "text-text-primary"
           }`}
         >
           {task.title}
@@ -95,14 +81,13 @@ export function TaskRow({ task, onComplete }: TaskRowProps) {
         {/* Subtask count */}
         {task.subtasks.length > 0 && (
           <span className="text-[11px] text-text-tertiary">
-            {task.subtasks.filter((s) => s.status === "DONE").length}/{task.subtasks.length}
+            {task.subtasks.filter((s) => s.status === "DONE").length}/
+            {task.subtasks.length}
           </span>
         )}
 
         {/* Workspace pill */}
-        <span
-          className="hidden shrink-0 items-center gap-1.5 rounded-full border border-border-subtle px-2 py-0.5 text-[11px] text-text-tertiary sm:flex"
-        >
+        <span className="hidden shrink-0 items-center gap-1.5 rounded-full border border-border-subtle px-2 py-0.5 text-[11px] text-text-tertiary sm:flex">
           <span
             className="h-1.5 w-1.5 rounded-full"
             style={{ backgroundColor: task.workspace.color }}
@@ -113,15 +98,24 @@ export function TaskRow({ task, onComplete }: TaskRowProps) {
         {/* Due date */}
         {task.dueDate && (
           <span
-            className={`flex shrink-0 items-center gap-1 text-[12px] ${
-              overdue ? "text-[var(--danger)]" : "text-text-tertiary"
-            }`}
+            className={`text-xs ${isOverdue(task.dueDate, task.status) ? "text-red-500 font-medium" : "text-text-tertiary"}`}
           >
-            {overdue && <AlertCircle size={11} strokeWidth={2} />}
-            {formatDueDate(task.dueDate)}
+            {isOverdue(task.dueDate, task.status) ? "⚠ " : ""}
+            {new Date(task.dueDate).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            })}
           </span>
         )}
-
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(task);
+          }}
+          className="opacity-0 group-hover:opacity-100 transition-opacity text-text-tertiary hover:text-text-primary"
+        >
+          <Pencil size={13} strokeWidth={1.5} />
+        </button>
         {/* Status badge */}
         <TaskStatusBadge status={task.status} />
 
@@ -141,6 +135,7 @@ export function TaskRow({ task, onComplete }: TaskRowProps) {
           description={task.description}
           attachments={task.attachments}
           subtasks={task.subtasks}
+          taskId={task.id}
         />
       )}
     </div>

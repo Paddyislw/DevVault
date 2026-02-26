@@ -213,21 +213,15 @@ export const tasksRouter = router({
     }),
 
   // Count of Incomplete Tasks For Logged In User Grouped By Priority
-  numberOfIncompleteTasks: protectedProcedure
-    .input(z.object({ workspaceId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const { workspaceId } = input;
-
-      const counts = await ctx.prisma.task.groupBy({
-        by: ["priority"],
-        where: {
-          workspaceId,
-          workspace: { userId: ctx.session.user.id },
-          status: { not: "DONE" },
-        },
-        _count: { id: true },
-      });
-
-      return counts;
-    }),
+  numberOfIncompleteTasks: protectedProcedure.query(async ({ ctx }) => {
+    const counts = await ctx.prisma.task.groupBy({
+      by: ["priority"],
+      where: {
+        workspace: { userId: ctx.session.user.id },
+        status: { not: "DONE" },
+      },
+      _count: { id: true },
+    });
+    return counts;
+  }),
 });

@@ -5,6 +5,11 @@ import { PriorityGroup } from "./PriorityGroup";
 import { api } from "@/lib/trpc";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
+import { useState, useEffect } from "react";
+import { AddTaskModal } from "./AddTaskModal";
+import type { RouterOutputs } from "@/lib/trpc";
+
+type Task = RouterOutputs["tasks"]["list"][number];
 
 const PRIORITY_ORDER = ["P1", "P2", "P3", "P4"] as const;
 
@@ -31,6 +36,16 @@ function formatTodayHeading() {
 
 export function TasksPage() {
   const { dueAfter, dueBefore } = getTodayRange();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editTask, setEditTask] = useState<Task | null>(null);
+
+  const { data: incompleteTasksByPriority } =
+    api.tasks.numberOfIncompleteTasks.useQuery();
+
+  console.log("incompleteTasksByPriority:", incompleteTasksByPriority);
+
+  const filteredIncompleteTaskWithNonZeroCount =
+    incompleteTasksByPriority?.filter((task) => task._count.id > 0);
 
   const {
     data: tasks = [],
@@ -88,6 +103,32 @@ export function TasksPage() {
     return groups;
   }, [tasks]);
 
+  const incompleteCounts = useMemo(() => {
+    return tasks.reduce(
+      (acc, task) => {
+        if (task.status !== "DONE") {
+          acc[task.priority] = (acc[task.priority] ?? 0) + 1;
+        }
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+  }, [tasks]);
+
+  // N key shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "n" && !e.metaKey && !e.ctrlKey) {
+        const tag = (e.target as HTMLElement).tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA") return;
+        e.preventDefault();
+        setModalOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
   const totalTasks = tasks.length;
   const doneTasks = tasks.filter((t) => t.status === "DONE").length;
 
@@ -114,30 +155,54 @@ export function TasksPage() {
     <div className="flex h-full flex-col overflow-hidden">
       {/* ── Page header ── */}
       <div className="flex items-end justify-between border-b border-border-subtle px-6 py-4">
-        <div>
-          <h1 className="font-display text-[32px] text-text-primary">Today</h1>
-          <p className="mt-0.5 text-[12px] text-text-tertiary tracking-wide">
-            {formatTodayHeading()}
-          </p>
+        {/* Left: title + date + stats */}
+        <div className="flex items-end gap-3">
+          <div className="flex flex-col gap-1">
+            <h1 className="font-display text-[32px] leading-none text-text-primary">
+              Today
+            </h1>
+            <p className="text-[12px] text-text-tertiary tracking-wide">
+              {formatTodayHeading()}
+            </p>
+          </div>
+          {/* Stats bar — sits naturally under the date */}
+          <div className="flex items-center gap-1.5 mt-1">
+            {(["P1", "P2", "P3", "P4"] as const)
+              .filter((p) => (incompleteCounts[p] ?? 0) > 0)
+              .map((p) => (
+                <span
+                  key={p}
+                  className={`badge-${p.toLowerCase()} px-2 py-0.5 text-[11px] font-medium rounded`}
+                >
+                  {p} · {incompleteCounts[p]}
+                </span>
+              ))}
+          </div>
         </div>
 
-        {/* Progress */}
-        {totalTasks > 0 && (
-          <div className="flex items-center gap-3">
-            {/* Mini progress bar */}
-            <div className="h-1 w-24 overflow-hidden rounded-full bg-surface-3">
-              <div
-                className="h-full rounded-full bg-accent transition-all duration-500"
-                style={{ width: `${(doneTasks / totalTasks) * 100}%` }}
-              />
+        {/* Right: progress + button */}
+        <div className="flex items-center gap-4">
+          {totalTasks > 0 && (
+            <div className="flex items-center gap-3">
+              <div className="h-1 w-24 overflow-hidden rounded-full bg-surface-3">
+                <div
+                  className="h-full rounded-full bg-accent transition-all duration-500"
+                  style={{ width: `${(doneTasks / totalTasks) * 100}%` }}
+                />
+              </div>
+              <span className="text-[12px] text-text-tertiary">
+                {doneTasks}/{totalTasks}
+              </span>
             </div>
-            <span className="text-[12px] text-text-tertiary">
-              {doneTasks}/{totalTasks}
-            </span>
-          </div>
-        )}
+          )}
+          <button
+            onClick={() => setModalOpen(true)}
+            className="px-3 py-1.5 text-sm bg-accent text-white rounded font-medium hover:opacity-90 transition-opacity"
+          >
+            + New Task
+          </button>
+        </div>
       </div>
-
       {/* ── Task groups ── */}
       <div className="flex-1 overflow-y-auto py-3">
         {totalTasks === 0 ? (
@@ -160,11 +225,21 @@ export function TasksPage() {
                 priority={priority}
                 tasks={group as any}
                 onComplete={handleComplete}
+                onEdit={setEditTask}
               />
             );
           })
         )}
       </div>
+      <AddTaskModal
+        key={editTask?.id ?? "new"}
+        open={modalOpen || !!editTask}
+        onClose={() => {
+          setModalOpen(false);
+          setEditTask(null);
+        }}
+        task={editTask ?? undefined}
+      />
     </div>
   );
 }
