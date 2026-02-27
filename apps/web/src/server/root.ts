@@ -2,10 +2,14 @@
 import { router } from './trpc'
 import { tasksRouter } from './routers/tasks'
 import { workspacesRouter } from './routers/workspaces'
+import { snippetsRouter } from './routers/snippets'
+import { scratchpadsRouter } from './routers/scratchpads'
 
 export const appRouter = router({
   tasks: tasksRouter,
-  workspaces: workspacesRouter
+  workspaces: workspacesRouter,
+  snippets: snippetsRouter,
+  scratchpads: scratchpadsRouter,
 })
 
 export type AppRouter = typeof appRouter
