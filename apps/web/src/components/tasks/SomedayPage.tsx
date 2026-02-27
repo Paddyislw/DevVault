@@ -1,11 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { PriorityGroup } from "./PriorityGroup";
 import { api } from "@/lib/trpc";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
-import { useState, useEffect } from "react";
 import { AddTaskModal } from "./AddTaskModal";
 import type { RouterOutputs } from "@/lib/trpc";
 
@@ -13,37 +12,26 @@ type Task = RouterOutputs["tasks"]["list"][number];
 
 const PRIORITY_ORDER = ["P1", "P2", "P3", "P4"] as const;
 
-function formatTodayHeading() {
-  return new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
-}
+type TabType = "someday" | "backlog";
 
-export function TasksPage() {
+export function SomedayPage() {
+  const [activeTab, setActiveTab] = useState<TabType>("someday");
   const [modalOpen, setModalOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
 
-  const { data: incompleteTasksByPriority } =
-    api.tasks.numberOfIncompleteTasks.useQuery();
-
-  console.log("incompleteTasksByPriority:", incompleteTasksByPriority);
-
-  const filteredIncompleteTaskWithNonZeroCount =
-    incompleteTasksByPriority?.filter((task) => task._count.id > 0);
+  // Fetch tasks based on active tab
+  const queryParams =
+    activeTab === "someday" ? { isSomeday: true } : { isBacklog: true };
 
   const {
     data: tasks = [],
     isLoading,
+    isFetching,
     refetch,
-  } = api.tasks.listToday.useQuery();
-
-  console.log("tasks", tasks);
+  } = api.tasks.list.useQuery(queryParams);
 
   const queryClient = useQueryClient();
-  
-  const queryKey = getQueryKey(api.tasks.listToday, undefined, "query");
+  const queryKey = getQueryKey(api.tasks.list, queryParams, "query");
 
   const completeMutation = api.tasks.complete.useMutation({
     onMutate: async ({ id, completed }) => {
@@ -59,7 +47,7 @@ export function TasksPage() {
       queryClient.setQueryData(queryKey, updatedTasks);
       return { previousTasks, updatedTasks };
     },
-    onError: (err, newTask, context) => {
+    onError: (_err, _newTask, context) => {
       queryClient.setQueryData(queryKey, context?.previousTasks);
     },
     onSettled: () => refetch(),
@@ -114,8 +102,6 @@ export function TasksPage() {
   const totalTasks = tasks.length;
   const doneTasks = tasks.filter((t) => t.status === "DONE").length;
 
-  console.log("tasks:", tasks, "isLoading:", isLoading);
-
   // ── Loading ──
   if (isLoading) {
     return (
@@ -133,21 +119,64 @@ export function TasksPage() {
     );
   }
 
+  const emptyStateConfig = {
+    someday: {
+      message: "No someday tasks.",
+      hint: "Move a task here when it's not urgent.",
+      buttonLabel: "+ Add someday task",
+    },
+    backlog: {
+      message: "Backlog is clear.",
+      hint: "Tasks moved here won't clutter your day.",
+      buttonLabel: "+ Add backlog task",
+    },
+  };
+
+  const emptyState = emptyStateConfig[activeTab];
+
   return (
     <div className="flex h-full flex-col overflow-hidden">
       {/* ── Page header ── */}
       <div className="flex items-end justify-between border-b border-border-subtle px-6 py-4">
-        {/* Left: title + date + stats */}
+        {/* Left: tabs + stats */}
         <div className="flex items-end gap-3">
           <div className="flex flex-col gap-1">
-            <h1 className="font-display text-[32px] leading-none text-text-primary">
-              Today
-            </h1>
+            {/* Tab headers - editorial style like Today heading */}
+            <div className="flex items-baseline gap-6">
+              <button
+                onClick={() => setActiveTab("someday")}
+                className={`relative font-display text-[32px] leading-none transition-colors ${
+                  activeTab === "someday"
+                    ? "text-text-primary"
+                    : "text-text-ghost hover:text-text-tertiary"
+                }`}
+              >
+                Someday
+                {activeTab === "someday" && (
+                  <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-accent rounded-full" />
+                )}
+              </button>
+              <button
+                onClick={() => setActiveTab("backlog")}
+                className={`relative font-display text-[32px] leading-none transition-colors ${
+                  activeTab === "backlog"
+                    ? "text-text-primary"
+                    : "text-text-ghost hover:text-text-tertiary"
+                }`}
+              >
+                Backlog
+                {activeTab === "backlog" && (
+                  <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-accent rounded-full" />
+                )}
+              </button>
+            </div>
             <p className="text-[12px] text-text-tertiary tracking-wide">
-              {formatTodayHeading()}
+              {activeTab === "someday"
+                ? "Tasks without a deadline"
+                : "Deprioritized tasks"}
             </p>
           </div>
-          {/* Stats bar — sits naturally under the date */}
+          {/* Stats bar */}
           <div className="flex items-center gap-1.5 mt-1">
             {(["P1", "P2", "P3", "P4"] as const)
               .filter((p) => (incompleteCounts[p] ?? 0) > 0)
@@ -185,17 +214,35 @@ export function TasksPage() {
           </button>
         </div>
       </div>
+
       {/* ── Task groups ── */}
       <div className="flex-1 overflow-y-auto py-3">
-        {totalTasks === 0 ? (
-          /* ── Empty state — text only, one clear action ── */
-          <div className="flex h-full flex-col items-center justify-center gap-2">
+        {isFetching ? (
+          /* ── Loading skeleton for tab switch ── */
+          <div className="flex h-full items-center justify-center">
+            <div className="space-y-2 w-full max-w-lg px-4">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="h-10 animate-pulse rounded-md bg-surface-3"
+                  style={{ opacity: 1 - i * 0.2 }}
+                />
+              ))}
+            </div>
+          </div>
+        ) : totalTasks === 0 ? (
+          /* ── Empty state ── */
+          <div className="flex h-full flex-col items-center justify-center gap-3">
             <p className="text-[14px] text-text-secondary">
-              No tasks due today.
+              {emptyState.message}
             </p>
-            <p className="text-[13px] text-text-ghost">
-              Press <kbd className="kbd">N</kbd> to create one.
-            </p>
+            <p className="text-[13px] text-text-ghost">{emptyState.hint}</p>
+            <button
+              onClick={() => setModalOpen(true)}
+              className="mt-2 px-4 py-2 text-sm bg-accent text-white rounded font-medium hover:opacity-90 transition-opacity"
+            >
+              {emptyState.buttonLabel}
+            </button>
           </div>
         ) : (
           PRIORITY_ORDER.map((priority) => {
@@ -213,14 +260,17 @@ export function TasksPage() {
           })
         )}
       </div>
+
       <AddTaskModal
-        key={editTask?.id ?? "new"}
+        key={editTask?.id ?? `new-${activeTab}`}
         open={modalOpen || !!editTask}
         onClose={() => {
           setModalOpen(false);
           setEditTask(null);
         }}
         task={editTask ?? undefined}
+        defaultSomeday={activeTab === "someday"}
+        defaultBacklog={activeTab === "backlog"}
       />
     </div>
   );

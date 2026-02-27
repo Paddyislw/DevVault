@@ -17,6 +17,8 @@ interface AddTaskModalProps {
   open: boolean;
   onClose: () => void;
   task?: Task;
+  defaultSomeday?: boolean;
+  defaultBacklog?: boolean;
 }
 
 interface FormState {
@@ -26,6 +28,7 @@ interface FormState {
   dueDate: string;
   description: string;
   isSomeday: boolean;
+  isBacklog: boolean;
 }
 
 const today = new Date().toISOString().split("T")[0];
@@ -37,9 +40,14 @@ const EMPTY_FORM: FormState = {
   dueDate: today,
   description: "",
   isSomeday: false,
+  isBacklog: false,
 };
 
-function getInitialForm(task?: Task): FormState {
+function getInitialForm(
+  task?: Task,
+  defaultSomeday?: boolean,
+  defaultBacklog?: boolean,
+): FormState {
   if (task) {
     return {
       title: task.title,
@@ -50,14 +58,28 @@ function getInitialForm(task?: Task): FormState {
         : today,
       description: task.description ?? "",
       isSomeday: task.isSomeday,
+      isBacklog: task.isBacklog,
     };
   }
-  return EMPTY_FORM;
+  return {
+    ...EMPTY_FORM,
+    isSomeday: defaultSomeday ?? false,
+    isBacklog: defaultBacklog ?? false,
+    dueDate: defaultSomeday ? "" : today,
+  };
 }
 
-export function AddTaskModal({ open, onClose, task }: AddTaskModalProps) {
+export function AddTaskModal({
+  open,
+  onClose,
+  task,
+  defaultSomeday,
+  defaultBacklog,
+}: AddTaskModalProps) {
   // With key={task?.id} on the component, we get fresh state on each task
-  const [form, setForm] = useState<FormState>(() => getInitialForm(task));
+  const [form, setForm] = useState<FormState>(() =>
+    getInitialForm(task, defaultSomeday, defaultBacklog),
+  );
   const titleRef = useRef<HTMLInputElement>(null);
   const utils = api.useUtils();
 
@@ -71,6 +93,13 @@ export function AddTaskModal({ open, onClose, task }: AddTaskModalProps) {
     const def = workspaces.find((w) => w.isDefault) ?? workspaces[0];
     if (def) setForm((f) => ({ ...f, workspaceId: def.id }));
   }, [task, workspaces, form.workspaceId]);
+
+  // Reset form when modal opens for a new task (not editing)
+  useEffect(() => {
+    if (open && !task) {
+      setForm(getInitialForm(undefined, defaultSomeday, defaultBacklog));
+    }
+  }, [open, task, defaultSomeday, defaultBacklog]);
 
   // Focus title on open
   useEffect(() => {
@@ -117,6 +146,8 @@ export function AddTaskModal({ open, onClose, task }: AddTaskModalProps) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.title.trim() || !form.workspaceId) return;
+    // Prevent double submission
+    if (createTask.isPending || updateTask.isPending) return;
 
     const payload = {
       title: form.title.trim(),
@@ -125,6 +156,7 @@ export function AddTaskModal({ open, onClose, task }: AddTaskModalProps) {
       dueDate: form.dueDate ? new Date(form.dueDate).toISOString() : undefined,
       description: form.description || undefined,
       isSomeday: form.isSomeday,
+      isBacklog: form.isBacklog,
     };
 
     if (task) {
@@ -249,7 +281,8 @@ export function AddTaskModal({ open, onClose, task }: AddTaskModalProps) {
                   disabled={
                     !form.title.trim() ||
                     !form.workspaceId ||
-                    createTask.isPending
+                    createTask.isPending ||
+                    updateTask.isPending
                   }
                   className="px-4 py-1.5 text-sm bg-accent text-white rounded font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
                 >

@@ -125,6 +125,45 @@ export const tasksRouter = router({
       return tasks;
     }),
 
+  listToday: protectedProcedure.query(async ({ ctx }) => {
+    const startOfToday = new Date();
+    startOfToday.setDate(startOfToday.getDate() - 1);
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
+
+    return ctx.prisma.task.findMany({
+      where: {
+        workspace: { userId: ctx.session.user.id },
+        isSomeday: false,
+        isBacklog: false,
+        OR: [
+          // Overdue + incomplete
+          {
+            dueDate: { lt: startOfToday },
+            status: { notIn: ["DONE", "CANCELLED"] },
+          },
+          // Today — all statuses
+          {
+            dueDate: { gte: startOfToday, lte: endOfToday },
+          },
+          // No due date + incomplete
+          {
+            dueDate: null,
+            status: { notIn: ["DONE", "CANCELLED"] },
+          },
+        ],
+      },
+      include: {
+        attachments: true,
+        subtasks: true,
+        workspace: { select: { id: true, name: true, color: true } },
+      },
+      orderBy: [{ priority: "asc" }, { createdAt: "asc" }],
+    });
+  }),
+
   // GET ONE
   byId: protectedProcedure
     .input(z.object({ id: z.string() }))

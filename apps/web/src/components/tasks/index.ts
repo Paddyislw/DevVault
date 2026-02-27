@@ -6,3 +6,4 @@ export { TaskStatusBadge } from "./Taskstatusbadge";
 export { PriorityPicker } from "./PriorityPicker";
 export { WorkspacePicker } from "./WorkspacePicker";
 export { AddTaskModal } from "./AddTaskModal";
+export { SomedayPage } from './SomedayPage'
