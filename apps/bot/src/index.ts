@@ -6,7 +6,9 @@ import {
   getSomedayTasks,
   getBacklogTasks,
   formatTasksByPriority,
+  createTask,
 } from "./services/task";
+import { parseMessage } from "./services/ai";
 
 const bot = new Bot(process.env.BOT_TOKEN!);
 
@@ -173,6 +175,90 @@ bot.command("workspaces", async (ctx) => {
         `);
   } else {
     await ctx.reply("No workspace found attached to the user");
+  }
+});
+
+// Handle plain text messages (NLP parsing)
+bot.on("message:text", async (ctx) => {
+  const text = ctx.message.text;
+
+  // Ignore commands (they're handled by command handlers above)
+  if (text.startsWith("/")) return;
+
+  const telegramId = ctx.from?.id.toString();
+  if (!telegramId) {
+    await ctx.reply("Please run /start first");
+    return;
+  }
+
+  const user = await findUserByTelegramId(telegramId);
+  if (!user) {
+    await ctx.reply("Please run /start first to set up your account.");
+    return;
+  }
+
+  try {
+    const parsed = await parseMessage(text);
+
+    if (parsed.intent === "add_task") {
+      const task = await createTask({
+        userId: user.id,
+        title: parsed.title,
+        workspaceName: parsed.workspace,
+        priority: parsed.priority,
+        dueDate: parsed.dueDate,
+        isSomeday: parsed.isSomeday,
+        description: parsed.description,
+      });
+
+      // Format due date for display
+      let dueDateDisplay = "";
+      if (task.dueDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const taskDate = new Date(task.dueDate);
+        taskDate.setHours(0, 0, 0, 0);
+
+        if (taskDate.getTime() === today.getTime()) {
+          dueDateDisplay = "Today";
+        } else if (taskDate.getTime() === tomorrow.getTime()) {
+          dueDateDisplay = "Tomorrow";
+        } else {
+          dueDateDisplay = task.dueDate.toLocaleDateString("en-US", {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+          });
+        }
+      }
+
+      const details = [
+        task.workspace.name,
+        task.priority,
+        dueDateDisplay ? `Due: ${dueDateDisplay}` : null,
+        task.isSomeday ? "Someday" : null,
+      ]
+        .filter(Boolean)
+        .join(" · ");
+
+      await ctx.reply(`✅ Task created\n${task.title}\n${details}`);
+    } else {
+      // Other intents not implemented yet
+      await ctx.reply(
+        "I understood your message, but this feature isn't available yet. " +
+          "Try describing a task to add, like:\n" +
+          '"Fix the login bug tomorrow P1 work"',
+      );
+    }
+  } catch (error) {
+    console.error("Error parsing message:", error);
+    await ctx.reply(
+      "I couldn't understand that message. Try something like:\n" +
+        '"Add a task to fix CORS bug tomorrow"\n' +
+        '"Review PR for auth module P2 work"',
+    );
   }
 });
 

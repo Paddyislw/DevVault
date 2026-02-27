@@ -45,7 +45,7 @@ export function TaskDetail({
   const utils = api.useUtils();
 
   const deleteTask = api.tasks.delete.useMutation({
-    onSuccess: () => utils.tasks.list.invalidate(),
+    onSuccess: () => utils.tasks.listToday.invalidate(),
   });
 
   return (

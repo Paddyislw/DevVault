@@ -540,10 +540,9 @@ Free tier changes domain on every restart. Update both:
 - [x] Someday/Backlog view with tabs
 - [x] Bot: /tasks, /backlog, /workspaces, /help commands
 - [x] Bot service layer (task.ts, user.ts)
+- [x] Bot NLP with Gemini 2.5 Flash — natural language task creation
 
 ## What's NOT Built Yet
-
-- [ ] Bot NLP with OpenAI (Day 12)
 - [ ] Snippets + Scratchpad (Week 3)
 - [ ] Notes (Week 3)
 - [ ] Credential Vault (Week 4)
@@ -584,3 +583,4 @@ Free tier changes domain on every restart. Update both:
 - Tab-driven query params: pass query object to `useQuery`, swap params on tab change
 - `listToday` procedure handles Today logic server-side — overdue incomplete + today all statuses + null date incomplete
 - Don't use dueAfter/dueBefore on frontend for Today view — use a dedicated server procedure with OR clauses
+- Gemini model name — use `gemini-2.5-flash` (2.0 and 1.5 deprecated)

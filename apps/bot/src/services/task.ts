@@ -1,6 +1,72 @@
-import { prisma, Task, TaskPriority } from "@devvault/db";
+import { prisma, Task, TaskPriority, Workspace } from "@devvault/db";
 
 type TaskWithWorkspace = Task & { workspace: { name: string } };
+
+export type CreateTaskInput = {
+  userId: string;
+  title: string;
+  workspaceName?: string | null;
+  priority?: TaskPriority | null;
+  dueDate?: string | null;
+  isSomeday?: boolean;
+  description?: string | null;
+};
+
+export async function createTask(
+  input: CreateTaskInput,
+): Promise<TaskWithWorkspace> {
+  const { userId, title, workspaceName, priority, dueDate, isSomeday, description } = input;
+
+  // Find workspace - match by name/slug or use default
+  let workspace: Workspace | null = null;
+
+  if (workspaceName) {
+    workspace = await prisma.workspace.findFirst({
+      where: {
+        userId,
+        OR: [
+          { name: { equals: workspaceName, mode: "insensitive" } },
+          { slug: { equals: workspaceName.toLowerCase() } },
+        ],
+      },
+    });
+  }
+
+  // Fallback to default workspace if not found
+  if (!workspace) {
+    workspace = await prisma.workspace.findFirst({
+      where: { userId, isDefault: true },
+      orderBy: { createdAt: "asc" },
+    });
+  }
+
+  if (!workspace) {
+    throw new Error("No workspace found for user");
+  }
+
+  // Parse and validate due date
+  let parsedDueDate: Date | null = null;
+  if (dueDate) {
+    const date = new Date(dueDate);
+    if (!isNaN(date.getTime())) {
+      parsedDueDate = date;
+    }
+  }
+
+  const task = await prisma.task.create({
+    data: {
+      workspaceId: workspace.id,
+      title,
+      description: description ?? undefined,
+      priority: priority ?? "P4",
+      dueDate: parsedDueDate,
+      isSomeday: isSomeday ?? false,
+    },
+    include: { workspace: { select: { name: true } } },
+  });
+
+  return task;
+}
 
 export async function getTodayTasks(
   userId: string,

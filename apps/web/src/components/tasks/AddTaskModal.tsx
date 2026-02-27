@@ -119,7 +119,7 @@ export function AddTaskModal({
 
   const createTask = api.tasks.create.useMutation({
     onSuccess: () => {
-      utils.tasks.list.invalidate();
+      utils.tasks.listToday.invalidate();
       onClose();
     },
   });
@@ -138,7 +138,7 @@ export function AddTaskModal({
 
   const updateTask = api.tasks.update.useMutation({
     onSuccess: () => {
-      utils.tasks.list.invalidate();
+      utils.tasks.listToday.invalidate();
       onClose();
     },
   });
