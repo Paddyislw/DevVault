@@ -10,7 +10,7 @@
 DevVault is a Telegram-first developer productivity tool. Combines task management, snippets, notes, credentials, bookmarks — controllable via Telegram bot + web dashboard.
 
 **Timeline:** 72-day challenge, 1 hour/day, Mon–Sat
-**Current day:** Day 14/72 complete (19% done, Week 3 of 12)
+**Current day:** Day 15/72 complete (21% done, Week 3 of 12)
 
 ---
 
@@ -88,6 +88,7 @@ app/
 ├── login/page.tsx            ← Telegram login
 ├── globals.css               ← ALL design tokens as CSS variables
 ├── layout.tsx
+├── notes/page.tsx
 ├── page.tsx                  ← Today view (/)
 └── providers.tsx             ← tRPC + React Query providers
 
@@ -120,6 +121,13 @@ components/
 ├── activity/
 │   ├── index.ts
 │   └── ActivityPage.tsx
+├── notes/
+│   ├── index.ts
+│   ├── NotesPage.tsx
+│   ├── NoteList.tsx
+│   ├── NoteViewer.tsx
+│   ├── CommandsView.tsx
+│   └── AddNoteModal.tsx
 └── ui/                       ← shadcn components only
 
 hooks/
@@ -136,6 +144,7 @@ server/
 │   ├── workspaces.ts
 │   ├── snippets.ts
 │   ├── scratchpads.ts
+│   ├── notes.ts
 │   └── activity.ts
 ├── root.ts
 └── trpc.ts
@@ -512,6 +521,16 @@ prisma.task.findMany({
 | `promote` | mutation | Creates snippet from pad, marks pad isPromoted: true |
 | `cleanup` | mutation | Deletes all expired scratchpads for user — returns `{ deleted: count }` |
 
+### `api.notes.*`
+| Procedure | Type | Description |
+|---|---|---|
+| `create` | mutation | Create note or command, verifies workspace ownership |
+| `list` | query | Filter by type, search (title/content/command), workspaceId. Pinned first, then by copyCount |
+| `update` | mutation | Partial update, ownership verified |
+| `delete` | mutation | Hard delete, ownership verified |
+| `incrementCopyCount` | mutation | Atomic increment on copyCount |
+| `togglePin` | mutation | Flips isPinned |
+
 ---
 
 ## Bot Patterns
@@ -594,10 +613,15 @@ Free tier changes domain on every restart. Update both:
 - [x] Workspace filter tabs on Today view
 - [x] Sticky default workspace in AddTaskModal
 - [x] Task update supports workspaceId change with ownership verification
+- [x] Notes tRPC router (create, list, update, delete, incrementCopyCount, togglePin)
+- [x] NotesPage — split panel for NOTE type, full-width cheatsheet for COMMAND type
+- [x] NoteList — search, pin toggle, type-aware empty states
+- [x] NoteViewer — markdown renderer (no deps), command block with copy
+- [x] CommandsView — grid + table toggle, grouped by language, inline copy/edit/delete
+- [x] AddNoteModal — type toggle, conditional fields for NOTE vs COMMAND
 
 ## What's NOT Built Yet
 - [ ] Snippets + Scratchpad UI (Week 3)
-- [ ] Notes (Week 3)
 - [ ] Credential Vault (Week 4)
 - [ ] Bookmarks (Week 4)
 - [ ] Env Manager + API Endpoints (Week 5)
