@@ -1,7 +1,7 @@
 # DevVault — CLAUDE.md
 > Drop this file in the root of your devvault/ monorepo as `CLAUDE.md`.
 > Claude Code reads this automatically on every session.
-> Updated after: Day 19
+> Updated after: Day 20
 
 ---
 
@@ -10,7 +10,7 @@
 DevVault is a Telegram-first developer productivity tool. Combines task management, snippets, notes, credentials, bookmarks — controllable via Telegram bot + web dashboard.
 
 **Timeline:** 72-day challenge, 1 hour/day, Mon–Sat
-**Current day:** Day 19/72 complete (26% done, Week 4 of 12)
+**Current day:** Day 20/72 complete (28% done, Week 4 of 12)
 
 ---
 
@@ -145,6 +145,11 @@ components/
 │   ├── BookmarkGrid.tsx
 │   ├── BookmarkCard.tsx
 │   └── AddBookmarkModal.tsx
+├── ideas/
+│   ├── index.ts
+│   ├── IdeasPage.tsx
+│   ├── IdeaCard.tsx
+│   └── AddIdeaModal.tsx
 └── ui/                       ← shadcn components only
 
 hooks/
@@ -166,6 +171,7 @@ server/
 │   ├── notes.ts
 │   ├── credentials.ts
 │   ├── bookmarks.ts
+│   ├── ideas.ts
 │   └── activity.ts
 ├── root.ts
 └── trpc.ts
@@ -573,6 +579,15 @@ prisma.task.findMany({
 | `refreshMetadata` | mutation | Re-fetches title/description/favicon for a URL |
 | `checkAlive` | mutation | HEAD request to verify URL still works |
 
+### `api.ideas.*`
+| Procedure | Type | Description |
+|---|---|---|
+| `create` | mutation | Create idea, linked to userId |
+| `list` | query | Filter by status, search title/description |
+| `update` | mutation | Partial update, ownership verified |
+| `delete` | mutation | Hard delete, ownership verified |
+| `promote` | mutation | Creates workspace from idea, marks COMMITTED, links id |
+
 ---
 
 ## Bot Patterns
@@ -676,11 +691,15 @@ Free tier changes domain on every restart. Update both:
 - [x] BookmarksPage — search in header, category sidebar, card grid
 - [x] BookmarkCard — favicon, title, description, domain, tags, dead link indicator, refresh metadata
 - [x] AddBookmarkModal — URL input, category picker, tags, auto-fetch on save
+- [x] Ideas tRPC router (create, list, update, delete, promote)
+- [x] IdeasPage — status tabs (All/Raw/Exploring/Committed/Abandoned), card grid
+- [x] IdeaCard — description, tech stack badges, status dropdown, promote button
+- [x] AddIdeaModal — title, description, tech stack, references
+- [x] Promote to Workspace — creates workspace + invalidates workspaces query (sidebar updates instantly)
 
 ## What's NOT Built Yet
 - [ ] Snippets + Scratchpad UI (Week 3)
 - [ ] Env Manager + API Endpoints (Week 5)
-- [ ] Project Ideas (Week 5)
 - [ ] Voice-to-task (Week 6)
 - [ ] Screenshot-to-bug (Week 6)
 - [ ] Standup + Recap + Reminders (Week 7)
@@ -728,3 +747,5 @@ Free tier changes domain on every restart. Update both:
 - Google favicon fallback: https://www.google.com/s2/favicons?domain={domain}&sz=32
 - AbortSignal.timeout(5000) — clean way to add fetch timeouts without manual AbortController
 - Category counts derived from fetched data client-side via reduce — no extra query needed
+- Derive filtered list + counts from single query via filter/reduce — never make two queries for the same data
+- promote mutation invalidates both ideas.list AND workspaces.list — sidebar updates instantly
