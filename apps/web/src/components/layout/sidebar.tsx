@@ -13,6 +13,7 @@ import {
   Code2,
   Activity,
   FileText,
+  ShieldCheck,
 } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
@@ -31,6 +32,7 @@ const NAV_ITEMS = [
   { label: "Snippets", href: "/snippets", icon: Code2 },
   { label: "Notes", href: "/notes", icon: FileText },
   { label: "Activity", href: "/activity", icon: Activity },
+  { label: "Vault", href: "/vault", icon: ShieldCheck },
 ] as const;
 
 export function Sidebar() {

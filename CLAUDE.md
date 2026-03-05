@@ -1,7 +1,7 @@
 # DevVault — CLAUDE.md
 > Drop this file in the root of your devvault/ monorepo as `CLAUDE.md`.
 > Claude Code reads this automatically on every session.
-> Updated after: Day 16
+> Updated after: Day 17
 
 ---
 
@@ -10,7 +10,7 @@
 DevVault is a Telegram-first developer productivity tool. Combines task management, snippets, notes, credentials, bookmarks — controllable via Telegram bot + web dashboard.
 
 **Timeline:** 72-day challenge, 1 hour/day, Mon–Sat
-**Current day:** Day 16/72 complete (22% done, Week 3 of 12)
+**Current day:** Day 17/72 complete (24% done, Week 3 of 12)
 
 ---
 
@@ -90,6 +90,7 @@ app/
 ├── globals.css               ← ALL design tokens as CSS variables
 ├── layout.tsx
 ├── notes/page.tsx
+├── vault/page.tsx            ← Credential vault
 ├── page.tsx                  ← Today view (/)
 └── providers.tsx             ← tRPC + React Query providers
 
@@ -129,6 +130,14 @@ components/
 │   ├── NoteViewer.tsx
 │   ├── CommandsView.tsx
 │   └── AddNoteModal.tsx
+├── vault/
+│   ├── index.ts
+│   ├── VaultPage.tsx
+│   ├── VaultSetup.tsx
+│   ├── VaultLock.tsx
+│   ├── CredentialList.tsx
+│   ├── CredentialCard.tsx
+│   └── AddCredentialModal.tsx
 └── ui/                       ← shadcn components only
 
 hooks/
@@ -636,10 +645,16 @@ Free tier changes domain on every restart. Update both:
 - [x] Credential encryption utility (deriveKey, encryptCredential, decryptCredential, hashMasterPassword, verifyMasterPassword)
 - [x] Credentials tRPC router (setMasterPassword, verifyMasterPassword, hasMasterPassword, create, list, reveal, delete)
 - [x] Prisma client import fixed — packages/db/src/index.ts now imports from '../prisma/generated/prisma'
+- [x] Vault UI — 3-state flow (setup → lock → unlocked)
+- [x] VaultSetup — first-time master password creation with confirmation
+- [x] VaultLock — unlock prompt with show/hide password toggle
+- [x] CredentialCard — masked value, reveal with 30s auto-clear countdown, copy, delete
+- [x] CredentialList — category sidebar filter, card grid
+- [x] AddCredentialModal — name, category, service, encrypted value input
+- [x] credentials query only fires when vault is unlocked (enabled: !!masterPassword)
 
 ## What's NOT Built Yet
 - [ ] Snippets + Scratchpad UI (Week 3)
-- [ ] Credential Vault UI (Week 4)
 - [ ] Bookmarks (Week 4)
 - [ ] Env Manager + API Endpoints (Week 5)
 - [ ] Project Ideas (Week 5)
@@ -683,3 +698,6 @@ Free tier changes domain on every restart. Update both:
 - `reveal` is a mutation not a query — decrypted values must never sit in React Query cache
 - `crypto.subtle` only available in HTTPS or localhost — fine for Vercel + local dev
 - Per-credential salt: each credential gets its own random 16-byte salt, so same password produces different ciphertext every time
+- Vault has 3 states: no master password (setup) → locked → unlocked. Handle all 3 in the container component
+- `enabled: !!masterPassword` on credentials query — never fetch encrypted data until unlocked
+- 30s auto-clear: useEffect watching timeLeft, decrement every second, clear revealed value at 0

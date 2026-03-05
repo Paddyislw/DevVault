@@ -1,23 +1,27 @@
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
-  actions?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
-export function PageHeader({ title, subtitle, actions }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, children }: PageHeaderProps) {
   return (
-    <div className="flex items-start justify-between">
-      <div>
-        <h1 className="text-lg font-semibold text-text-primary">
-          {title}
-        </h1>
-        {subtitle && (
-          <p className="mt-0.5 text-[13px] text-text-tertiary">
-            {subtitle}
-          </p>
-        )}
+    <div className="flex items-end justify-between border-b border-border-subtle px-6 py-4">
+      <div className="flex items-end gap-3">
+        <div className="flex flex-col gap-1">
+          <h1 className="font-display text-[32px] leading-none text-text-primary">
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="text-[12px] text-text-tertiary tracking-wide">
+              {subtitle}
+            </p>
+          )}
+        </div>
       </div>
-      {actions && <div className="flex items-center gap-2">{actions}</div>}
+      {children && (
+        <div className="flex items-center gap-3">{children}</div>
+      )}
     </div>
   );
 }
