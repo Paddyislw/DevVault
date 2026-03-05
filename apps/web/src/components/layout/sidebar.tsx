@@ -12,6 +12,7 @@ import {
   PanelLeft,
   Code2,
   Activity,
+  FileText,
 } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
@@ -28,6 +29,7 @@ const NAV_ITEMS = [
   { label: "Someday", href: "/someday", icon: CloudSun },
   { label: "Ideas", href: "/ideas", icon: Lightbulb },
   { label: "Snippets", href: "/snippets", icon: Code2 },
+  { label: "Notes", href: "/notes", icon: FileText },
   { label: "Activity", href: "/activity", icon: Activity },
 ] as const;
 

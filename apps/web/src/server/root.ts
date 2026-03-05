@@ -5,6 +5,7 @@ import { workspacesRouter } from './routers/workspaces'
 import { snippetsRouter } from './routers/snippets'
 import { scratchpadsRouter } from './routers/scratchpads'
 import { activityRouter } from './routers/activity'
+import { notesRouter } from './routers/notes'
 
 export const appRouter = router({
   tasks: tasksRouter,
@@ -12,6 +13,7 @@ export const appRouter = router({
   snippets: snippetsRouter,
   scratchpads: scratchpadsRouter,
   activity: activityRouter,
+  notes: notesRouter,
 })
 
 export type AppRouter = typeof appRouter
