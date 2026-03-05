@@ -9,7 +9,7 @@ export function PageHeader({ title, subtitle, children }: PageHeaderProps) {
     <div className="flex items-end justify-between border-b border-border-subtle px-6 py-4">
       <div className="flex items-end gap-3">
         <div className="flex flex-col gap-1">
-          <h1 className="font-display text-[32px] leading-none text-text-primary">
+          <h1 className="font-display text-[32px] leading-none text-text-primary normal-case">
             {title}
           </h1>
           {subtitle && (

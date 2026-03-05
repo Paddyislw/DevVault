@@ -1,7 +1,7 @@
 # DevVault — CLAUDE.md
 > Drop this file in the root of your devvault/ monorepo as `CLAUDE.md`.
 > Claude Code reads this automatically on every session.
-> Updated after: Day 17
+> Updated after: Day 19
 
 ---
 
@@ -10,7 +10,7 @@
 DevVault is a Telegram-first developer productivity tool. Combines task management, snippets, notes, credentials, bookmarks — controllable via Telegram bot + web dashboard.
 
 **Timeline:** 72-day challenge, 1 hour/day, Mon–Sat
-**Current day:** Day 17/72 complete (24% done, Week 3 of 12)
+**Current day:** Day 19/72 complete (26% done, Week 4 of 12)
 
 ---
 
@@ -91,6 +91,7 @@ app/
 ├── layout.tsx
 ├── notes/page.tsx
 ├── vault/page.tsx            ← Credential vault
+├── bookmarks/page.tsx        ← Bookmarks
 ├── page.tsx                  ← Today view (/)
 └── providers.tsx             ← tRPC + React Query providers
 
@@ -138,6 +139,12 @@ components/
 │   ├── CredentialList.tsx
 │   ├── CredentialCard.tsx
 │   └── AddCredentialModal.tsx
+├── bookmarks/
+│   ├── index.ts
+│   ├── BookmarksPage.tsx
+│   ├── BookmarkGrid.tsx
+│   ├── BookmarkCard.tsx
+│   └── AddBookmarkModal.tsx
 └── ui/                       ← shadcn components only
 
 hooks/
@@ -146,6 +153,7 @@ hooks/
 lib/
 ├── auth.ts
 ├── encryption.ts            ← deriveKey, encryptCredential, decryptCredential, hashMasterPassword, verifyMasterPassword
+├── metadata.ts              ← fetchUrlMetadata — server-side HTML scraper
 ├── prisma.ts
 └── trpc.ts
 
@@ -157,6 +165,7 @@ server/
 │   ├── scratchpads.ts
 │   ├── notes.ts
 │   ├── credentials.ts
+│   ├── bookmarks.ts
 │   └── activity.ts
 ├── root.ts
 └── trpc.ts
@@ -554,6 +563,16 @@ prisma.task.findMany({
 | `reveal` | mutation | Decrypt on demand, requires master password, updates lastCopiedAt |
 | `delete` | mutation | Hard delete, ownership verified |
 
+### `api.bookmarks.*`
+| Procedure | Type | Description |
+|---|---|---|
+| `create` | mutation | Auto-fetches metadata server-side on save |
+| `list` | query | Filter by category, search (title/url/description) |
+| `update` | mutation | Partial update, ownership verified |
+| `delete` | mutation | Hard delete, ownership verified |
+| `refreshMetadata` | mutation | Re-fetches title/description/favicon for a URL |
+| `checkAlive` | mutation | HEAD request to verify URL still works |
+
 ---
 
 ## Bot Patterns
@@ -652,10 +671,14 @@ Free tier changes domain on every restart. Update both:
 - [x] CredentialList — category sidebar filter, card grid
 - [x] AddCredentialModal — name, category, service, encrypted value input
 - [x] credentials query only fires when vault is unlocked (enabled: !!masterPassword)
+- [x] Bookmarks tRPC router (create, list, update, delete, refreshMetadata, checkAlive)
+- [x] URL metadata fetcher (title, description, favicon — server-side, 5s timeout)
+- [x] BookmarksPage — search in header, category sidebar, card grid
+- [x] BookmarkCard — favicon, title, description, domain, tags, dead link indicator, refresh metadata
+- [x] AddBookmarkModal — URL input, category picker, tags, auto-fetch on save
 
 ## What's NOT Built Yet
 - [ ] Snippets + Scratchpad UI (Week 3)
-- [ ] Bookmarks (Week 4)
 - [ ] Env Manager + API Endpoints (Week 5)
 - [ ] Project Ideas (Week 5)
 - [ ] Voice-to-task (Week 6)
@@ -701,3 +724,7 @@ Free tier changes domain on every restart. Update both:
 - Vault has 3 states: no master password (setup) → locked → unlocked. Handle all 3 in the container component
 - `enabled: !!masterPassword` on credentials query — never fetch encrypted data until unlocked
 - 30s auto-clear: useEffect watching timeLeft, decrement every second, clear revealed value at 0
+- URL metadata fetching: og:title > <title>, og:description > meta description, relative favicon → absolute URL
+- Google favicon fallback: https://www.google.com/s2/favicons?domain={domain}&sz=32
+- AbortSignal.timeout(5000) — clean way to add fetch timeouts without manual AbortController
+- Category counts derived from fetched data client-side via reduce — no extra query needed
