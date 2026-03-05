@@ -335,9 +335,10 @@ model Credential {
   id            String             @id @default(cuid())
   workspaceId   String
   name          String
-  service       String
+  service       String?
   encryptedData String
   iv            String
+  salt          String
   category      CredentialCategory @default(OTHER)
   lastCopiedAt  DateTime?
   createdAt     DateTime           @default(now())

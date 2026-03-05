@@ -12416,6 +12416,7 @@ export namespace Prisma {
     service: string | null
     encryptedData: string | null
     iv: string | null
+    salt: string | null
     category: $Enums.CredentialCategory | null
     lastCopiedAt: Date | null
     createdAt: Date | null
@@ -12429,6 +12430,7 @@ export namespace Prisma {
     service: string | null
     encryptedData: string | null
     iv: string | null
+    salt: string | null
     category: $Enums.CredentialCategory | null
     lastCopiedAt: Date | null
     createdAt: Date | null
@@ -12442,6 +12444,7 @@ export namespace Prisma {
     service: number
     encryptedData: number
     iv: number
+    salt: number
     category: number
     lastCopiedAt: number
     createdAt: number
@@ -12457,6 +12460,7 @@ export namespace Prisma {
     service?: true
     encryptedData?: true
     iv?: true
+    salt?: true
     category?: true
     lastCopiedAt?: true
     createdAt?: true
@@ -12470,6 +12474,7 @@ export namespace Prisma {
     service?: true
     encryptedData?: true
     iv?: true
+    salt?: true
     category?: true
     lastCopiedAt?: true
     createdAt?: true
@@ -12483,6 +12488,7 @@ export namespace Prisma {
     service?: true
     encryptedData?: true
     iv?: true
+    salt?: true
     category?: true
     lastCopiedAt?: true
     createdAt?: true
@@ -12566,9 +12572,10 @@ export namespace Prisma {
     id: string
     workspaceId: string
     name: string
-    service: string
+    service: string | null
     encryptedData: string
     iv: string
+    salt: string
     category: $Enums.CredentialCategory
     lastCopiedAt: Date | null
     createdAt: Date
@@ -12599,6 +12606,7 @@ export namespace Prisma {
     service?: boolean
     encryptedData?: boolean
     iv?: boolean
+    salt?: boolean
     category?: boolean
     lastCopiedAt?: boolean
     createdAt?: boolean
@@ -12613,6 +12621,7 @@ export namespace Prisma {
     service?: boolean
     encryptedData?: boolean
     iv?: boolean
+    salt?: boolean
     category?: boolean
     lastCopiedAt?: boolean
     createdAt?: boolean
@@ -12627,6 +12636,7 @@ export namespace Prisma {
     service?: boolean
     encryptedData?: boolean
     iv?: boolean
+    salt?: boolean
     category?: boolean
     lastCopiedAt?: boolean
     createdAt?: boolean
@@ -12649,9 +12659,10 @@ export namespace Prisma {
       id: string
       workspaceId: string
       name: string
-      service: string
+      service: string | null
       encryptedData: string
       iv: string
+      salt: string
       category: $Enums.CredentialCategory
       lastCopiedAt: Date | null
       createdAt: Date
@@ -13056,6 +13067,7 @@ export namespace Prisma {
     readonly service: FieldRef<"Credential", 'String'>
     readonly encryptedData: FieldRef<"Credential", 'String'>
     readonly iv: FieldRef<"Credential", 'String'>
+    readonly salt: FieldRef<"Credential", 'String'>
     readonly category: FieldRef<"Credential", 'CredentialCategory'>
     readonly lastCopiedAt: FieldRef<"Credential", 'DateTime'>
     readonly createdAt: FieldRef<"Credential", 'DateTime'>
@@ -21511,6 +21523,7 @@ export namespace Prisma {
     service: 'service',
     encryptedData: 'encryptedData',
     iv: 'iv',
+    salt: 'salt',
     category: 'category',
     lastCopiedAt: 'lastCopiedAt',
     createdAt: 'createdAt',
@@ -22757,9 +22770,10 @@ export namespace Prisma {
     id?: StringFilter<"Credential"> | string
     workspaceId?: StringFilter<"Credential"> | string
     name?: StringFilter<"Credential"> | string
-    service?: StringFilter<"Credential"> | string
+    service?: StringNullableFilter<"Credential"> | string | null
     encryptedData?: StringFilter<"Credential"> | string
     iv?: StringFilter<"Credential"> | string
+    salt?: StringFilter<"Credential"> | string
     category?: EnumCredentialCategoryFilter<"Credential"> | $Enums.CredentialCategory
     lastCopiedAt?: DateTimeNullableFilter<"Credential"> | Date | string | null
     createdAt?: DateTimeFilter<"Credential"> | Date | string
@@ -22771,9 +22785,10 @@ export namespace Prisma {
     id?: SortOrder
     workspaceId?: SortOrder
     name?: SortOrder
-    service?: SortOrder
+    service?: SortOrderInput | SortOrder
     encryptedData?: SortOrder
     iv?: SortOrder
+    salt?: SortOrder
     category?: SortOrder
     lastCopiedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -22788,9 +22803,10 @@ export namespace Prisma {
     NOT?: CredentialWhereInput | CredentialWhereInput[]
     workspaceId?: StringFilter<"Credential"> | string
     name?: StringFilter<"Credential"> | string
-    service?: StringFilter<"Credential"> | string
+    service?: StringNullableFilter<"Credential"> | string | null
     encryptedData?: StringFilter<"Credential"> | string
     iv?: StringFilter<"Credential"> | string
+    salt?: StringFilter<"Credential"> | string
     category?: EnumCredentialCategoryFilter<"Credential"> | $Enums.CredentialCategory
     lastCopiedAt?: DateTimeNullableFilter<"Credential"> | Date | string | null
     createdAt?: DateTimeFilter<"Credential"> | Date | string
@@ -22802,9 +22818,10 @@ export namespace Prisma {
     id?: SortOrder
     workspaceId?: SortOrder
     name?: SortOrder
-    service?: SortOrder
+    service?: SortOrderInput | SortOrder
     encryptedData?: SortOrder
     iv?: SortOrder
+    salt?: SortOrder
     category?: SortOrder
     lastCopiedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -22821,9 +22838,10 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Credential"> | string
     workspaceId?: StringWithAggregatesFilter<"Credential"> | string
     name?: StringWithAggregatesFilter<"Credential"> | string
-    service?: StringWithAggregatesFilter<"Credential"> | string
+    service?: StringNullableWithAggregatesFilter<"Credential"> | string | null
     encryptedData?: StringWithAggregatesFilter<"Credential"> | string
     iv?: StringWithAggregatesFilter<"Credential"> | string
+    salt?: StringWithAggregatesFilter<"Credential"> | string
     category?: EnumCredentialCategoryWithAggregatesFilter<"Credential"> | $Enums.CredentialCategory
     lastCopiedAt?: DateTimeNullableWithAggregatesFilter<"Credential"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Credential"> | Date | string
@@ -24337,9 +24355,10 @@ export namespace Prisma {
   export type CredentialCreateInput = {
     id?: string
     name: string
-    service: string
+    service?: string | null
     encryptedData: string
     iv: string
+    salt: string
     category?: $Enums.CredentialCategory
     lastCopiedAt?: Date | string | null
     createdAt?: Date | string
@@ -24351,9 +24370,10 @@ export namespace Prisma {
     id?: string
     workspaceId: string
     name: string
-    service: string
+    service?: string | null
     encryptedData: string
     iv: string
+    salt: string
     category?: $Enums.CredentialCategory
     lastCopiedAt?: Date | string | null
     createdAt?: Date | string
@@ -24363,9 +24383,10 @@ export namespace Prisma {
   export type CredentialUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    service?: StringFieldUpdateOperationsInput | string
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     encryptedData?: StringFieldUpdateOperationsInput | string
     iv?: StringFieldUpdateOperationsInput | string
+    salt?: StringFieldUpdateOperationsInput | string
     category?: EnumCredentialCategoryFieldUpdateOperationsInput | $Enums.CredentialCategory
     lastCopiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24377,9 +24398,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     workspaceId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    service?: StringFieldUpdateOperationsInput | string
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     encryptedData?: StringFieldUpdateOperationsInput | string
     iv?: StringFieldUpdateOperationsInput | string
+    salt?: StringFieldUpdateOperationsInput | string
     category?: EnumCredentialCategoryFieldUpdateOperationsInput | $Enums.CredentialCategory
     lastCopiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24390,9 +24412,10 @@ export namespace Prisma {
     id?: string
     workspaceId: string
     name: string
-    service: string
+    service?: string | null
     encryptedData: string
     iv: string
+    salt: string
     category?: $Enums.CredentialCategory
     lastCopiedAt?: Date | string | null
     createdAt?: Date | string
@@ -24402,9 +24425,10 @@ export namespace Prisma {
   export type CredentialUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    service?: StringFieldUpdateOperationsInput | string
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     encryptedData?: StringFieldUpdateOperationsInput | string
     iv?: StringFieldUpdateOperationsInput | string
+    salt?: StringFieldUpdateOperationsInput | string
     category?: EnumCredentialCategoryFieldUpdateOperationsInput | $Enums.CredentialCategory
     lastCopiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24415,9 +24439,10 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     workspaceId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    service?: StringFieldUpdateOperationsInput | string
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     encryptedData?: StringFieldUpdateOperationsInput | string
     iv?: StringFieldUpdateOperationsInput | string
+    salt?: StringFieldUpdateOperationsInput | string
     category?: EnumCredentialCategoryFieldUpdateOperationsInput | $Enums.CredentialCategory
     lastCopiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26023,6 +26048,7 @@ export namespace Prisma {
     service?: SortOrder
     encryptedData?: SortOrder
     iv?: SortOrder
+    salt?: SortOrder
     category?: SortOrder
     lastCopiedAt?: SortOrder
     createdAt?: SortOrder
@@ -26036,6 +26062,7 @@ export namespace Prisma {
     service?: SortOrder
     encryptedData?: SortOrder
     iv?: SortOrder
+    salt?: SortOrder
     category?: SortOrder
     lastCopiedAt?: SortOrder
     createdAt?: SortOrder
@@ -26049,6 +26076,7 @@ export namespace Prisma {
     service?: SortOrder
     encryptedData?: SortOrder
     iv?: SortOrder
+    salt?: SortOrder
     category?: SortOrder
     lastCopiedAt?: SortOrder
     createdAt?: SortOrder
@@ -29247,9 +29275,10 @@ export namespace Prisma {
   export type CredentialCreateWithoutWorkspaceInput = {
     id?: string
     name: string
-    service: string
+    service?: string | null
     encryptedData: string
     iv: string
+    salt: string
     category?: $Enums.CredentialCategory
     lastCopiedAt?: Date | string | null
     createdAt?: Date | string
@@ -29259,9 +29288,10 @@ export namespace Prisma {
   export type CredentialUncheckedCreateWithoutWorkspaceInput = {
     id?: string
     name: string
-    service: string
+    service?: string | null
     encryptedData: string
     iv: string
+    salt: string
     category?: $Enums.CredentialCategory
     lastCopiedAt?: Date | string | null
     createdAt?: Date | string
@@ -29669,9 +29699,10 @@ export namespace Prisma {
     id?: StringFilter<"Credential"> | string
     workspaceId?: StringFilter<"Credential"> | string
     name?: StringFilter<"Credential"> | string
-    service?: StringFilter<"Credential"> | string
+    service?: StringNullableFilter<"Credential"> | string | null
     encryptedData?: StringFilter<"Credential"> | string
     iv?: StringFilter<"Credential"> | string
+    salt?: StringFilter<"Credential"> | string
     category?: EnumCredentialCategoryFilter<"Credential"> | $Enums.CredentialCategory
     lastCopiedAt?: DateTimeNullableFilter<"Credential"> | Date | string | null
     createdAt?: DateTimeFilter<"Credential"> | Date | string
@@ -32201,9 +32232,10 @@ export namespace Prisma {
   export type CredentialCreateManyWorkspaceInput = {
     id?: string
     name: string
-    service: string
+    service?: string | null
     encryptedData: string
     iv: string
+    salt: string
     category?: $Enums.CredentialCategory
     lastCopiedAt?: Date | string | null
     createdAt?: Date | string
@@ -32470,9 +32502,10 @@ export namespace Prisma {
   export type CredentialUpdateWithoutWorkspaceInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    service?: StringFieldUpdateOperationsInput | string
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     encryptedData?: StringFieldUpdateOperationsInput | string
     iv?: StringFieldUpdateOperationsInput | string
+    salt?: StringFieldUpdateOperationsInput | string
     category?: EnumCredentialCategoryFieldUpdateOperationsInput | $Enums.CredentialCategory
     lastCopiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32482,9 +32515,10 @@ export namespace Prisma {
   export type CredentialUncheckedUpdateWithoutWorkspaceInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    service?: StringFieldUpdateOperationsInput | string
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     encryptedData?: StringFieldUpdateOperationsInput | string
     iv?: StringFieldUpdateOperationsInput | string
+    salt?: StringFieldUpdateOperationsInput | string
     category?: EnumCredentialCategoryFieldUpdateOperationsInput | $Enums.CredentialCategory
     lastCopiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32494,9 +32528,10 @@ export namespace Prisma {
   export type CredentialUncheckedUpdateManyWithoutWorkspaceInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
-    service?: StringFieldUpdateOperationsInput | string
+    service?: NullableStringFieldUpdateOperationsInput | string | null
     encryptedData?: StringFieldUpdateOperationsInput | string
     iv?: StringFieldUpdateOperationsInput | string
+    salt?: StringFieldUpdateOperationsInput | string
     category?: EnumCredentialCategoryFieldUpdateOperationsInput | $Enums.CredentialCategory
     lastCopiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

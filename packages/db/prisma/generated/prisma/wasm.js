@@ -241,6 +241,7 @@ exports.Prisma.CredentialScalarFieldEnum = {
   service: 'service',
   encryptedData: 'encryptedData',
   iv: 'iv',
+  salt: 'salt',
   category: 'category',
   lastCopiedAt: 'lastCopiedAt',
   createdAt: 'createdAt',

@@ -1,7 +1,7 @@
 # DevVault — CLAUDE.md
 > Drop this file in the root of your devvault/ monorepo as `CLAUDE.md`.
 > Claude Code reads this automatically on every session.
-> Updated after: Day 15
+> Updated after: Day 16
 
 ---
 
@@ -10,7 +10,7 @@
 DevVault is a Telegram-first developer productivity tool. Combines task management, snippets, notes, credentials, bookmarks — controllable via Telegram bot + web dashboard.
 
 **Timeline:** 72-day challenge, 1 hour/day, Mon–Sat
-**Current day:** Day 15/72 complete (21% done, Week 3 of 12)
+**Current day:** Day 16/72 complete (22% done, Week 3 of 12)
 
 ---
 
@@ -46,7 +46,8 @@ devvault/
 ## Critical Import Rules
 
 ### Prisma
-- Schema currently has NO custom output path (generates to node_modules default)
+- Schema uses custom output path: `output = "./generated/prisma"` in generator block
+- `packages/db/src/index.ts` imports from `../prisma/generated/prisma` (NOT `@prisma/client`)
 - **NEVER** import from `@prisma/client` directly
 - **ALWAYS** import ALL Prisma types, enums, PrismaClient from `@devvault/db`
 
@@ -135,6 +136,7 @@ hooks/
 
 lib/
 ├── auth.ts
+├── encryption.ts            ← deriveKey, encryptCredential, decryptCredential, hashMasterPassword, verifyMasterPassword
 ├── prisma.ts
 └── trpc.ts
 
@@ -145,6 +147,7 @@ server/
 │   ├── snippets.ts
 │   ├── scratchpads.ts
 │   ├── notes.ts
+│   ├── credentials.ts
 │   └── activity.ts
 ├── root.ts
 └── trpc.ts
@@ -531,6 +534,17 @@ prisma.task.findMany({
 | `incrementCopyCount` | mutation | Atomic increment on copyCount |
 | `togglePin` | mutation | Flips isPinned |
 
+### `api.credentials.*`
+| Procedure | Type | Description |
+|---|---|---|
+| `setMasterPassword` | mutation | Set master password first time, stores SHA-256 hash only |
+| `verifyMasterPassword` | mutation | Returns { verified, needsSetup } — never exposes hash |
+| `hasMasterPassword` | query | Returns { hasPassword } — for vault entry gate |
+| `create` | mutation | Verifies master password, encrypts value, stores ciphertext |
+| `list` | query | Metadata only — encryptedData/iv/salt intentionally excluded |
+| `reveal` | mutation | Decrypt on demand, requires master password, updates lastCopiedAt |
+| `delete` | mutation | Hard delete, ownership verified |
+
 ---
 
 ## Bot Patterns
@@ -619,10 +633,13 @@ Free tier changes domain on every restart. Update both:
 - [x] NoteViewer — markdown renderer (no deps), command block with copy
 - [x] CommandsView — grid + table toggle, grouped by language, inline copy/edit/delete
 - [x] AddNoteModal — type toggle, conditional fields for NOTE vs COMMAND
+- [x] Credential encryption utility (deriveKey, encryptCredential, decryptCredential, hashMasterPassword, verifyMasterPassword)
+- [x] Credentials tRPC router (setMasterPassword, verifyMasterPassword, hasMasterPassword, create, list, reveal, delete)
+- [x] Prisma client import fixed — packages/db/src/index.ts now imports from '../prisma/generated/prisma'
 
 ## What's NOT Built Yet
 - [ ] Snippets + Scratchpad UI (Week 3)
-- [ ] Credential Vault (Week 4)
+- [ ] Credential Vault UI (Week 4)
 - [ ] Bookmarks (Week 4)
 - [ ] Env Manager + API Endpoints (Week 5)
 - [ ] Project Ideas (Week 5)
@@ -638,13 +655,12 @@ Free tier changes domain on every restart. Update both:
 ## Known Issues / TODOs
 
 - [ ] Remove console.log statements from TasksPage.tsx (3 left)
-- [ ] Add `output = "./generated/prisma"` to schema generator block (deferred)
 
 ---
 
 ## Key Learnings (reference)
 
-- Custom Prisma output path requires importing from `@devvault/db` not `@prisma/client`
+- Custom Prisma output path (`./generated/prisma`) requires `packages/db` to re-export from `../prisma/generated/prisma`, and all consumers import from `@devvault/db`
 - NextAuth session needs type extension for `user.id` — done in `types/`
 - tRPC v11 uses `getQueryKey` from `@trpc/react-query` (not `.getQueryKey()` on procedure)
 - Optimistic updates: `onMutate` → cancel → backup → update. `onError` → restore. `onSettled` → refetch
@@ -662,3 +678,8 @@ Free tier changes domain on every restart. Update both:
 - `assertOwnership` helper pattern — extract auth+fetch into a reusable function per router. Returns the record (so callers can use it without a second query)
 - Atomic increments in Prisma — use `{ increment: 1 }` in `data` instead of fetch → compute → update
 - Scratchpad TTL cleanup strategy — run `deleteMany` on expired rows inline at the top of `list`, so cleanup is automatic on every read without a cron job
+- `packages/db/src/index.ts` must import from `../prisma/generated/prisma` not `@prisma/client` — new schema fields won't be picked up by TS otherwise
+- Prisma generate must be run after every schema change: `pnpm --filter db exec prisma generate`
+- `reveal` is a mutation not a query — decrypted values must never sit in React Query cache
+- `crypto.subtle` only available in HTTPS or localhost — fine for Vercel + local dev
+- Per-credential salt: each credential gets its own random 16-byte salt, so same password produces different ciphertext every time
