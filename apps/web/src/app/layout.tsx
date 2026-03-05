@@ -31,9 +31,9 @@ export default function RootLayout({
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
         <SessionProvider>
-          <AuthGate>
-            <Providers>{children}</Providers>
-          </AuthGate>
+          <Providers>
+            <AuthGate>{children}</AuthGate>
+          </Providers>
         </SessionProvider>
       </body>
     </html>

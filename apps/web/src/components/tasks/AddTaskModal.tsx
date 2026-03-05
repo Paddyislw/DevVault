@@ -19,6 +19,8 @@ interface AddTaskModalProps {
   task?: Task;
   defaultSomeday?: boolean;
   defaultBacklog?: boolean;
+  defaultWorkspaceId?: string;
+  onWorkspaceUsed?: (workspaceId: string) => void;
 }
 
 interface FormState {
@@ -75,6 +77,8 @@ export function AddTaskModal({
   task,
   defaultSomeday,
   defaultBacklog,
+  defaultWorkspaceId,
+  onWorkspaceUsed,
 }: AddTaskModalProps) {
   // With key={task?.id} on the component, we get fresh state on each task
   const [form, setForm] = useState<FormState>(() =>
@@ -90,9 +94,14 @@ export function AddTaskModal({
   useEffect(() => {
     if (task || form.workspaceId) return;
     if (!workspaces?.length) return;
-    const def = workspaces.find((w) => w.isDefault) ?? workspaces[0];
-    if (def) setForm((f) => ({ ...f, workspaceId: def.id }));
-  }, [task, workspaces, form.workspaceId]);
+    // Prefer sticky/passed-in workspace > DB default > first workspace
+    if (defaultWorkspaceId) {
+      setForm((f) => ({ ...f, workspaceId: defaultWorkspaceId }));
+    } else {
+      const def = workspaces.find((w) => w.isDefault) ?? workspaces[0];
+      if (def) setForm((f) => ({ ...f, workspaceId: def.id }));
+    }
+  }, [task, workspaces, form.workspaceId, defaultWorkspaceId]);
 
   // Reset form when modal opens for a new task (not editing)
   useEffect(() => {
@@ -119,6 +128,7 @@ export function AddTaskModal({
 
   const createTask = api.tasks.create.useMutation({
     onSuccess: () => {
+      onWorkspaceUsed?.(form.workspaceId);
       utils.tasks.listToday.invalidate();
       onClose();
     },

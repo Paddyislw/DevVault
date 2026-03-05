@@ -3,12 +3,15 @@
 import { useState } from "react";
 import {
   CalendarDays,
+  Calendar,
   Inbox,
   Lightbulb,
   CloudSun,
   Settings,
   PanelLeftClose,
   PanelLeft,
+  Code2,
+  Activity,
 } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
@@ -16,22 +19,21 @@ import { NavItem } from "./nav-item";
 import { WorkspaceItem } from "./workspace-item";
 import { SectionLabel } from "./section-label";
 import { CommandTrigger } from "./command-trigger";
+import { api } from "@/lib/trpc";
 
 const NAV_ITEMS = [
   { label: "Today", href: "/", icon: CalendarDays },
   { label: "Inbox", href: "/inbox", icon: Inbox },
+  { label: "Scheduled", href: "/scheduled", icon: Calendar },
   { label: "Someday", href: "/someday", icon: CloudSun },
   { label: "Ideas", href: "/ideas", icon: Lightbulb },
-] as const;
-
-// TODO: Replace with real data from DB
-const WORKSPACES = [
-  { name: "Personal", color: "#3b82f6" },
-  { name: "Work", color: "#22c55e" },
+  { label: "Snippets", href: "/snippets", icon: Code2 },
+  { label: "Activity", href: "/activity", icon: Activity },
 ] as const;
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const { data: workspaces = [] } = api.workspaces.list.useQuery();
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -78,11 +80,11 @@ export function Sidebar() {
         <div className="p-2">
           <SectionLabel collapsed={collapsed}>Workspaces</SectionLabel>
           <div className="space-y-0.5">
-            {WORKSPACES.map((ws) => (
+            {workspaces.map((ws) => (
               <WorkspaceItem
-                key={ws.name}
+                key={ws.id}
                 name={ws.name}
-                color={ws.color}
+                color={ws.color ?? "#3b82f6"}
                 collapsed={collapsed}
               />
             ))}

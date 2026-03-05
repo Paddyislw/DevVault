@@ -7,3 +7,4 @@ export { PriorityPicker } from "./PriorityPicker";
 export { WorkspacePicker } from "./WorkspacePicker";
 export { AddTaskModal } from "./AddTaskModal";
 export { SomedayPage } from './SomedayPage'
+export { ScheduledPage } from './ScheduledPage'

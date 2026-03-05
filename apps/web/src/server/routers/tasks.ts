@@ -2,7 +2,32 @@
 import { z } from "zod";
 import { router, protectedProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
-import { TaskPriority, TaskStatus } from "@devvault/db";
+import {
+  TaskPriority,
+  TaskStatus,
+  PrismaClient,
+  Prisma,
+} from "@devvault/db";
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+async function logActivity(
+  prisma: PrismaClient,
+  userId: string,
+  action: string,
+  entityId: string,
+  metadata?: Record<string, string | number | boolean | null>,
+) {
+  await prisma.activityLog.create({
+    data: {
+      userId,
+      action,
+      entityType: "task",
+      entityId,
+      metadata: (metadata ?? {}) as Prisma.InputJsonValue,
+    },
+  });
+}
 
 // ─── Input Schemas ────────────────────────────────────────────────────────────
 
@@ -22,6 +47,7 @@ const updateTaskSchema = z.object({
   id: z.string(),
   title: z.string().min(1).max(500).optional(),
   description: z.string().optional().nullable(),
+  workspaceId: z.string().optional(),
   priority: z.nativeEnum(TaskPriority).optional(),
   status: z.nativeEnum(TaskStatus).optional(),
   dueDate: z.string().datetime().optional().nullable(),
@@ -80,6 +106,12 @@ export const tasksRouter = router({
         },
       });
 
+      await logActivity(prisma, session.user.id, "task.created", task.id, {
+        title: task.title,
+        workspace: workspace.name,
+        workspaceColor: workspace.color,
+      });
+
       return task;
     }),
 
@@ -127,7 +159,7 @@ export const tasksRouter = router({
 
   listToday: protectedProcedure.query(async ({ ctx }) => {
     const startOfToday = new Date();
-    startOfToday.setDate(startOfToday.getDate() - 1);
+   // startOfToday.setDate(startOfToday.getDate() - 1);
     startOfToday.setHours(0, 0, 0, 0);
 
     const endOfToday = new Date();
@@ -163,6 +195,32 @@ export const tasksRouter = router({
       orderBy: [{ priority: "asc" }, { createdAt: "asc" }],
     });
   }),
+
+  // LIST SCHEDULED (future due dates only)
+  listScheduled: protectedProcedure
+    .input(z.object({ workspaceId: z.string().optional() }))
+    .query(async ({ ctx, input }) => {
+      const startOfTomorrow = new Date();
+      startOfTomorrow.setHours(24, 0, 0, 0);
+
+      return ctx.prisma.task.findMany({
+        where: {
+          workspace: { userId: ctx.session.user.id },
+          ...(input.workspaceId && { workspaceId: input.workspaceId }),
+          status: { notIn: ["DONE", "CANCELLED"] },
+          dueDate: { gte: startOfTomorrow },
+          isSomeday: false,
+        },
+        include: {
+          attachments: true,
+          subtasks: {
+            select: { id: true, title: true, status: true },
+          },
+          workspace: { select: { id: true, name: true, color: true } },
+        },
+        orderBy: [{ dueDate: "asc" }, { priority: "asc" }],
+      });
+    }),
 
   // GET ONE
   byId: protectedProcedure
@@ -205,6 +263,19 @@ export const tasksRouter = router({
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
+      // Verify new workspace ownership if changing workspace
+      if (data.workspaceId && data.workspaceId !== existing.workspaceId) {
+        const newWorkspace = await prisma.workspace.findFirst({
+          where: { id: data.workspaceId, userId: session.user.id },
+        });
+        if (!newWorkspace) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Target workspace not found or access denied",
+          });
+        }
+      }
+
       return prisma.task.update({
         where: { id },
         data: {
@@ -222,16 +293,31 @@ export const tasksRouter = router({
 
       const existing = await prisma.task.findFirst({
         where: { id: input.id, workspace: { userId: session.user.id } },
+        include: { workspace: { select: { name: true, color: true } } },
       });
 
       if (!existing) throw new TRPCError({ code: "NOT_FOUND" });
 
-      return prisma.task.update({
+      const result = await prisma.task.update({
         where: { id: input.id },
         data: {
           status: input.completed ? "DONE" : "TODO",
         },
       });
+
+      await logActivity(
+        prisma,
+        session.user.id,
+        input.completed ? "task.completed" : "task.reopened",
+        input.id,
+        {
+          title: existing.title,
+          workspace: existing.workspace.name,
+          workspaceColor: existing.workspace.color,
+        },
+      );
+
+      return result;
     }),
 
   // DELETE
@@ -242,9 +328,16 @@ export const tasksRouter = router({
 
       const existing = await prisma.task.findFirst({
         where: { id: input.id, workspace: { userId: session.user.id } },
+        include: { workspace: { select: { name: true, color: true } } },
       });
 
       if (!existing) throw new TRPCError({ code: "NOT_FOUND" });
+
+      await logActivity(prisma, session.user.id, "task.deleted", input.id, {
+        title: existing.title,
+        workspace: existing.workspace.name,
+        workspaceColor: existing.workspace.color,
+      });
 
       await prisma.task.delete({ where: { id: input.id } });
 

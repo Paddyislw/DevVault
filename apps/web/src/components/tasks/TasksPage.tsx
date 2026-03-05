@@ -1,13 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { PriorityGroup } from "./PriorityGroup";
 import { api } from "@/lib/trpc";
 import { useQueryClient } from "@tanstack/react-query";
 import { getQueryKey } from "@trpc/react-query";
-import { useState, useEffect } from "react";
 import { AddTaskModal } from "./AddTaskModal";
 import type { RouterOutputs } from "@/lib/trpc";
+import { useGlobalShortcuts } from "@/hooks/useGlobalShortcuts";
 
 type Task = RouterOutputs["tasks"]["list"][number];
 
@@ -24,14 +24,14 @@ function formatTodayHeading() {
 export function TasksPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
+  const [activeWorkspace, setActiveWorkspace] = useState<string | null>(null);
 
-  const { data: incompleteTasksByPriority } =
-    api.tasks.numberOfIncompleteTasks.useQuery();
+  // Sticky workspace: remembers last used workspace for new task creation
+  const [stickyWorkspaceId, setStickyWorkspaceId] = useState<string | null>(
+    null,
+  );
 
-  console.log("incompleteTasksByPriority:", incompleteTasksByPriority);
-
-  const filteredIncompleteTaskWithNonZeroCount =
-    incompleteTasksByPriority?.filter((task) => task._count.id > 0);
+  const { data: workspaces = [] } = api.workspaces.list.useQuery();
 
   const {
     data: tasks = [],
@@ -39,11 +39,17 @@ export function TasksPage() {
     refetch,
   } = api.tasks.listToday.useQuery();
 
-  console.log("tasks", tasks);
-
   const queryClient = useQueryClient();
-  
   const queryKey = getQueryKey(api.tasks.listToday, undefined, "query");
+
+  // Filter tasks by workspace
+  const filteredTasks = useMemo(
+    () =>
+      activeWorkspace
+        ? tasks.filter((t) => t.workspace.id === activeWorkspace)
+        : tasks,
+    [tasks, activeWorkspace],
+  );
 
   const completeMutation = api.tasks.complete.useMutation({
     onMutate: async ({ id, completed }) => {
@@ -59,7 +65,7 @@ export function TasksPage() {
       queryClient.setQueryData(queryKey, updatedTasks);
       return { previousTasks, updatedTasks };
     },
-    onError: (err, newTask, context) => {
+    onError: (_err, _input, context) => {
       queryClient.setQueryData(queryKey, context?.previousTasks);
     },
     onSettled: () => refetch(),
@@ -69,24 +75,24 @@ export function TasksPage() {
     completeMutation.mutate({ id, completed });
   };
 
-  // Group tasks by priority
+  // Group filtered tasks by priority
   const grouped = useMemo(() => {
-    const groups: Record<string, typeof tasks> = {
+    const groups: Record<string, typeof filteredTasks> = {
       P1: [],
       P2: [],
       P3: [],
       P4: [],
     };
-    for (const task of tasks) {
+    for (const task of filteredTasks) {
       if (groups[task.priority]) {
         groups[task.priority].push(task);
       }
     }
     return groups;
-  }, [tasks]);
+  }, [filteredTasks]);
 
   const incompleteCounts = useMemo(() => {
-    return tasks.reduce(
+    return filteredTasks.reduce(
       (acc, task) => {
         if (task.status !== "DONE") {
           acc[task.priority] = (acc[task.priority] ?? 0) + 1;
@@ -95,26 +101,25 @@ export function TasksPage() {
       },
       {} as Record<string, number>,
     );
+  }, [filteredTasks]);
+
+  useGlobalShortcuts({ n: () => setModalOpen(true) });
+
+  const totalTasks = filteredTasks.length;
+  const doneTasks = filteredTasks.filter((t) => t.status === "DONE").length;
+
+  // Count tasks per workspace (from all tasks, not filtered)
+  const workspaceCounts = useMemo(() => {
+    const c: Record<string, number> = {};
+    for (const t of tasks) {
+      c[t.workspace.id] = (c[t.workspace.id] ?? 0) + 1;
+    }
+    return c;
   }, [tasks]);
 
-  // N key shortcut
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "n" && !e.metaKey && !e.ctrlKey) {
-        const tag = (e.target as HTMLElement).tagName;
-        if (tag === "INPUT" || tag === "TEXTAREA") return;
-        e.preventDefault();
-        setModalOpen(true);
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, []);
-
-  const totalTasks = tasks.length;
-  const doneTasks = tasks.filter((t) => t.status === "DONE").length;
-
-  console.log("tasks:", tasks, "isLoading:", isLoading);
+  // Resolve which workspace to pre-select in the modal
+  const defaultWorkspaceForModal =
+    stickyWorkspaceId ?? activeWorkspace ?? undefined;
 
   // ── Loading ──
   if (isLoading) {
@@ -147,7 +152,7 @@ export function TasksPage() {
               {formatTodayHeading()}
             </p>
           </div>
-          {/* Stats bar — sits naturally under the date */}
+          {/* Stats bar */}
           <div className="flex items-center gap-1.5 mt-1">
             {(["P1", "P2", "P3", "P4"] as const)
               .filter((p) => (incompleteCounts[p] ?? 0) > 0)
@@ -185,13 +190,62 @@ export function TasksPage() {
           </button>
         </div>
       </div>
+
+      {/* ── Workspace filter tabs ── */}
+      {workspaces.length > 1 && (
+        <div className="flex items-center gap-1.5 border-b border-border-subtle px-6 py-2.5">
+          <button
+            onClick={() => setActiveWorkspace(null)}
+            className={`flex items-center gap-1.5 rounded px-2.5 py-1 text-[12px] font-medium transition-colors ${
+              activeWorkspace === null
+                ? "bg-accent text-white"
+                : "text-text-secondary hover:bg-surface-2 hover:text-text-primary"
+            }`}
+          >
+            All
+            <span
+              className={`text-[10px] ${activeWorkspace === null ? "text-white/70" : "text-text-ghost"}`}
+            >
+              {tasks.length}
+            </span>
+          </button>
+          {workspaces.map((ws) => {
+            const isActive = activeWorkspace === ws.id;
+            const count = workspaceCounts[ws.id] ?? 0;
+            return (
+              <button
+                key={ws.id}
+                onClick={() => setActiveWorkspace(isActive ? null : ws.id)}
+                className={`flex items-center gap-1.5 rounded px-2.5 py-1 text-[12px] font-medium transition-colors ${
+                  isActive
+                    ? "bg-accent text-white"
+                    : "text-text-secondary hover:bg-surface-2 hover:text-text-primary"
+                }`}
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full shrink-0 ${isActive ? "opacity-80" : ""}`}
+                  style={{ backgroundColor: ws.color ?? "#3b82f6" }}
+                />
+                {ws.name}
+                <span
+                  className={`text-[10px] ${isActive ? "text-white/70" : "text-text-ghost"}`}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* ── Task groups ── */}
       <div className="flex-1 overflow-y-auto py-3">
         {totalTasks === 0 ? (
-          /* ── Empty state — text only, one clear action ── */
           <div className="flex h-full flex-col items-center justify-center gap-2">
             <p className="text-[14px] text-text-secondary">
-              No tasks due today.
+              {activeWorkspace
+                ? "No tasks in this workspace today."
+                : "No tasks due today."}
             </p>
             <p className="text-[13px] text-text-ghost">
               Press <kbd className="kbd">N</kbd> to create one.
@@ -221,6 +275,8 @@ export function TasksPage() {
           setEditTask(null);
         }}
         task={editTask ?? undefined}
+        defaultWorkspaceId={defaultWorkspaceForModal}
+        onWorkspaceUsed={setStickyWorkspaceId}
       />
     </div>
   );

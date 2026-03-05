@@ -1,7 +1,7 @@
 # DevVault — CLAUDE.md
 > Drop this file in the root of your devvault/ monorepo as `CLAUDE.md`.
 > Claude Code reads this automatically on every session.
-> Updated after: Day 11
+> Updated after: Day 14
 
 ---
 
@@ -10,7 +10,7 @@
 DevVault is a Telegram-first developer productivity tool. Combines task management, snippets, notes, credentials, bookmarks — controllable via Telegram bot + web dashboard.
 
 **Timeline:** 72-day challenge, 1 hour/day, Mon–Sat
-**Current day:** Day 11/72 complete (15% done, Week 2 of 12)
+**Current day:** Day 14/72 complete (19% done, Week 3 of 12)
 
 ---
 
@@ -80,6 +80,8 @@ app/
 │   ├── auth/[...nextauth]/   ← NextAuth route
 │   └── trpc/[trpc]/route.ts  ← tRPC route handler
 ├── someday/page.tsx
+├── scheduled/page.tsx
+├── activity/page.tsx
 ├── inbox/page.tsx
 ├── ideas/page.tsx
 ├── settings/page.tsx
@@ -111,10 +113,17 @@ components/
 │   ├── PriorityGroup.tsx
 │   ├── TasksPage.tsx
 │   ├── SomedayPage.tsx
+│   ├── ScheduledPage.tsx
 │   ├── AddTaskModal.tsx
 │   ├── PriorityPicker.tsx
 │   └── WorkspacePicker.tsx
+├── activity/
+│   ├── index.ts
+│   └── ActivityPage.tsx
 └── ui/                       ← shadcn components only
+
+hooks/
+└── useGlobalShortcuts.ts
 
 lib/
 ├── auth.ts
@@ -123,7 +132,11 @@ lib/
 
 server/
 ├── routers/
-│   └── tasks.ts
+│   ├── tasks.ts
+│   ├── workspaces.ts
+│   ├── snippets.ts
+│   ├── scratchpads.ts
+│   └── activity.ts
 ├── root.ts
 └── trpc.ts
 ```
@@ -463,12 +476,41 @@ prisma.task.findMany({
 | `update` | mutation | Update any task fields |
 | `complete` | mutation | Toggle DONE/TODO |
 | `delete` | mutation | Delete task |
+| `listScheduled` | query | Future tasks — dueDate >= tomorrow, not someday, not done |
 | `numberOfIncompleteTasks` | query | Group by priority counts |
+
+### `api.activity.*`
+| Procedure | Type | Description |
+|---|---|---|
+| `list` | query | Paginated activity log, optional entityType and action filter |
+| `log` | mutation | Create activity log entry |
 
 ### `api.workspaces.*`
 | Procedure | Type | Description |
 |---|---|---|
 | `list` | query | All workspaces for user, ordered default first |
+
+### `api.snippets.*`
+| Procedure | Type | Description |
+|---|---|---|
+| `create` | mutation | Create snippet, verifies workspace ownership |
+| `list` | query | Filters: workspaceId, language, tags (hasSome), search (title contains, case-insensitive). Favorites sorted first |
+| `byId` | query | Single snippet |
+| `update` | mutation | Partial update of title, code, language, tags |
+| `delete` | mutation | Hard delete |
+| `toggleFavorite` | mutation | Reads current isFavorite, flips it |
+| `incrementUsage` | mutation | Atomic `{ increment: 1 }` on usageCount — call on copy |
+
+### `api.scratchpads.*`
+| Procedure | Type | Description |
+|---|---|---|
+| `create` | mutation | Create scratchpad with optional TTL (expiresAt) |
+| `list` | query | Runs inline cleanup first, then returns non-promoted non-expired pads |
+| `byId` | query | Single scratchpad |
+| `update` | mutation | Update content and/or language |
+| `delete` | mutation | Hard delete |
+| `promote` | mutation | Creates snippet from pad, marks pad isPromoted: true |
+| `cleanup` | mutation | Deletes all expired scratchpads for user — returns `{ deleted: count }` |
 
 ---
 
@@ -541,9 +583,20 @@ Free tier changes domain on every restart. Update both:
 - [x] Bot: /tasks, /backlog, /workspaces, /help commands
 - [x] Bot service layer (task.ts, user.ts)
 - [x] Bot NLP with Gemini 2.5 Flash — natural language task creation
+- [x] Snippets tRPC router (create, list, byId, update, delete, toggleFavorite, incrementUsage)
+- [x] Scratchpads tRPC router (create, list, byId, update, delete, promote, cleanup)
+- [x] Scheduled page (listScheduled tRPC + UI, grouped by date)
+- [x] Sidebar workspaces fetched from DB (live query)
+- [x] useGlobalShortcuts hook — N opens AddTaskModal globally
+- [x] Activity log tRPC router (list + log procedures)
+- [x] ActivityPage UI — grouped by day, filters, workspace pills, relative timestamps
+- [x] logActivity helper wired into tasks router (created, completed, reopened, deleted)
+- [x] Workspace filter tabs on Today view
+- [x] Sticky default workspace in AddTaskModal
+- [x] Task update supports workspaceId change with ownership verification
 
 ## What's NOT Built Yet
-- [ ] Snippets + Scratchpad (Week 3)
+- [ ] Snippets + Scratchpad UI (Week 3)
 - [ ] Notes (Week 3)
 - [ ] Credential Vault (Week 4)
 - [ ] Bookmarks (Week 4)
@@ -562,8 +615,6 @@ Free tier changes domain on every restart. Update both:
 
 - [ ] Remove console.log statements from TasksPage.tsx (3 left)
 - [ ] Add `output = "./generated/prisma"` to schema generator block (deferred)
-- [ ] Sidebar workspaces are hardcoded — need to fetch from DB
-- [ ] N keyboard shortcut handler not global yet
 
 ---
 
@@ -584,3 +635,6 @@ Free tier changes domain on every restart. Update both:
 - `listToday` procedure handles Today logic server-side — overdue incomplete + today all statuses + null date incomplete
 - Don't use dueAfter/dueBefore on frontend for Today view — use a dedicated server procedure with OR clauses
 - Gemini model name — use `gemini-2.5-flash` (2.0 and 1.5 deprecated)
+- `assertOwnership` helper pattern — extract auth+fetch into a reusable function per router. Returns the record (so callers can use it without a second query)
+- Atomic increments in Prisma — use `{ increment: 1 }` in `data` instead of fetch → compute → update
+- Scratchpad TTL cleanup strategy — run `deleteMany` on expired rows inline at the top of `list`, so cleanup is automatic on every read without a cron job
