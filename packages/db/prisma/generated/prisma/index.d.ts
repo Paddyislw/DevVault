@@ -103,6 +103,11 @@ export type Reminder = $Result.DefaultSelection<Prisma.$ReminderPayload>
  * 
  */
 export type ProjectIdea = $Result.DefaultSelection<Prisma.$ProjectIdeaPayload>
+/**
+ * Model PingResult
+ * 
+ */
+export type PingResult = $Result.DefaultSelection<Prisma.$PingResultPayload>
 
 /**
  * Enums
@@ -623,6 +628,16 @@ export class PrismaClient<
     * ```
     */
   get projectIdea(): Prisma.ProjectIdeaDelegate<ExtArgs>;
+
+  /**
+   * `prisma.pingResult`: Exposes CRUD operations for the **PingResult** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PingResults
+    * const pingResults = await prisma.pingResult.findMany()
+    * ```
+    */
+  get pingResult(): Prisma.PingResultDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -1081,7 +1096,8 @@ export namespace Prisma {
     Standup: 'Standup',
     Recap: 'Recap',
     Reminder: 'Reminder',
-    ProjectIdea: 'ProjectIdea'
+    ProjectIdea: 'ProjectIdea',
+    PingResult: 'PingResult'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1097,7 +1113,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "customStatus" | "user" | "workspace" | "task" | "taskAttachment" | "tag" | "snippet" | "scratchpad" | "note" | "credential" | "bookmark" | "envSet" | "apiEndpoint" | "activityLog" | "standup" | "recap" | "reminder" | "projectIdea"
+      modelProps: "customStatus" | "user" | "workspace" | "task" | "taskAttachment" | "tag" | "snippet" | "scratchpad" | "note" | "credential" | "bookmark" | "envSet" | "apiEndpoint" | "activityLog" | "standup" | "recap" | "reminder" | "projectIdea" | "pingResult"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2361,6 +2377,76 @@ export namespace Prisma {
           }
         }
       }
+      PingResult: {
+        payload: Prisma.$PingResultPayload<ExtArgs>
+        fields: Prisma.PingResultFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PingResultFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PingResultPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PingResultFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PingResultPayload>
+          }
+          findFirst: {
+            args: Prisma.PingResultFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PingResultPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PingResultFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PingResultPayload>
+          }
+          findMany: {
+            args: Prisma.PingResultFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PingResultPayload>[]
+          }
+          create: {
+            args: Prisma.PingResultCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PingResultPayload>
+          }
+          createMany: {
+            args: Prisma.PingResultCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PingResultCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PingResultPayload>[]
+          }
+          delete: {
+            args: Prisma.PingResultDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PingResultPayload>
+          }
+          update: {
+            args: Prisma.PingResultUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PingResultPayload>
+          }
+          deleteMany: {
+            args: Prisma.PingResultDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PingResultUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.PingResultUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PingResultPayload>
+          }
+          aggregate: {
+            args: Prisma.PingResultAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePingResult>
+          }
+          groupBy: {
+            args: Prisma.PingResultGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PingResultGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PingResultCountArgs<ExtArgs>
+            result: $Utils.Optional<PingResultCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2822,6 +2908,37 @@ export namespace Prisma {
    */
   export type TagCountOutputTypeCountTaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TaskWhereInput
+  }
+
+
+  /**
+   * Count Type ApiEndpointCountOutputType
+   */
+
+  export type ApiEndpointCountOutputType = {
+    pingResults: number
+  }
+
+  export type ApiEndpointCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    pingResults?: boolean | ApiEndpointCountOutputTypeCountPingResultsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ApiEndpointCountOutputType without action
+   */
+  export type ApiEndpointCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ApiEndpointCountOutputType
+     */
+    select?: ApiEndpointCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ApiEndpointCountOutputType without action
+   */
+  export type ApiEndpointCountOutputTypeCountPingResultsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PingResultWhereInput
   }
 
 
@@ -15401,8 +15518,10 @@ export namespace Prisma {
     url: string | null
     method: $Enums.ApiMethod | null
     authType: $Enums.ApiAuthType | null
+    authValue: string | null
     projectName: string | null
     lastPingStatus: number | null
+    lastPingAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -15414,8 +15533,10 @@ export namespace Prisma {
     url: string | null
     method: $Enums.ApiMethod | null
     authType: $Enums.ApiAuthType | null
+    authValue: string | null
     projectName: string | null
     lastPingStatus: number | null
+    lastPingAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -15429,8 +15550,10 @@ export namespace Prisma {
     headers: number
     body: number
     authType: number
+    authValue: number
     projectName: number
     lastPingStatus: number
+    lastPingAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -15452,8 +15575,10 @@ export namespace Prisma {
     url?: true
     method?: true
     authType?: true
+    authValue?: true
     projectName?: true
     lastPingStatus?: true
+    lastPingAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -15465,8 +15590,10 @@ export namespace Prisma {
     url?: true
     method?: true
     authType?: true
+    authValue?: true
     projectName?: true
     lastPingStatus?: true
+    lastPingAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -15480,8 +15607,10 @@ export namespace Prisma {
     headers?: true
     body?: true
     authType?: true
+    authValue?: true
     projectName?: true
     lastPingStatus?: true
+    lastPingAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -15582,8 +15711,10 @@ export namespace Prisma {
     headers: JsonValue
     body: JsonValue
     authType: $Enums.ApiAuthType
+    authValue: string | null
     projectName: string | null
     lastPingStatus: number | null
+    lastPingAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: ApiEndpointCountAggregateOutputType | null
@@ -15616,11 +15747,15 @@ export namespace Prisma {
     headers?: boolean
     body?: boolean
     authType?: boolean
+    authValue?: boolean
     projectName?: boolean
     lastPingStatus?: boolean
+    lastPingAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    pingResults?: boolean | ApiEndpoint$pingResultsArgs<ExtArgs>
+    _count?: boolean | ApiEndpointCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["apiEndpoint"]>
 
   export type ApiEndpointSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -15632,8 +15767,10 @@ export namespace Prisma {
     headers?: boolean
     body?: boolean
     authType?: boolean
+    authValue?: boolean
     projectName?: boolean
     lastPingStatus?: boolean
+    lastPingAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
@@ -15648,14 +15785,18 @@ export namespace Prisma {
     headers?: boolean
     body?: boolean
     authType?: boolean
+    authValue?: boolean
     projectName?: boolean
     lastPingStatus?: boolean
+    lastPingAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
   export type ApiEndpointInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    pingResults?: boolean | ApiEndpoint$pingResultsArgs<ExtArgs>
+    _count?: boolean | ApiEndpointCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ApiEndpointIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
@@ -15665,6 +15806,7 @@ export namespace Prisma {
     name: "ApiEndpoint"
     objects: {
       workspace: Prisma.$WorkspacePayload<ExtArgs>
+      pingResults: Prisma.$PingResultPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -15675,8 +15817,10 @@ export namespace Prisma {
       headers: Prisma.JsonValue
       body: Prisma.JsonValue
       authType: $Enums.ApiAuthType
+      authValue: string | null
       projectName: string | null
       lastPingStatus: number | null
+      lastPingAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["apiEndpoint"]>
@@ -16044,6 +16188,7 @@ export namespace Prisma {
   export interface Prisma__ApiEndpointClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     workspace<T extends WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WorkspaceDefaultArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    pingResults<T extends ApiEndpoint$pingResultsArgs<ExtArgs> = {}>(args?: Subset<T, ApiEndpoint$pingResultsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PingResultPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -16081,8 +16226,10 @@ export namespace Prisma {
     readonly headers: FieldRef<"ApiEndpoint", 'Json'>
     readonly body: FieldRef<"ApiEndpoint", 'Json'>
     readonly authType: FieldRef<"ApiEndpoint", 'ApiAuthType'>
+    readonly authValue: FieldRef<"ApiEndpoint", 'String'>
     readonly projectName: FieldRef<"ApiEndpoint", 'String'>
     readonly lastPingStatus: FieldRef<"ApiEndpoint", 'Int'>
+    readonly lastPingAt: FieldRef<"ApiEndpoint", 'DateTime'>
     readonly createdAt: FieldRef<"ApiEndpoint", 'DateTime'>
     readonly updatedAt: FieldRef<"ApiEndpoint", 'DateTime'>
   }
@@ -16400,6 +16547,26 @@ export namespace Prisma {
      * Filter which ApiEndpoints to delete
      */
     where?: ApiEndpointWhereInput
+  }
+
+  /**
+   * ApiEndpoint.pingResults
+   */
+  export type ApiEndpoint$pingResultsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PingResult
+     */
+    select?: PingResultSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PingResultInclude<ExtArgs> | null
+    where?: PingResultWhereInput
+    orderBy?: PingResultOrderByWithRelationInput | PingResultOrderByWithRelationInput[]
+    cursor?: PingResultWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PingResultScalarFieldEnum | PingResultScalarFieldEnum[]
   }
 
   /**
@@ -21364,6 +21531,1009 @@ export namespace Prisma {
 
 
   /**
+   * Model PingResult
+   */
+
+  export type AggregatePingResult = {
+    _count: PingResultCountAggregateOutputType | null
+    _avg: PingResultAvgAggregateOutputType | null
+    _sum: PingResultSumAggregateOutputType | null
+    _min: PingResultMinAggregateOutputType | null
+    _max: PingResultMaxAggregateOutputType | null
+  }
+
+  export type PingResultAvgAggregateOutputType = {
+    status: number | null
+    responseTime: number | null
+  }
+
+  export type PingResultSumAggregateOutputType = {
+    status: number | null
+    responseTime: number | null
+  }
+
+  export type PingResultMinAggregateOutputType = {
+    id: string | null
+    endpointId: string | null
+    status: number | null
+    responseTime: number | null
+    body: string | null
+    error: string | null
+    createdAt: Date | null
+  }
+
+  export type PingResultMaxAggregateOutputType = {
+    id: string | null
+    endpointId: string | null
+    status: number | null
+    responseTime: number | null
+    body: string | null
+    error: string | null
+    createdAt: Date | null
+  }
+
+  export type PingResultCountAggregateOutputType = {
+    id: number
+    endpointId: number
+    status: number
+    responseTime: number
+    body: number
+    headers: number
+    error: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PingResultAvgAggregateInputType = {
+    status?: true
+    responseTime?: true
+  }
+
+  export type PingResultSumAggregateInputType = {
+    status?: true
+    responseTime?: true
+  }
+
+  export type PingResultMinAggregateInputType = {
+    id?: true
+    endpointId?: true
+    status?: true
+    responseTime?: true
+    body?: true
+    error?: true
+    createdAt?: true
+  }
+
+  export type PingResultMaxAggregateInputType = {
+    id?: true
+    endpointId?: true
+    status?: true
+    responseTime?: true
+    body?: true
+    error?: true
+    createdAt?: true
+  }
+
+  export type PingResultCountAggregateInputType = {
+    id?: true
+    endpointId?: true
+    status?: true
+    responseTime?: true
+    body?: true
+    headers?: true
+    error?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PingResultAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PingResult to aggregate.
+     */
+    where?: PingResultWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PingResults to fetch.
+     */
+    orderBy?: PingResultOrderByWithRelationInput | PingResultOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PingResultWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PingResults from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PingResults.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PingResults
+    **/
+    _count?: true | PingResultCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PingResultAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PingResultSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PingResultMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PingResultMaxAggregateInputType
+  }
+
+  export type GetPingResultAggregateType<T extends PingResultAggregateArgs> = {
+        [P in keyof T & keyof AggregatePingResult]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePingResult[P]>
+      : GetScalarType<T[P], AggregatePingResult[P]>
+  }
+
+
+
+
+  export type PingResultGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PingResultWhereInput
+    orderBy?: PingResultOrderByWithAggregationInput | PingResultOrderByWithAggregationInput[]
+    by: PingResultScalarFieldEnum[] | PingResultScalarFieldEnum
+    having?: PingResultScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PingResultCountAggregateInputType | true
+    _avg?: PingResultAvgAggregateInputType
+    _sum?: PingResultSumAggregateInputType
+    _min?: PingResultMinAggregateInputType
+    _max?: PingResultMaxAggregateInputType
+  }
+
+  export type PingResultGroupByOutputType = {
+    id: string
+    endpointId: string
+    status: number | null
+    responseTime: number
+    body: string | null
+    headers: JsonValue
+    error: string | null
+    createdAt: Date
+    _count: PingResultCountAggregateOutputType | null
+    _avg: PingResultAvgAggregateOutputType | null
+    _sum: PingResultSumAggregateOutputType | null
+    _min: PingResultMinAggregateOutputType | null
+    _max: PingResultMaxAggregateOutputType | null
+  }
+
+  type GetPingResultGroupByPayload<T extends PingResultGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PingResultGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PingResultGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PingResultGroupByOutputType[P]>
+            : GetScalarType<T[P], PingResultGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PingResultSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    endpointId?: boolean
+    status?: boolean
+    responseTime?: boolean
+    body?: boolean
+    headers?: boolean
+    error?: boolean
+    createdAt?: boolean
+    endpoint?: boolean | ApiEndpointDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pingResult"]>
+
+  export type PingResultSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    endpointId?: boolean
+    status?: boolean
+    responseTime?: boolean
+    body?: boolean
+    headers?: boolean
+    error?: boolean
+    createdAt?: boolean
+    endpoint?: boolean | ApiEndpointDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pingResult"]>
+
+  export type PingResultSelectScalar = {
+    id?: boolean
+    endpointId?: boolean
+    status?: boolean
+    responseTime?: boolean
+    body?: boolean
+    headers?: boolean
+    error?: boolean
+    createdAt?: boolean
+  }
+
+  export type PingResultInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    endpoint?: boolean | ApiEndpointDefaultArgs<ExtArgs>
+  }
+  export type PingResultIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    endpoint?: boolean | ApiEndpointDefaultArgs<ExtArgs>
+  }
+
+  export type $PingResultPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PingResult"
+    objects: {
+      endpoint: Prisma.$ApiEndpointPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      endpointId: string
+      status: number | null
+      responseTime: number
+      body: string | null
+      headers: Prisma.JsonValue
+      error: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["pingResult"]>
+    composites: {}
+  }
+
+  type PingResultGetPayload<S extends boolean | null | undefined | PingResultDefaultArgs> = $Result.GetResult<Prisma.$PingResultPayload, S>
+
+  type PingResultCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<PingResultFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: PingResultCountAggregateInputType | true
+    }
+
+  export interface PingResultDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PingResult'], meta: { name: 'PingResult' } }
+    /**
+     * Find zero or one PingResult that matches the filter.
+     * @param {PingResultFindUniqueArgs} args - Arguments to find a PingResult
+     * @example
+     * // Get one PingResult
+     * const pingResult = await prisma.pingResult.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PingResultFindUniqueArgs>(args: SelectSubset<T, PingResultFindUniqueArgs<ExtArgs>>): Prisma__PingResultClient<$Result.GetResult<Prisma.$PingResultPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one PingResult that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {PingResultFindUniqueOrThrowArgs} args - Arguments to find a PingResult
+     * @example
+     * // Get one PingResult
+     * const pingResult = await prisma.pingResult.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PingResultFindUniqueOrThrowArgs>(args: SelectSubset<T, PingResultFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PingResultClient<$Result.GetResult<Prisma.$PingResultPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first PingResult that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PingResultFindFirstArgs} args - Arguments to find a PingResult
+     * @example
+     * // Get one PingResult
+     * const pingResult = await prisma.pingResult.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PingResultFindFirstArgs>(args?: SelectSubset<T, PingResultFindFirstArgs<ExtArgs>>): Prisma__PingResultClient<$Result.GetResult<Prisma.$PingResultPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first PingResult that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PingResultFindFirstOrThrowArgs} args - Arguments to find a PingResult
+     * @example
+     * // Get one PingResult
+     * const pingResult = await prisma.pingResult.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PingResultFindFirstOrThrowArgs>(args?: SelectSubset<T, PingResultFindFirstOrThrowArgs<ExtArgs>>): Prisma__PingResultClient<$Result.GetResult<Prisma.$PingResultPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more PingResults that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PingResultFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PingResults
+     * const pingResults = await prisma.pingResult.findMany()
+     * 
+     * // Get first 10 PingResults
+     * const pingResults = await prisma.pingResult.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const pingResultWithIdOnly = await prisma.pingResult.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PingResultFindManyArgs>(args?: SelectSubset<T, PingResultFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PingResultPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a PingResult.
+     * @param {PingResultCreateArgs} args - Arguments to create a PingResult.
+     * @example
+     * // Create one PingResult
+     * const PingResult = await prisma.pingResult.create({
+     *   data: {
+     *     // ... data to create a PingResult
+     *   }
+     * })
+     * 
+     */
+    create<T extends PingResultCreateArgs>(args: SelectSubset<T, PingResultCreateArgs<ExtArgs>>): Prisma__PingResultClient<$Result.GetResult<Prisma.$PingResultPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many PingResults.
+     * @param {PingResultCreateManyArgs} args - Arguments to create many PingResults.
+     * @example
+     * // Create many PingResults
+     * const pingResult = await prisma.pingResult.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PingResultCreateManyArgs>(args?: SelectSubset<T, PingResultCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PingResults and returns the data saved in the database.
+     * @param {PingResultCreateManyAndReturnArgs} args - Arguments to create many PingResults.
+     * @example
+     * // Create many PingResults
+     * const pingResult = await prisma.pingResult.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PingResults and only return the `id`
+     * const pingResultWithIdOnly = await prisma.pingResult.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PingResultCreateManyAndReturnArgs>(args?: SelectSubset<T, PingResultCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PingResultPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a PingResult.
+     * @param {PingResultDeleteArgs} args - Arguments to delete one PingResult.
+     * @example
+     * // Delete one PingResult
+     * const PingResult = await prisma.pingResult.delete({
+     *   where: {
+     *     // ... filter to delete one PingResult
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PingResultDeleteArgs>(args: SelectSubset<T, PingResultDeleteArgs<ExtArgs>>): Prisma__PingResultClient<$Result.GetResult<Prisma.$PingResultPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one PingResult.
+     * @param {PingResultUpdateArgs} args - Arguments to update one PingResult.
+     * @example
+     * // Update one PingResult
+     * const pingResult = await prisma.pingResult.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PingResultUpdateArgs>(args: SelectSubset<T, PingResultUpdateArgs<ExtArgs>>): Prisma__PingResultClient<$Result.GetResult<Prisma.$PingResultPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more PingResults.
+     * @param {PingResultDeleteManyArgs} args - Arguments to filter PingResults to delete.
+     * @example
+     * // Delete a few PingResults
+     * const { count } = await prisma.pingResult.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PingResultDeleteManyArgs>(args?: SelectSubset<T, PingResultDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PingResults.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PingResultUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PingResults
+     * const pingResult = await prisma.pingResult.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PingResultUpdateManyArgs>(args: SelectSubset<T, PingResultUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one PingResult.
+     * @param {PingResultUpsertArgs} args - Arguments to update or create a PingResult.
+     * @example
+     * // Update or create a PingResult
+     * const pingResult = await prisma.pingResult.upsert({
+     *   create: {
+     *     // ... data to create a PingResult
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PingResult we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PingResultUpsertArgs>(args: SelectSubset<T, PingResultUpsertArgs<ExtArgs>>): Prisma__PingResultClient<$Result.GetResult<Prisma.$PingResultPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of PingResults.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PingResultCountArgs} args - Arguments to filter PingResults to count.
+     * @example
+     * // Count the number of PingResults
+     * const count = await prisma.pingResult.count({
+     *   where: {
+     *     // ... the filter for the PingResults we want to count
+     *   }
+     * })
+    **/
+    count<T extends PingResultCountArgs>(
+      args?: Subset<T, PingResultCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PingResultCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PingResult.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PingResultAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PingResultAggregateArgs>(args: Subset<T, PingResultAggregateArgs>): Prisma.PrismaPromise<GetPingResultAggregateType<T>>
+
+    /**
+     * Group by PingResult.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PingResultGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PingResultGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PingResultGroupByArgs['orderBy'] }
+        : { orderBy?: PingResultGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PingResultGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPingResultGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PingResult model
+   */
+  readonly fields: PingResultFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PingResult.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PingResultClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    endpoint<T extends ApiEndpointDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ApiEndpointDefaultArgs<ExtArgs>>): Prisma__ApiEndpointClient<$Result.GetResult<Prisma.$ApiEndpointPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PingResult model
+   */ 
+  interface PingResultFieldRefs {
+    readonly id: FieldRef<"PingResult", 'String'>
+    readonly endpointId: FieldRef<"PingResult", 'String'>
+    readonly status: FieldRef<"PingResult", 'Int'>
+    readonly responseTime: FieldRef<"PingResult", 'Int'>
+    readonly body: FieldRef<"PingResult", 'String'>
+    readonly headers: FieldRef<"PingResult", 'Json'>
+    readonly error: FieldRef<"PingResult", 'String'>
+    readonly createdAt: FieldRef<"PingResult", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PingResult findUnique
+   */
+  export type PingResultFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PingResult
+     */
+    select?: PingResultSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PingResultInclude<ExtArgs> | null
+    /**
+     * Filter, which PingResult to fetch.
+     */
+    where: PingResultWhereUniqueInput
+  }
+
+  /**
+   * PingResult findUniqueOrThrow
+   */
+  export type PingResultFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PingResult
+     */
+    select?: PingResultSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PingResultInclude<ExtArgs> | null
+    /**
+     * Filter, which PingResult to fetch.
+     */
+    where: PingResultWhereUniqueInput
+  }
+
+  /**
+   * PingResult findFirst
+   */
+  export type PingResultFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PingResult
+     */
+    select?: PingResultSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PingResultInclude<ExtArgs> | null
+    /**
+     * Filter, which PingResult to fetch.
+     */
+    where?: PingResultWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PingResults to fetch.
+     */
+    orderBy?: PingResultOrderByWithRelationInput | PingResultOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PingResults.
+     */
+    cursor?: PingResultWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PingResults from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PingResults.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PingResults.
+     */
+    distinct?: PingResultScalarFieldEnum | PingResultScalarFieldEnum[]
+  }
+
+  /**
+   * PingResult findFirstOrThrow
+   */
+  export type PingResultFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PingResult
+     */
+    select?: PingResultSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PingResultInclude<ExtArgs> | null
+    /**
+     * Filter, which PingResult to fetch.
+     */
+    where?: PingResultWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PingResults to fetch.
+     */
+    orderBy?: PingResultOrderByWithRelationInput | PingResultOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PingResults.
+     */
+    cursor?: PingResultWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PingResults from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PingResults.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PingResults.
+     */
+    distinct?: PingResultScalarFieldEnum | PingResultScalarFieldEnum[]
+  }
+
+  /**
+   * PingResult findMany
+   */
+  export type PingResultFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PingResult
+     */
+    select?: PingResultSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PingResultInclude<ExtArgs> | null
+    /**
+     * Filter, which PingResults to fetch.
+     */
+    where?: PingResultWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PingResults to fetch.
+     */
+    orderBy?: PingResultOrderByWithRelationInput | PingResultOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PingResults.
+     */
+    cursor?: PingResultWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PingResults from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PingResults.
+     */
+    skip?: number
+    distinct?: PingResultScalarFieldEnum | PingResultScalarFieldEnum[]
+  }
+
+  /**
+   * PingResult create
+   */
+  export type PingResultCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PingResult
+     */
+    select?: PingResultSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PingResultInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PingResult.
+     */
+    data: XOR<PingResultCreateInput, PingResultUncheckedCreateInput>
+  }
+
+  /**
+   * PingResult createMany
+   */
+  export type PingResultCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PingResults.
+     */
+    data: PingResultCreateManyInput | PingResultCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PingResult createManyAndReturn
+   */
+  export type PingResultCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PingResult
+     */
+    select?: PingResultSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many PingResults.
+     */
+    data: PingResultCreateManyInput | PingResultCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PingResultIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PingResult update
+   */
+  export type PingResultUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PingResult
+     */
+    select?: PingResultSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PingResultInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PingResult.
+     */
+    data: XOR<PingResultUpdateInput, PingResultUncheckedUpdateInput>
+    /**
+     * Choose, which PingResult to update.
+     */
+    where: PingResultWhereUniqueInput
+  }
+
+  /**
+   * PingResult updateMany
+   */
+  export type PingResultUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PingResults.
+     */
+    data: XOR<PingResultUpdateManyMutationInput, PingResultUncheckedUpdateManyInput>
+    /**
+     * Filter which PingResults to update
+     */
+    where?: PingResultWhereInput
+  }
+
+  /**
+   * PingResult upsert
+   */
+  export type PingResultUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PingResult
+     */
+    select?: PingResultSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PingResultInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PingResult to update in case it exists.
+     */
+    where: PingResultWhereUniqueInput
+    /**
+     * In case the PingResult found by the `where` argument doesn't exist, create a new PingResult with this data.
+     */
+    create: XOR<PingResultCreateInput, PingResultUncheckedCreateInput>
+    /**
+     * In case the PingResult was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PingResultUpdateInput, PingResultUncheckedUpdateInput>
+  }
+
+  /**
+   * PingResult delete
+   */
+  export type PingResultDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PingResult
+     */
+    select?: PingResultSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PingResultInclude<ExtArgs> | null
+    /**
+     * Filter which PingResult to delete.
+     */
+    where: PingResultWhereUniqueInput
+  }
+
+  /**
+   * PingResult deleteMany
+   */
+  export type PingResultDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PingResults to delete
+     */
+    where?: PingResultWhereInput
+  }
+
+  /**
+   * PingResult without action
+   */
+  export type PingResultDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PingResult
+     */
+    select?: PingResultSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PingResultInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -21573,8 +22743,10 @@ export namespace Prisma {
     headers: 'headers',
     body: 'body',
     authType: 'authType',
+    authValue: 'authValue',
     projectName: 'projectName',
     lastPingStatus: 'lastPingStatus',
+    lastPingAt: 'lastPingAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -21658,6 +22830,20 @@ export namespace Prisma {
   };
 
   export type ProjectIdeaScalarFieldEnum = (typeof ProjectIdeaScalarFieldEnum)[keyof typeof ProjectIdeaScalarFieldEnum]
+
+
+  export const PingResultScalarFieldEnum: {
+    id: 'id',
+    endpointId: 'endpointId',
+    status: 'status',
+    responseTime: 'responseTime',
+    body: 'body',
+    headers: 'headers',
+    error: 'error',
+    createdAt: 'createdAt'
+  };
+
+  export type PingResultScalarFieldEnum = (typeof PingResultScalarFieldEnum)[keyof typeof PingResultScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -23016,11 +24202,14 @@ export namespace Prisma {
     headers?: JsonFilter<"ApiEndpoint">
     body?: JsonFilter<"ApiEndpoint">
     authType?: EnumApiAuthTypeFilter<"ApiEndpoint"> | $Enums.ApiAuthType
+    authValue?: StringNullableFilter<"ApiEndpoint"> | string | null
     projectName?: StringNullableFilter<"ApiEndpoint"> | string | null
     lastPingStatus?: IntNullableFilter<"ApiEndpoint"> | number | null
+    lastPingAt?: DateTimeNullableFilter<"ApiEndpoint"> | Date | string | null
     createdAt?: DateTimeFilter<"ApiEndpoint"> | Date | string
     updatedAt?: DateTimeFilter<"ApiEndpoint"> | Date | string
     workspace?: XOR<WorkspaceRelationFilter, WorkspaceWhereInput>
+    pingResults?: PingResultListRelationFilter
   }
 
   export type ApiEndpointOrderByWithRelationInput = {
@@ -23032,11 +24221,14 @@ export namespace Prisma {
     headers?: SortOrder
     body?: SortOrder
     authType?: SortOrder
+    authValue?: SortOrderInput | SortOrder
     projectName?: SortOrderInput | SortOrder
     lastPingStatus?: SortOrderInput | SortOrder
+    lastPingAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     workspace?: WorkspaceOrderByWithRelationInput
+    pingResults?: PingResultOrderByRelationAggregateInput
   }
 
   export type ApiEndpointWhereUniqueInput = Prisma.AtLeast<{
@@ -23051,11 +24243,14 @@ export namespace Prisma {
     headers?: JsonFilter<"ApiEndpoint">
     body?: JsonFilter<"ApiEndpoint">
     authType?: EnumApiAuthTypeFilter<"ApiEndpoint"> | $Enums.ApiAuthType
+    authValue?: StringNullableFilter<"ApiEndpoint"> | string | null
     projectName?: StringNullableFilter<"ApiEndpoint"> | string | null
     lastPingStatus?: IntNullableFilter<"ApiEndpoint"> | number | null
+    lastPingAt?: DateTimeNullableFilter<"ApiEndpoint"> | Date | string | null
     createdAt?: DateTimeFilter<"ApiEndpoint"> | Date | string
     updatedAt?: DateTimeFilter<"ApiEndpoint"> | Date | string
     workspace?: XOR<WorkspaceRelationFilter, WorkspaceWhereInput>
+    pingResults?: PingResultListRelationFilter
   }, "id">
 
   export type ApiEndpointOrderByWithAggregationInput = {
@@ -23067,8 +24262,10 @@ export namespace Prisma {
     headers?: SortOrder
     body?: SortOrder
     authType?: SortOrder
+    authValue?: SortOrderInput | SortOrder
     projectName?: SortOrderInput | SortOrder
     lastPingStatus?: SortOrderInput | SortOrder
+    lastPingAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ApiEndpointCountOrderByAggregateInput
@@ -23090,8 +24287,10 @@ export namespace Prisma {
     headers?: JsonWithAggregatesFilter<"ApiEndpoint">
     body?: JsonWithAggregatesFilter<"ApiEndpoint">
     authType?: EnumApiAuthTypeWithAggregatesFilter<"ApiEndpoint"> | $Enums.ApiAuthType
+    authValue?: StringNullableWithAggregatesFilter<"ApiEndpoint"> | string | null
     projectName?: StringNullableWithAggregatesFilter<"ApiEndpoint"> | string | null
     lastPingStatus?: IntNullableWithAggregatesFilter<"ApiEndpoint"> | number | null
+    lastPingAt?: DateTimeNullableWithAggregatesFilter<"ApiEndpoint"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ApiEndpoint"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ApiEndpoint"> | Date | string
   }
@@ -23488,6 +24687,78 @@ export namespace Prisma {
     promotedToWorkspaceId?: StringNullableWithAggregatesFilter<"ProjectIdea"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ProjectIdea"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ProjectIdea"> | Date | string
+  }
+
+  export type PingResultWhereInput = {
+    AND?: PingResultWhereInput | PingResultWhereInput[]
+    OR?: PingResultWhereInput[]
+    NOT?: PingResultWhereInput | PingResultWhereInput[]
+    id?: StringFilter<"PingResult"> | string
+    endpointId?: StringFilter<"PingResult"> | string
+    status?: IntNullableFilter<"PingResult"> | number | null
+    responseTime?: IntFilter<"PingResult"> | number
+    body?: StringNullableFilter<"PingResult"> | string | null
+    headers?: JsonFilter<"PingResult">
+    error?: StringNullableFilter<"PingResult"> | string | null
+    createdAt?: DateTimeFilter<"PingResult"> | Date | string
+    endpoint?: XOR<ApiEndpointRelationFilter, ApiEndpointWhereInput>
+  }
+
+  export type PingResultOrderByWithRelationInput = {
+    id?: SortOrder
+    endpointId?: SortOrder
+    status?: SortOrderInput | SortOrder
+    responseTime?: SortOrder
+    body?: SortOrderInput | SortOrder
+    headers?: SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    endpoint?: ApiEndpointOrderByWithRelationInput
+  }
+
+  export type PingResultWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: PingResultWhereInput | PingResultWhereInput[]
+    OR?: PingResultWhereInput[]
+    NOT?: PingResultWhereInput | PingResultWhereInput[]
+    endpointId?: StringFilter<"PingResult"> | string
+    status?: IntNullableFilter<"PingResult"> | number | null
+    responseTime?: IntFilter<"PingResult"> | number
+    body?: StringNullableFilter<"PingResult"> | string | null
+    headers?: JsonFilter<"PingResult">
+    error?: StringNullableFilter<"PingResult"> | string | null
+    createdAt?: DateTimeFilter<"PingResult"> | Date | string
+    endpoint?: XOR<ApiEndpointRelationFilter, ApiEndpointWhereInput>
+  }, "id">
+
+  export type PingResultOrderByWithAggregationInput = {
+    id?: SortOrder
+    endpointId?: SortOrder
+    status?: SortOrderInput | SortOrder
+    responseTime?: SortOrder
+    body?: SortOrderInput | SortOrder
+    headers?: SortOrder
+    error?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: PingResultCountOrderByAggregateInput
+    _avg?: PingResultAvgOrderByAggregateInput
+    _max?: PingResultMaxOrderByAggregateInput
+    _min?: PingResultMinOrderByAggregateInput
+    _sum?: PingResultSumOrderByAggregateInput
+  }
+
+  export type PingResultScalarWhereWithAggregatesInput = {
+    AND?: PingResultScalarWhereWithAggregatesInput | PingResultScalarWhereWithAggregatesInput[]
+    OR?: PingResultScalarWhereWithAggregatesInput[]
+    NOT?: PingResultScalarWhereWithAggregatesInput | PingResultScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"PingResult"> | string
+    endpointId?: StringWithAggregatesFilter<"PingResult"> | string
+    status?: IntNullableWithAggregatesFilter<"PingResult"> | number | null
+    responseTime?: IntWithAggregatesFilter<"PingResult"> | number
+    body?: StringNullableWithAggregatesFilter<"PingResult"> | string | null
+    headers?: JsonWithAggregatesFilter<"PingResult">
+    error?: StringNullableWithAggregatesFilter<"PingResult"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"PingResult"> | Date | string
   }
 
   export type CustomStatusCreateInput = {
@@ -24630,11 +25901,14 @@ export namespace Prisma {
     headers?: JsonNullValueInput | InputJsonValue
     body?: JsonNullValueInput | InputJsonValue
     authType?: $Enums.ApiAuthType
+    authValue?: string | null
     projectName?: string | null
     lastPingStatus?: number | null
+    lastPingAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     workspace: WorkspaceCreateNestedOneWithoutApiEndpointsInput
+    pingResults?: PingResultCreateNestedManyWithoutEndpointInput
   }
 
   export type ApiEndpointUncheckedCreateInput = {
@@ -24646,10 +25920,13 @@ export namespace Prisma {
     headers?: JsonNullValueInput | InputJsonValue
     body?: JsonNullValueInput | InputJsonValue
     authType?: $Enums.ApiAuthType
+    authValue?: string | null
     projectName?: string | null
     lastPingStatus?: number | null
+    lastPingAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    pingResults?: PingResultUncheckedCreateNestedManyWithoutEndpointInput
   }
 
   export type ApiEndpointUpdateInput = {
@@ -24660,11 +25937,14 @@ export namespace Prisma {
     headers?: JsonNullValueInput | InputJsonValue
     body?: JsonNullValueInput | InputJsonValue
     authType?: EnumApiAuthTypeFieldUpdateOperationsInput | $Enums.ApiAuthType
+    authValue?: NullableStringFieldUpdateOperationsInput | string | null
     projectName?: NullableStringFieldUpdateOperationsInput | string | null
     lastPingStatus?: NullableIntFieldUpdateOperationsInput | number | null
+    lastPingAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workspace?: WorkspaceUpdateOneRequiredWithoutApiEndpointsNestedInput
+    pingResults?: PingResultUpdateManyWithoutEndpointNestedInput
   }
 
   export type ApiEndpointUncheckedUpdateInput = {
@@ -24676,10 +25956,13 @@ export namespace Prisma {
     headers?: JsonNullValueInput | InputJsonValue
     body?: JsonNullValueInput | InputJsonValue
     authType?: EnumApiAuthTypeFieldUpdateOperationsInput | $Enums.ApiAuthType
+    authValue?: NullableStringFieldUpdateOperationsInput | string | null
     projectName?: NullableStringFieldUpdateOperationsInput | string | null
     lastPingStatus?: NullableIntFieldUpdateOperationsInput | number | null
+    lastPingAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pingResults?: PingResultUncheckedUpdateManyWithoutEndpointNestedInput
   }
 
   export type ApiEndpointCreateManyInput = {
@@ -24691,8 +25974,10 @@ export namespace Prisma {
     headers?: JsonNullValueInput | InputJsonValue
     body?: JsonNullValueInput | InputJsonValue
     authType?: $Enums.ApiAuthType
+    authValue?: string | null
     projectName?: string | null
     lastPingStatus?: number | null
+    lastPingAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -24705,8 +25990,10 @@ export namespace Prisma {
     headers?: JsonNullValueInput | InputJsonValue
     body?: JsonNullValueInput | InputJsonValue
     authType?: EnumApiAuthTypeFieldUpdateOperationsInput | $Enums.ApiAuthType
+    authValue?: NullableStringFieldUpdateOperationsInput | string | null
     projectName?: NullableStringFieldUpdateOperationsInput | string | null
     lastPingStatus?: NullableIntFieldUpdateOperationsInput | number | null
+    lastPingAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24720,8 +26007,10 @@ export namespace Prisma {
     headers?: JsonNullValueInput | InputJsonValue
     body?: JsonNullValueInput | InputJsonValue
     authType?: EnumApiAuthTypeFieldUpdateOperationsInput | $Enums.ApiAuthType
+    authValue?: NullableStringFieldUpdateOperationsInput | string | null
     projectName?: NullableStringFieldUpdateOperationsInput | string | null
     lastPingStatus?: NullableIntFieldUpdateOperationsInput | number | null
+    lastPingAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25159,6 +26448,82 @@ export namespace Prisma {
     promotedToWorkspaceId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PingResultCreateInput = {
+    id?: string
+    status?: number | null
+    responseTime: number
+    body?: string | null
+    headers?: JsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
+    endpoint: ApiEndpointCreateNestedOneWithoutPingResultsInput
+  }
+
+  export type PingResultUncheckedCreateInput = {
+    id?: string
+    endpointId: string
+    status?: number | null
+    responseTime: number
+    body?: string | null
+    headers?: JsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PingResultUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: NullableIntFieldUpdateOperationsInput | number | null
+    responseTime?: IntFieldUpdateOperationsInput | number
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    headers?: JsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    endpoint?: ApiEndpointUpdateOneRequiredWithoutPingResultsNestedInput
+  }
+
+  export type PingResultUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpointId?: StringFieldUpdateOperationsInput | string
+    status?: NullableIntFieldUpdateOperationsInput | number | null
+    responseTime?: IntFieldUpdateOperationsInput | number
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    headers?: JsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PingResultCreateManyInput = {
+    id?: string
+    endpointId: string
+    status?: number | null
+    responseTime: number
+    body?: string | null
+    headers?: JsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PingResultUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: NullableIntFieldUpdateOperationsInput | number | null
+    responseTime?: IntFieldUpdateOperationsInput | number
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    headers?: JsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PingResultUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    endpointId?: StringFieldUpdateOperationsInput | string
+    status?: NullableIntFieldUpdateOperationsInput | number | null
+    responseTime?: IntFieldUpdateOperationsInput | number
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    headers?: JsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -26231,6 +27596,16 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type PingResultListRelationFilter = {
+    every?: PingResultWhereInput
+    some?: PingResultWhereInput
+    none?: PingResultWhereInput
+  }
+
+  export type PingResultOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type ApiEndpointCountOrderByAggregateInput = {
     id?: SortOrder
     workspaceId?: SortOrder
@@ -26240,8 +27615,10 @@ export namespace Prisma {
     headers?: SortOrder
     body?: SortOrder
     authType?: SortOrder
+    authValue?: SortOrder
     projectName?: SortOrder
     lastPingStatus?: SortOrder
+    lastPingAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -26257,8 +27634,10 @@ export namespace Prisma {
     url?: SortOrder
     method?: SortOrder
     authType?: SortOrder
+    authValue?: SortOrder
     projectName?: SortOrder
     lastPingStatus?: SortOrder
+    lastPingAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -26270,8 +27649,10 @@ export namespace Prisma {
     url?: SortOrder
     method?: SortOrder
     authType?: SortOrder
+    authValue?: SortOrder
     projectName?: SortOrder
     lastPingStatus?: SortOrder
+    lastPingAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -26607,6 +27988,52 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumIdeaStatusFilter<$PrismaModel>
     _max?: NestedEnumIdeaStatusFilter<$PrismaModel>
+  }
+
+  export type ApiEndpointRelationFilter = {
+    is?: ApiEndpointWhereInput
+    isNot?: ApiEndpointWhereInput
+  }
+
+  export type PingResultCountOrderByAggregateInput = {
+    id?: SortOrder
+    endpointId?: SortOrder
+    status?: SortOrder
+    responseTime?: SortOrder
+    body?: SortOrder
+    headers?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PingResultAvgOrderByAggregateInput = {
+    status?: SortOrder
+    responseTime?: SortOrder
+  }
+
+  export type PingResultMaxOrderByAggregateInput = {
+    id?: SortOrder
+    endpointId?: SortOrder
+    status?: SortOrder
+    responseTime?: SortOrder
+    body?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PingResultMinOrderByAggregateInput = {
+    id?: SortOrder
+    endpointId?: SortOrder
+    status?: SortOrder
+    responseTime?: SortOrder
+    body?: SortOrder
+    error?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PingResultSumOrderByAggregateInput = {
+    status?: SortOrder
+    responseTime?: SortOrder
   }
 
   export type WorkspaceCreateNestedOneWithoutCustomStatusInput = {
@@ -27804,6 +29231,20 @@ export namespace Prisma {
     connect?: WorkspaceWhereUniqueInput
   }
 
+  export type PingResultCreateNestedManyWithoutEndpointInput = {
+    create?: XOR<PingResultCreateWithoutEndpointInput, PingResultUncheckedCreateWithoutEndpointInput> | PingResultCreateWithoutEndpointInput[] | PingResultUncheckedCreateWithoutEndpointInput[]
+    connectOrCreate?: PingResultCreateOrConnectWithoutEndpointInput | PingResultCreateOrConnectWithoutEndpointInput[]
+    createMany?: PingResultCreateManyEndpointInputEnvelope
+    connect?: PingResultWhereUniqueInput | PingResultWhereUniqueInput[]
+  }
+
+  export type PingResultUncheckedCreateNestedManyWithoutEndpointInput = {
+    create?: XOR<PingResultCreateWithoutEndpointInput, PingResultUncheckedCreateWithoutEndpointInput> | PingResultCreateWithoutEndpointInput[] | PingResultUncheckedCreateWithoutEndpointInput[]
+    connectOrCreate?: PingResultCreateOrConnectWithoutEndpointInput | PingResultCreateOrConnectWithoutEndpointInput[]
+    createMany?: PingResultCreateManyEndpointInputEnvelope
+    connect?: PingResultWhereUniqueInput | PingResultWhereUniqueInput[]
+  }
+
   export type EnumApiMethodFieldUpdateOperationsInput = {
     set?: $Enums.ApiMethod
   }
@@ -27826,6 +29267,34 @@ export namespace Prisma {
     upsert?: WorkspaceUpsertWithoutApiEndpointsInput
     connect?: WorkspaceWhereUniqueInput
     update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutApiEndpointsInput, WorkspaceUpdateWithoutApiEndpointsInput>, WorkspaceUncheckedUpdateWithoutApiEndpointsInput>
+  }
+
+  export type PingResultUpdateManyWithoutEndpointNestedInput = {
+    create?: XOR<PingResultCreateWithoutEndpointInput, PingResultUncheckedCreateWithoutEndpointInput> | PingResultCreateWithoutEndpointInput[] | PingResultUncheckedCreateWithoutEndpointInput[]
+    connectOrCreate?: PingResultCreateOrConnectWithoutEndpointInput | PingResultCreateOrConnectWithoutEndpointInput[]
+    upsert?: PingResultUpsertWithWhereUniqueWithoutEndpointInput | PingResultUpsertWithWhereUniqueWithoutEndpointInput[]
+    createMany?: PingResultCreateManyEndpointInputEnvelope
+    set?: PingResultWhereUniqueInput | PingResultWhereUniqueInput[]
+    disconnect?: PingResultWhereUniqueInput | PingResultWhereUniqueInput[]
+    delete?: PingResultWhereUniqueInput | PingResultWhereUniqueInput[]
+    connect?: PingResultWhereUniqueInput | PingResultWhereUniqueInput[]
+    update?: PingResultUpdateWithWhereUniqueWithoutEndpointInput | PingResultUpdateWithWhereUniqueWithoutEndpointInput[]
+    updateMany?: PingResultUpdateManyWithWhereWithoutEndpointInput | PingResultUpdateManyWithWhereWithoutEndpointInput[]
+    deleteMany?: PingResultScalarWhereInput | PingResultScalarWhereInput[]
+  }
+
+  export type PingResultUncheckedUpdateManyWithoutEndpointNestedInput = {
+    create?: XOR<PingResultCreateWithoutEndpointInput, PingResultUncheckedCreateWithoutEndpointInput> | PingResultCreateWithoutEndpointInput[] | PingResultUncheckedCreateWithoutEndpointInput[]
+    connectOrCreate?: PingResultCreateOrConnectWithoutEndpointInput | PingResultCreateOrConnectWithoutEndpointInput[]
+    upsert?: PingResultUpsertWithWhereUniqueWithoutEndpointInput | PingResultUpsertWithWhereUniqueWithoutEndpointInput[]
+    createMany?: PingResultCreateManyEndpointInputEnvelope
+    set?: PingResultWhereUniqueInput | PingResultWhereUniqueInput[]
+    disconnect?: PingResultWhereUniqueInput | PingResultWhereUniqueInput[]
+    delete?: PingResultWhereUniqueInput | PingResultWhereUniqueInput[]
+    connect?: PingResultWhereUniqueInput | PingResultWhereUniqueInput[]
+    update?: PingResultUpdateWithWhereUniqueWithoutEndpointInput | PingResultUpdateWithWhereUniqueWithoutEndpointInput[]
+    updateMany?: PingResultUpdateManyWithWhereWithoutEndpointInput | PingResultUpdateManyWithWhereWithoutEndpointInput[]
+    deleteMany?: PingResultScalarWhereInput | PingResultScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutActivityLogsInput = {
@@ -27954,6 +29423,20 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutProjectIdeasInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutProjectIdeasInput, UserUpdateWithoutProjectIdeasInput>, UserUncheckedUpdateWithoutProjectIdeasInput>
+  }
+
+  export type ApiEndpointCreateNestedOneWithoutPingResultsInput = {
+    create?: XOR<ApiEndpointCreateWithoutPingResultsInput, ApiEndpointUncheckedCreateWithoutPingResultsInput>
+    connectOrCreate?: ApiEndpointCreateOrConnectWithoutPingResultsInput
+    connect?: ApiEndpointWhereUniqueInput
+  }
+
+  export type ApiEndpointUpdateOneRequiredWithoutPingResultsNestedInput = {
+    create?: XOR<ApiEndpointCreateWithoutPingResultsInput, ApiEndpointUncheckedCreateWithoutPingResultsInput>
+    connectOrCreate?: ApiEndpointCreateOrConnectWithoutPingResultsInput
+    upsert?: ApiEndpointUpsertWithoutPingResultsInput
+    connect?: ApiEndpointWhereUniqueInput
+    update?: XOR<XOR<ApiEndpointUpdateToOneWithWhereWithoutPingResultsInput, ApiEndpointUpdateWithoutPingResultsInput>, ApiEndpointUncheckedUpdateWithoutPingResultsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -29382,10 +30865,13 @@ export namespace Prisma {
     headers?: JsonNullValueInput | InputJsonValue
     body?: JsonNullValueInput | InputJsonValue
     authType?: $Enums.ApiAuthType
+    authValue?: string | null
     projectName?: string | null
     lastPingStatus?: number | null
+    lastPingAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    pingResults?: PingResultCreateNestedManyWithoutEndpointInput
   }
 
   export type ApiEndpointUncheckedCreateWithoutWorkspaceInput = {
@@ -29396,10 +30882,13 @@ export namespace Prisma {
     headers?: JsonNullValueInput | InputJsonValue
     body?: JsonNullValueInput | InputJsonValue
     authType?: $Enums.ApiAuthType
+    authValue?: string | null
     projectName?: string | null
     lastPingStatus?: number | null
+    lastPingAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    pingResults?: PingResultUncheckedCreateNestedManyWithoutEndpointInput
   }
 
   export type ApiEndpointCreateOrConnectWithoutWorkspaceInput = {
@@ -29800,8 +31289,10 @@ export namespace Prisma {
     headers?: JsonFilter<"ApiEndpoint">
     body?: JsonFilter<"ApiEndpoint">
     authType?: EnumApiAuthTypeFilter<"ApiEndpoint"> | $Enums.ApiAuthType
+    authValue?: StringNullableFilter<"ApiEndpoint"> | string | null
     projectName?: StringNullableFilter<"ApiEndpoint"> | string | null
     lastPingStatus?: IntNullableFilter<"ApiEndpoint"> | number | null
+    lastPingAt?: DateTimeNullableFilter<"ApiEndpoint"> | Date | string | null
     createdAt?: DateTimeFilter<"ApiEndpoint"> | Date | string
     updatedAt?: DateTimeFilter<"ApiEndpoint"> | Date | string
   }
@@ -31231,6 +32722,36 @@ export namespace Prisma {
     create: XOR<WorkspaceCreateWithoutApiEndpointsInput, WorkspaceUncheckedCreateWithoutApiEndpointsInput>
   }
 
+  export type PingResultCreateWithoutEndpointInput = {
+    id?: string
+    status?: number | null
+    responseTime: number
+    body?: string | null
+    headers?: JsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PingResultUncheckedCreateWithoutEndpointInput = {
+    id?: string
+    status?: number | null
+    responseTime: number
+    body?: string | null
+    headers?: JsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PingResultCreateOrConnectWithoutEndpointInput = {
+    where: PingResultWhereUniqueInput
+    create: XOR<PingResultCreateWithoutEndpointInput, PingResultUncheckedCreateWithoutEndpointInput>
+  }
+
+  export type PingResultCreateManyEndpointInputEnvelope = {
+    data: PingResultCreateManyEndpointInput | PingResultCreateManyEndpointInput[]
+    skipDuplicates?: boolean
+  }
+
   export type WorkspaceUpsertWithoutApiEndpointsInput = {
     update: XOR<WorkspaceUpdateWithoutApiEndpointsInput, WorkspaceUncheckedUpdateWithoutApiEndpointsInput>
     create: XOR<WorkspaceCreateWithoutApiEndpointsInput, WorkspaceUncheckedCreateWithoutApiEndpointsInput>
@@ -31286,6 +32807,36 @@ export namespace Prisma {
     envSets?: EnvSetUncheckedUpdateManyWithoutWorkspaceNestedInput
     reminders?: ReminderUncheckedUpdateManyWithoutWorkspaceNestedInput
     CustomStatus?: CustomStatusUncheckedUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type PingResultUpsertWithWhereUniqueWithoutEndpointInput = {
+    where: PingResultWhereUniqueInput
+    update: XOR<PingResultUpdateWithoutEndpointInput, PingResultUncheckedUpdateWithoutEndpointInput>
+    create: XOR<PingResultCreateWithoutEndpointInput, PingResultUncheckedCreateWithoutEndpointInput>
+  }
+
+  export type PingResultUpdateWithWhereUniqueWithoutEndpointInput = {
+    where: PingResultWhereUniqueInput
+    data: XOR<PingResultUpdateWithoutEndpointInput, PingResultUncheckedUpdateWithoutEndpointInput>
+  }
+
+  export type PingResultUpdateManyWithWhereWithoutEndpointInput = {
+    where: PingResultScalarWhereInput
+    data: XOR<PingResultUpdateManyMutationInput, PingResultUncheckedUpdateManyWithoutEndpointInput>
+  }
+
+  export type PingResultScalarWhereInput = {
+    AND?: PingResultScalarWhereInput | PingResultScalarWhereInput[]
+    OR?: PingResultScalarWhereInput[]
+    NOT?: PingResultScalarWhereInput | PingResultScalarWhereInput[]
+    id?: StringFilter<"PingResult"> | string
+    endpointId?: StringFilter<"PingResult"> | string
+    status?: IntNullableFilter<"PingResult"> | number | null
+    responseTime?: IntFilter<"PingResult"> | number
+    body?: StringNullableFilter<"PingResult"> | string | null
+    headers?: JsonFilter<"PingResult">
+    error?: StringNullableFilter<"PingResult"> | string | null
+    createdAt?: DateTimeFilter<"PingResult"> | Date | string
   }
 
   export type UserCreateWithoutActivityLogsInput = {
@@ -31796,6 +33347,90 @@ export namespace Prisma {
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
   }
 
+  export type ApiEndpointCreateWithoutPingResultsInput = {
+    id?: string
+    name: string
+    url: string
+    method?: $Enums.ApiMethod
+    headers?: JsonNullValueInput | InputJsonValue
+    body?: JsonNullValueInput | InputJsonValue
+    authType?: $Enums.ApiAuthType
+    authValue?: string | null
+    projectName?: string | null
+    lastPingStatus?: number | null
+    lastPingAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workspace: WorkspaceCreateNestedOneWithoutApiEndpointsInput
+  }
+
+  export type ApiEndpointUncheckedCreateWithoutPingResultsInput = {
+    id?: string
+    workspaceId: string
+    name: string
+    url: string
+    method?: $Enums.ApiMethod
+    headers?: JsonNullValueInput | InputJsonValue
+    body?: JsonNullValueInput | InputJsonValue
+    authType?: $Enums.ApiAuthType
+    authValue?: string | null
+    projectName?: string | null
+    lastPingStatus?: number | null
+    lastPingAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ApiEndpointCreateOrConnectWithoutPingResultsInput = {
+    where: ApiEndpointWhereUniqueInput
+    create: XOR<ApiEndpointCreateWithoutPingResultsInput, ApiEndpointUncheckedCreateWithoutPingResultsInput>
+  }
+
+  export type ApiEndpointUpsertWithoutPingResultsInput = {
+    update: XOR<ApiEndpointUpdateWithoutPingResultsInput, ApiEndpointUncheckedUpdateWithoutPingResultsInput>
+    create: XOR<ApiEndpointCreateWithoutPingResultsInput, ApiEndpointUncheckedCreateWithoutPingResultsInput>
+    where?: ApiEndpointWhereInput
+  }
+
+  export type ApiEndpointUpdateToOneWithWhereWithoutPingResultsInput = {
+    where?: ApiEndpointWhereInput
+    data: XOR<ApiEndpointUpdateWithoutPingResultsInput, ApiEndpointUncheckedUpdateWithoutPingResultsInput>
+  }
+
+  export type ApiEndpointUpdateWithoutPingResultsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    method?: EnumApiMethodFieldUpdateOperationsInput | $Enums.ApiMethod
+    headers?: JsonNullValueInput | InputJsonValue
+    body?: JsonNullValueInput | InputJsonValue
+    authType?: EnumApiAuthTypeFieldUpdateOperationsInput | $Enums.ApiAuthType
+    authValue?: NullableStringFieldUpdateOperationsInput | string | null
+    projectName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastPingStatus?: NullableIntFieldUpdateOperationsInput | number | null
+    lastPingAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspace?: WorkspaceUpdateOneRequiredWithoutApiEndpointsNestedInput
+  }
+
+  export type ApiEndpointUncheckedUpdateWithoutPingResultsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    method?: EnumApiMethodFieldUpdateOperationsInput | $Enums.ApiMethod
+    headers?: JsonNullValueInput | InputJsonValue
+    body?: JsonNullValueInput | InputJsonValue
+    authType?: EnumApiAuthTypeFieldUpdateOperationsInput | $Enums.ApiAuthType
+    authValue?: NullableStringFieldUpdateOperationsInput | string | null
+    projectName?: NullableStringFieldUpdateOperationsInput | string | null
+    lastPingStatus?: NullableIntFieldUpdateOperationsInput | number | null
+    lastPingAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type TaskCreateManyCustomStatusInput = {
     id?: string
     workspaceId: string
@@ -32273,8 +33908,10 @@ export namespace Prisma {
     headers?: JsonNullValueInput | InputJsonValue
     body?: JsonNullValueInput | InputJsonValue
     authType?: $Enums.ApiAuthType
+    authValue?: string | null
     projectName?: string | null
     lastPingStatus?: number | null
+    lastPingAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -32615,10 +34252,13 @@ export namespace Prisma {
     headers?: JsonNullValueInput | InputJsonValue
     body?: JsonNullValueInput | InputJsonValue
     authType?: EnumApiAuthTypeFieldUpdateOperationsInput | $Enums.ApiAuthType
+    authValue?: NullableStringFieldUpdateOperationsInput | string | null
     projectName?: NullableStringFieldUpdateOperationsInput | string | null
     lastPingStatus?: NullableIntFieldUpdateOperationsInput | number | null
+    lastPingAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pingResults?: PingResultUpdateManyWithoutEndpointNestedInput
   }
 
   export type ApiEndpointUncheckedUpdateWithoutWorkspaceInput = {
@@ -32629,10 +34269,13 @@ export namespace Prisma {
     headers?: JsonNullValueInput | InputJsonValue
     body?: JsonNullValueInput | InputJsonValue
     authType?: EnumApiAuthTypeFieldUpdateOperationsInput | $Enums.ApiAuthType
+    authValue?: NullableStringFieldUpdateOperationsInput | string | null
     projectName?: NullableStringFieldUpdateOperationsInput | string | null
     lastPingStatus?: NullableIntFieldUpdateOperationsInput | number | null
+    lastPingAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pingResults?: PingResultUncheckedUpdateManyWithoutEndpointNestedInput
   }
 
   export type ApiEndpointUncheckedUpdateManyWithoutWorkspaceInput = {
@@ -32643,8 +34286,10 @@ export namespace Prisma {
     headers?: JsonNullValueInput | InputJsonValue
     body?: JsonNullValueInput | InputJsonValue
     authType?: EnumApiAuthTypeFieldUpdateOperationsInput | $Enums.ApiAuthType
+    authValue?: NullableStringFieldUpdateOperationsInput | string | null
     projectName?: NullableStringFieldUpdateOperationsInput | string | null
     lastPingStatus?: NullableIntFieldUpdateOperationsInput | number | null
+    lastPingAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32927,6 +34572,46 @@ export namespace Prisma {
     customStatusId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type PingResultCreateManyEndpointInput = {
+    id?: string
+    status?: number | null
+    responseTime: number
+    body?: string | null
+    headers?: JsonNullValueInput | InputJsonValue
+    error?: string | null
+    createdAt?: Date | string
+  }
+
+  export type PingResultUpdateWithoutEndpointInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: NullableIntFieldUpdateOperationsInput | number | null
+    responseTime?: IntFieldUpdateOperationsInput | number
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    headers?: JsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PingResultUncheckedUpdateWithoutEndpointInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: NullableIntFieldUpdateOperationsInput | number | null
+    responseTime?: IntFieldUpdateOperationsInput | number
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    headers?: JsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PingResultUncheckedUpdateManyWithoutEndpointInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: NullableIntFieldUpdateOperationsInput | number | null
+    responseTime?: IntFieldUpdateOperationsInput | number
+    body?: NullableStringFieldUpdateOperationsInput | string | null
+    headers?: JsonNullValueInput | InputJsonValue
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
 
 
   /**
@@ -32952,6 +34637,10 @@ export namespace Prisma {
      * @deprecated Use TagCountOutputTypeDefaultArgs instead
      */
     export type TagCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TagCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ApiEndpointCountOutputTypeDefaultArgs instead
+     */
+    export type ApiEndpointCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ApiEndpointCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use CustomStatusDefaultArgs instead
      */
@@ -33024,6 +34713,10 @@ export namespace Prisma {
      * @deprecated Use ProjectIdeaDefaultArgs instead
      */
     export type ProjectIdeaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ProjectIdeaDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use PingResultDefaultArgs instead
+     */
+    export type PingResultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PingResultDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

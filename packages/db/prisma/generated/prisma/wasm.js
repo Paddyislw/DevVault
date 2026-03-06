@@ -282,8 +282,10 @@ exports.Prisma.ApiEndpointScalarFieldEnum = {
   headers: 'headers',
   body: 'body',
   authType: 'authType',
+  authValue: 'authValue',
   projectName: 'projectName',
   lastPingStatus: 'lastPingStatus',
+  lastPingAt: 'lastPingAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -349,6 +351,17 @@ exports.Prisma.ProjectIdeaScalarFieldEnum = {
   promotedToWorkspaceId: 'promotedToWorkspaceId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PingResultScalarFieldEnum = {
+  id: 'id',
+  endpointId: 'endpointId',
+  status: 'status',
+  responseTime: 'responseTime',
+  body: 'body',
+  headers: 'headers',
+  error: 'error',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -500,7 +513,8 @@ exports.Prisma.ModelName = {
   Standup: 'Standup',
   Recap: 'Recap',
   Reminder: 'Reminder',
-  ProjectIdea: 'ProjectIdea'
+  ProjectIdea: 'ProjectIdea',
+  PingResult: 'PingResult'
 };
 
 /**

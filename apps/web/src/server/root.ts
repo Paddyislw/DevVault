@@ -1,14 +1,15 @@
 // apps/web/src/server/root.ts
-import { router } from './trpc'
-import { tasksRouter } from './routers/tasks'
-import { workspacesRouter } from './routers/workspaces'
-import { snippetsRouter } from './routers/snippets'
-import { scratchpadsRouter } from './routers/scratchpads'
-import { activityRouter } from './routers/activity'
-import { notesRouter } from './routers/notes'
-import { credentialsRouter } from './routers/credentials'
-import { bookmarksRouter } from './routers/bookmarks'
-import { ideasRouter } from './routers/ideas'
+import { router } from "./trpc";
+import { tasksRouter } from "./routers/tasks";
+import { workspacesRouter } from "./routers/workspaces";
+import { snippetsRouter } from "./routers/snippets";
+import { scratchpadsRouter } from "./routers/scratchpads";
+import { activityRouter } from "./routers/activity";
+import { notesRouter } from "./routers/notes";
+import { credentialsRouter } from "./routers/credentials";
+import { bookmarksRouter } from "./routers/bookmarks";
+import { ideasRouter } from "./routers/ideas";
+import { apiEndpointsRouter } from "./routers/apiEndpoints";
 
 export const appRouter = router({
   tasks: tasksRouter,
@@ -20,6 +21,7 @@ export const appRouter = router({
   credentials: credentialsRouter,
   bookmarks: bookmarksRouter,
   ideas: ideasRouter,
-})
+  apiEndpoints: apiEndpointsRouter,
+});
 
-export type AppRouter = typeof appRouter
+export type AppRouter = typeof appRouter;
