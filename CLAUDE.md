@@ -195,7 +195,8 @@ apps/bot/src/
 ├── index.ts          ← Bot entry point, command handlers
 └── services/
     ├── user.ts       ← findOrCreateUser, findUserByTelegramId
-    └── task.ts       ← getTodayTasks, getSomedayTasks, getBacklogTasks, formatTasksByPriority
+    ├── task.ts       ← getTodayTasks, getSomedayTasks, getBacklogTasks, formatTasksByPriority
+    └── ai.ts         ← parseMessage (NLP), transcribeVoice, extractBugFromScreenshot
 ```
 
 **Rule:** Every `components/<module>/` folder MUST have an `index.ts` barrel export.
@@ -749,12 +750,14 @@ Free tier changes domain on every restart. Update both:
 - [x] AddEndpointModal — prefill from playground state, onSaved callback wires back to loaded endpoint
 - [x] cURL parser — parseCurl handles -X, -H, -d, -b (cookie→header), -u (basic auth), boolean/arg flags, strict URL detection
 - [x] parseQueryParams / buildUrlWithParams — bidirectional query param ↔ URL sync
+- [x] Voice-to-task pipeline — voice note → Gemini transcription → NLP parse → task created
+- [x] Screenshot-to-bug pipeline — photo → Gemini Vision → structured bug extraction → P1 task created
+- [x] safeEdit helper — editMessageText with silent fallback to ctx.reply if status message deleted
+- [x] Bot helper refactors — getAuthenticatedUser, formatDueDate, formatTaskConfirmation extracted
 
 ## What's NOT Built Yet
 - [ ] Snippets + Scratchpad UI (Week 3)
 - [ ] Env Manager (Week 5)
-- [ ] Voice-to-task (Week 6)
-- [ ] Screenshot-to-bug (Week 6)
 - [ ] Standup + Recap + Reminders (Week 7)
 - [ ] Telegram Mini App (Week 8)
 - [ ] Global search (Week 9)
@@ -810,3 +813,8 @@ Free tier changes domain on every restart. Update both:
 - Bidirectional URL↔params sync: use a `syncSource` ref (`'url' | 'params' | null`) as a guard to prevent circular setState calls between handleUrlChange and handleQueryParamsChange
 - API requests from browser hit CORS — always proxy through a tRPC mutation server-side (`proxyRequest`), never call external APIs directly from client code
 - Playground-first UX: test first, save optionally — don't force users to save before testing. `proxyRequest` for ad-hoc, `ping` for saved endpoints with history tracking
+- Gemini 2.5 Flash handles OGG/Opus audio natively via inlineData — no format conversion needed for Telegram voice messages
+- Always grab largest photo from ctx.message.photo array (last element) — Telegram sends multiple resolutions
+- safeEdit pattern: wrap editMessageText in try/catch, fall back to ctx.reply — handles user-deleted status messages
+- Extract chatId + msgId at handler top so catch block can also call safeEdit without crashing
+- Type safeEdit options as a simple inline union instead of fighting Parameters<> on grammY internals
