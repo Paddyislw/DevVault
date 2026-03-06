@@ -1,7 +1,7 @@
 # DevVault — CLAUDE.md
 > Drop this file in the root of your devvault/ monorepo as `CLAUDE.md`.
 > Claude Code reads this automatically on every session.
-> Updated after: Day 20
+> Updated after: Day 21
 
 ---
 
@@ -10,7 +10,7 @@
 DevVault is a Telegram-first developer productivity tool. Combines task management, snippets, notes, credentials, bookmarks — controllable via Telegram bot + web dashboard.
 
 **Timeline:** 72-day challenge, 1 hour/day, Mon–Sat
-**Current day:** Day 20/72 complete (28% done, Week 4 of 12)
+**Current day:** Day 21/72 complete (29% done, Week 4 of 12)
 
 ---
 
@@ -85,6 +85,7 @@ app/
 ├── activity/page.tsx
 ├── inbox/page.tsx
 ├── ideas/page.tsx
+├── api-endpoints/page.tsx    ← API Playground
 ├── settings/page.tsx
 ├── login/page.tsx            ← Telegram login
 ├── globals.css               ← ALL design tokens as CSS variables
@@ -150,6 +151,14 @@ components/
 │   ├── IdeasPage.tsx
 │   ├── IdeaCard.tsx
 │   └── AddIdeaModal.tsx
+├── api-endpoints/
+│   ├── index.ts
+│   ├── ApiPlaygroundPage.tsx  ← main container, owns all state
+│   ├── UrlBar.tsx             ← method select + URL input + Send (paste cURL to auto-parse)
+│   ├── RequestConfig.tsx      ← Params/Headers/Body/Auth tabs, collapsible
+│   ├── ResponsePanel.tsx      ← JSON highlighting, Body/Headers tabs, ResizeHandle export
+│   ├── SidePanel.tsx          ← Saved endpoints + history tabs
+│   └── AddEndpointModal.tsx   ← create/edit, accepts prefill + onSaved callback
 └── ui/                       ← shadcn components only
 
 hooks/
@@ -159,6 +168,7 @@ lib/
 ├── auth.ts
 ├── encryption.ts            ← deriveKey, encryptCredential, decryptCredential, hashMasterPassword, verifyMasterPassword
 ├── metadata.ts              ← fetchUrlMetadata — server-side HTML scraper
+├── curl-parser.ts           ← parseCurl, parseQueryParams, buildUrlWithParams
 ├── prisma.ts
 └── trpc.ts
 
@@ -172,7 +182,8 @@ server/
 │   ├── credentials.ts
 │   ├── bookmarks.ts
 │   ├── ideas.ts
-│   └── activity.ts
+│   ├── activity.ts
+│   └── apiEndpoints.ts
 ├── root.ts
 └── trpc.ts
 ```
@@ -588,6 +599,37 @@ prisma.task.findMany({
 | `delete` | mutation | Hard delete, ownership verified |
 | `promote` | mutation | Creates workspace from idea, marks COMMITTED, links id |
 
+### `api.apiEndpoints.*`
+
+**Module philosophy — API Playground (renamed from API Endpoints):**
+- Playground-first, not storage-first — default view is an empty request builder
+- URL bar is the primary UI element: method selector + URL input + Send button in one bar
+- Response panel: JSON viewer with syntax highlighting, status pill, timing, size
+- "Save Endpoint" is a secondary action — top-right button, only after testing
+- Saved endpoints live in a collapsible sidebar (grouped by project), not the main view
+- Request history (last 20) shown in sidebar History tab for loaded saved endpoints
+- Request tabs: Params, Headers, Body, Auth — compact, between URL bar and response
+- Server-side proxy for Send (`proxyRequest` tRPC mutation) to avoid CORS
+- Empty state: "Enter a URL and hit Send" — no illustrations
+- cURL paste auto-parses into method/URL/headers/body/auth/params
+- Bidirectional URL ↔ query params sync (edit either, both update)
+- Resizable split between request config and response panel
+
+| Procedure | Type | Description |
+|---|---|---|
+| `proxyRequest` | mutation | Proxies HTTP request server-side, returns status + headers + body + time — no DB write |
+| `create` | mutation | Save a tested endpoint (method, url, headers, body, auth, project), verifies workspace ownership |
+| `list` | query | List saved endpoints, grouped/filtered by workspaceId, method, search |
+| `byId` | query | Single endpoint with last 5 pingResults |
+| `update` | mutation | Partial update, ownership verified |
+| `delete` | mutation | Delete saved endpoint |
+| `ping` | mutation | Execute request for a saved endpoint, stores PingResult, updates lastPingAt |
+| `history` | query | Last 20 PingResults for a saved endpoint |
+
+**Key design:** `proxyRequest` = fire-and-forget (no DB write). `ping` = saved endpoint execution (writes PingResult row). The playground uses `proxyRequest` by default and switches to `ping` when an endpoint is loaded from the sidebar.
+
+**`fireRequest` helper** in `apiEndpoints.ts` handles auth header injection: BEARER → `Authorization: Bearer`, API_KEY → `X-API-Key`, BASIC → `Authorization: Basic` (base64).
+
 ---
 
 ## Bot Patterns
@@ -696,10 +738,21 @@ Free tier changes domain on every restart. Update both:
 - [x] IdeaCard — description, tech stack badges, status dropdown, promote button
 - [x] AddIdeaModal — title, description, tech stack, references
 - [x] Promote to Workspace — creates workspace + invalidates workspaces query (sidebar updates instantly)
+- [x] API Endpoints Prisma schema — ApiEndpoint + PingResult models, authValue/lastPingAt fields
+- [x] apiEndpoints tRPC router — full CRUD + ping + history + proxyRequest
+- [x] API Playground UI — Postman-style, two-card layout on surface-2 canvas
+- [x] UrlBar — method badge pill, URL input, Send button, smart paste (cURL auto-parse)
+- [x] RequestConfig — Params/Headers/Body/Auth tabs, collapsible, bidirectional URL↔params sync
+- [x] ResponsePanel — JSON syntax highlighting, Body/Headers tabs with underline indicator, status/time/size meta bar
+- [x] ResizeHandle — draggable divider between request and response cards
+- [x] SidePanel — Saved endpoints (grouped by project) + History tabs
+- [x] AddEndpointModal — prefill from playground state, onSaved callback wires back to loaded endpoint
+- [x] cURL parser — parseCurl handles -X, -H, -d, -b (cookie→header), -u (basic auth), boolean/arg flags, strict URL detection
+- [x] parseQueryParams / buildUrlWithParams — bidirectional query param ↔ URL sync
 
 ## What's NOT Built Yet
 - [ ] Snippets + Scratchpad UI (Week 3)
-- [ ] Env Manager + API Endpoints (Week 5)
+- [ ] Env Manager (Week 5)
 - [ ] Voice-to-task (Week 6)
 - [ ] Screenshot-to-bug (Week 6)
 - [ ] Standup + Recap + Reminders (Week 7)
@@ -749,3 +802,11 @@ Free tier changes domain on every restart. Update both:
 - Category counts derived from fetched data client-side via reduce — no extra query needed
 - Derive filtered list + counts from single query via filter/reduce — never make two queries for the same data
 - promote mutation invalidates both ideas.list AND workspaces.list — sidebar updates instantly
+- tRPC deep type instantiation (TS2589): `RouterOutputs['router']['proc']` on complex Prisma includes causes "Type instantiation is excessively deep". Fix: define a manual interface with only the fields you need, cast with `as unknown as MyType`
+- Two-card playground layout: use `bg-surface-2` as the canvas, white `bg-surface-1` bordered cards sitting on top — creates visible depth without needing dark backgrounds
+- cURL `-b` / `--cookie` flag must be converted to a `Cookie` header, NOT treated as a URL (cookie values contain `.` which triggers naive URL detection)
+- cURL parser URL detection: only match `http://` or `https://` prefixes explicitly. Fallback to `token.includes('.') && token.includes('/')` only when no URL found yet — prevents cookie/token strings from being misidentified
+- ResizeHandle pattern: `useRef` for dragging state + `window` mousemove/mouseup listeners in `useEffect`. `document.body.style.cursor = 'row-resize'` during drag for smooth UX
+- Bidirectional URL↔params sync: use a `syncSource` ref (`'url' | 'params' | null`) as a guard to prevent circular setState calls between handleUrlChange and handleQueryParamsChange
+- API requests from browser hit CORS — always proxy through a tRPC mutation server-side (`proxyRequest`), never call external APIs directly from client code
+- Playground-first UX: test first, save optionally — don't force users to save before testing. `proxyRequest` for ad-hoc, `ping` for saved endpoints with history tracking
