@@ -93,6 +93,7 @@ export function Sidebar() {
                 key={ws.id}
                 name={ws.name}
                 color={ws.color ?? "#3b82f6"}
+                icon={ws.icon}
                 collapsed={collapsed}
               />
             ))}

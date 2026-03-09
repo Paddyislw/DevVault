@@ -537,6 +537,9 @@ prisma.task.findMany({
 | Procedure | Type | Description |
 |---|---|---|
 | `list` | query | All workspaces for user, ordered default first |
+| `create` | mutation | Create workspace with slug generation, color, icon, type |
+| `update` | mutation | Partial update (name, color, icon, type), re-slugs on name change, ownership verified |
+| `delete` | mutation | Hard delete, blocked if isDefault or has tasks |
 
 ### `api.snippets.*`
 | Procedure | Type | Description |
@@ -754,6 +757,9 @@ Free tier changes domain on every restart. Update both:
 - [x] Screenshot-to-bug pipeline — photo → Gemini Vision → structured bug extraction → P1 task created
 - [x] safeEdit helper — editMessageText with silent fallback to ctx.reply if status message deleted
 - [x] Bot helper refactors — getAuthenticatedUser, formatDueDate, formatTaskConfirmation extracted
+- [x] Workspaces tRPC router extended — create, update, delete with ownership checks and default workspace protection
+- [x] Settings page — workspace list, create/edit modal (color picker, emoji grid, type selector, live preview), delete confirmation with task-count guard
+- [x] WorkspaceIcon component — Lucide icon map for known names (user, briefcase), emoji fallback for custom icons
 
 ## What's NOT Built Yet
 - [ ] Snippets + Scratchpad UI (Week 3)
@@ -818,3 +824,8 @@ Free tier changes domain on every restart. Update both:
 - safeEdit pattern: wrap editMessageText in try/catch, fall back to ctx.reply — handles user-deleted status messages
 - Extract chatId + msgId at handler top so catch block can also call safeEdit without crashing
 - Type safeEdit options as a simple inline union instead of fighting Parameters<> on grammY internals
+- Slug generation — derive from name, strip special chars, append `Date.now()` if collision within same user
+- Delete guard at API level — `isDefault` check + task count check, both throw `TRPCError` so even direct API calls are blocked
+- Color ring selection pattern — `box-shadow: 0 0 0 2px white, 0 0 0 3.5px ${color}` for selected color swatches
+- `backdrop-blur-[1px]` on modal overlay — subtle depth without heavy darkening
+- WorkspaceIcon rendering — check stored Lucide name in a map first, fall back to emoji text render

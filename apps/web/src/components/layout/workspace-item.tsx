@@ -1,14 +1,27 @@
 "use client";
 
+import { User, Briefcase } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+const LUCIDE_ICON_MAP: Record<string, React.ReactNode> = {
+  user: <User size={12} strokeWidth={1.5} />,
+  briefcase: <Briefcase size={12} strokeWidth={1.5} />,
+};
+
+function renderWorkspaceIcon(icon: string | null) {
+  if (!icon) return <User size={12} strokeWidth={1.5} />;
+  if (LUCIDE_ICON_MAP[icon]) return LUCIDE_ICON_MAP[icon];
+  return <span className="text-xs leading-none">{icon}</span>;
+}
+
 interface WorkspaceItemProps {
   name: string;
   color: string;
+  icon?: string | null;
   isActive?: boolean;
   collapsed: boolean;
   onClick?: () => void;
@@ -17,6 +30,7 @@ interface WorkspaceItemProps {
 export function WorkspaceItem({
   name,
   color,
+  icon = null,
   isActive = false,
   collapsed,
   onClick,
@@ -31,9 +45,11 @@ export function WorkspaceItem({
       }`}
     >
       <span
-        className="h-[9px] w-[9px] shrink-0 rounded-full"
-        style={{ backgroundColor: color }}
-      />
+        className="flex h-4 w-4 shrink-0 items-center justify-center rounded"
+        style={{ color }}
+      >
+        {renderWorkspaceIcon(icon)}
+      </span>
       {!collapsed && <span className="truncate">{name}</span>}
     </button>
   );
