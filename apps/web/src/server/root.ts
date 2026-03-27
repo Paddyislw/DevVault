@@ -10,6 +10,7 @@ import { credentialsRouter } from "./routers/credentials";
 import { bookmarksRouter } from "./routers/bookmarks";
 import { ideasRouter } from "./routers/ideas";
 import { apiEndpointsRouter } from "./routers/apiEndpoints";
+import { remindersRouter } from "./routers/reminders";
 
 export const appRouter = router({
   tasks: tasksRouter,
@@ -22,6 +23,7 @@ export const appRouter = router({
   bookmarks: bookmarksRouter,
   ideas: ideasRouter,
   apiEndpoints: apiEndpointsRouter,
+  remindersRouter: remindersRouter,
 });
 
 export type AppRouter = typeof appRouter;

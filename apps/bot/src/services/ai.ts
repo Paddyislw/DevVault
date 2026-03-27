@@ -64,7 +64,7 @@ export async function parseMessage(message: string): Promise<ParsedIntent> {
  */
 export async function transcribeVoice(
   audioBuffer: Buffer,
-  mimeType: string = "audio/ogg",
+  mimeType: string = "audio/ogg"
 ): Promise<string> {
   const result = await model.generateContent([
     {
@@ -100,7 +100,7 @@ export type ExtractedBug = {
  */
 export async function extractBugFromScreenshot(
   imageBuffer: Buffer,
-  mimeType: string = "image/jpeg",
+  mimeType: string = "image/jpeg"
 ): Promise<ExtractedBug> {
   const prompt = `You are analyzing a screenshot of a software error or bug.
 Extract the error information and return ONLY valid JSON with these fields:

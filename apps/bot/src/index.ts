@@ -13,6 +13,9 @@ import {
   transcribeVoice,
   extractBugFromScreenshot,
 } from "./services/ai";
+import { startReminderWorker } from './queues/workers/reminderWorker'
+import { startStandupWorker, registerCronJobs } from './queues/workers/standupWorker'
+import { reminderQueue } from './queues/queue'
 
 const bot = new Bot(process.env.BOT_TOKEN!);
 
@@ -460,5 +463,21 @@ bot.catch((err) => {
   console.error("Bot error:", err);
 });
 
-bot.start();
+// ─── Workers & Cron ───────────────────────────────────────────────────────────
+
+startReminderWorker(async (telegramId, text, options) => {
+  await bot.api.sendMessage(telegramId, text, options as any)
+})
+
+startStandupWorker(
+  async (telegramId, text) => {
+    await bot.api.sendMessage(telegramId, text, { parse_mode: 'Markdown' })
+  },
+  reminderQueue
+)
+
+;(async () => {
+  await registerCronJobs()
+  bot.start()
+})()
 console.log("DevVault bot is running...");
