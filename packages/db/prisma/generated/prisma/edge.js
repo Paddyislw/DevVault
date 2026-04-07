@@ -495,7 +495,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/pradyumsingh/Desktop/Personal Work/DevVault/Code/devvault/packages/db/prisma/generated/prisma",
+      "value": "/Users/pradyumsingh/Desktop/Personal Work/Projects/DevVault/Code/DevVault/packages/db/prisma/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -509,12 +509,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/Users/pradyumsingh/Desktop/Personal Work/DevVault/Code/devvault/packages/db/prisma/schema.prisma",
+    "sourceFilePath": "/Users/pradyumsingh/Desktop/Personal Work/Projects/DevVault/Code/DevVault/packages/db/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../..",
   "clientVersion": "5.22.0",

@@ -1,7 +1,7 @@
 # DevVault — CLAUDE.md
 > Drop this file in the root of your devvault/ monorepo as `CLAUDE.md`.
 > Claude Code reads this automatically on every session.
-> Updated after: Day 21
+> Updated after: Day 26
 
 ---
 
@@ -10,7 +10,7 @@
 DevVault is a Telegram-first developer productivity tool. Combines task management, snippets, notes, credentials, bookmarks — controllable via Telegram bot + web dashboard.
 
 **Timeline:** 72-day challenge, 1 hour/day, Mon–Sat
-**Current day:** Day 21/72 complete (29% done, Week 4 of 12)
+**Current day:** Day 26/72 complete (36% done, Week 5 of 12)
 
 ---
 
@@ -86,6 +86,7 @@ app/
 ├── inbox/page.tsx
 ├── ideas/page.tsx
 ├── api-endpoints/page.tsx    ← API Playground
+├── reminders/page.tsx
 ├── settings/page.tsx
 ├── login/page.tsx            ← Telegram login
 ├── globals.css               ← ALL design tokens as CSS variables
@@ -159,6 +160,16 @@ components/
 │   ├── ResponsePanel.tsx      ← JSON highlighting, Body/Headers tabs, ResizeHandle export
 │   ├── SidePanel.tsx          ← Saved endpoints + history tabs
 │   └── AddEndpointModal.tsx   ← create/edit, accepts prefill + onSaved callback
+├── reminders/
+│   ├── index.ts
+│   ├── RemindersPage.tsx
+│   └── AddReminderModal.tsx
+├── snippets/
+│   ├── index.ts
+│   ├── ScratchpadList.tsx
+│   ├── ScratchpadDetail.tsx
+│   ├── AddScratchpadModal.tsx
+│   └── PromoteModal.tsx
 └── ui/                       ← shadcn components only
 
 hooks/
@@ -183,7 +194,8 @@ server/
 │   ├── bookmarks.ts
 │   ├── ideas.ts
 │   ├── activity.ts
-│   └── apiEndpoints.ts
+│   ├── apiEndpoints.ts
+│   └── reminders.ts
 ├── root.ts
 └── trpc.ts
 ```
@@ -193,10 +205,16 @@ server/
 ```
 apps/bot/src/
 ├── index.ts          ← Bot entry point, command handlers
-└── services/
-    ├── user.ts       ← findOrCreateUser, findUserByTelegramId
-    ├── task.ts       ← getTodayTasks, getSomedayTasks, getBacklogTasks, formatTasksByPriority
-    └── ai.ts         ← parseMessage (NLP), transcribeVoice, extractBugFromScreenshot
+├── services/
+│   ├── user.ts       ← findOrCreateUser, findUserByTelegramId
+│   ├── task.ts       ← getTodayTasks, getSomedayTasks, getBacklogTasks, formatTasksByPriority
+│   └── ai.ts         ← parseMessage (NLP + reminders), transcribeVoice, extractBugFromScreenshot
+└── queues/
+    ├── connection.ts  ← { host, port } Redis connection object
+    ├── queue.ts       ← reminderQueue, standupQueue producers
+    └── workers/
+        ├── reminderWorker.ts  ← processes reminder-delivery, sends Telegram with inline buttons
+        └── standupWorker.ts   ← standup-daily, recap-weekly, overdue-scan crons
 ```
 
 **Rule:** Every `components/<module>/` folder MUST have an `index.ts` barrel export.
@@ -634,6 +652,17 @@ prisma.task.findMany({
 
 **`fireRequest` helper** in `apiEndpoints.ts` handles auth header injection: BEARER → `Authorization: Bearer`, API_KEY → `X-API-Key`, BASIC → `Authorization: Basic` (base64).
 
+### `api.reminders.*`
+| Procedure | Type | Description |
+|---|---|---|
+| `create` | mutation | Create reminder + schedule BullMQ job (jobId = reminderId) |
+| `list` | query | Filter by status (upcoming/snoozed/delivered/all) + category |
+| `update` | mutation | Update fields + reschedule job |
+| `snooze` | mutation | Set SNOOZED status + reschedule with new delay |
+| `dismiss` | mutation | Set DISMISSED + remove job from queue |
+| `delete` | mutation | Hard delete + remove job |
+| `upcomingCount` | query | Count of PENDING/SNOOZED reminders in next 7 days (sidebar badge) |
+
 ---
 
 ## Bot Patterns
@@ -675,6 +704,9 @@ NEXT_PUBLIC_BOT_USERNAME=devvault_dev_bot
 ```env
 DATABASE_URL=
 BOT_TOKEN=
+GEMINI_API_KEY=
+REDIS_HOST=localhost
+REDIS_PORT=6379
 ```
 
 ### ngrok note
@@ -760,14 +792,25 @@ Free tier changes domain on every restart. Update both:
 - [x] Workspaces tRPC router extended — create, update, delete with ownership checks and default workspace protection
 - [x] Settings page — workspace list, create/edit modal (color picker, emoji grid, type selector, live preview), delete confirmation with task-count guard
 - [x] WorkspaceIcon component — Lucide icon map for known names (user, briefcase), emoji fallback for custom icons
+- [x] Snippets + Scratchpad UI — tab toggle inside Snippets page, quick paste modal with TTL, promote to snippet
+- [x] Reminders tRPC router (create, list, update, snooze, dismiss, delete, upcomingCount)
+- [x] Reminders web UI — list with status/category filters, inline snooze (1h/1d/1w), dismiss, delete, create modal
+- [x] Reminder NLP in bot — "remind me to...", "remind me every Monday...", "show my reminders"
+- [x] Redis + BullMQ infrastructure — connection, queues, workers, cron jobs
+- [x] Standup cron (daily 04:30 UTC / 10:00 AM IST)
+- [x] Weekly recap cron (Monday 02:30 UTC / 8:00 AM IST)
+- [x] Overdue task scanner (nightly 18:29 UTC / 11:59 PM IST)
+- [x] Reminder delivery via BullMQ — delayed jobs with inline Telegram buttons
 
 ## What's NOT Built Yet
-- [ ] Snippets + Scratchpad UI (Week 3)
-- [ ] Env Manager (Week 5)
-- [ ] Standup + Recap + Reminders (Week 7)
+- [ ] Bot callback query handlers for reminder buttons (code ready, needs applying)
+- [ ] Env Manager UI (Week 5)
 - [ ] Telegram Mini App (Week 8)
 - [ ] Global search (Week 9)
 - [ ] PWA (Week 9)
+- [ ] Polish + Security audit (Week 10)
+- [ ] Template packaging + demo videos (Week 11)
+- [ ] Launch (Week 12)
 
 ---
 
@@ -829,3 +872,11 @@ Free tier changes domain on every restart. Update both:
 - Color ring selection pattern — `box-shadow: 0 0 0 2px white, 0 0 0 3.5px ${color}` for selected color swatches
 - `backdrop-blur-[1px]` on modal overlay — subtle depth without heavy darkening
 - WorkspaceIcon rendering — check stored Lucide name in a map first, fall back to emoji text render
+- BullMQ plain connection object `{ host, port }` avoids ioredis version conflicts in monorepo
+- `jobId: reminder.id` — deduplication, re-adding replaces the old waiting/delayed job
+- `Promise.allSettled` in standup worker — one user failure doesn't block others
+- Rolling schedule for recurring reminders — each occurrence schedules the next on completion
+- `answerCallbackQuery()` must be called immediately in callback handlers — removes Telegram button spinner
+- Scratchpad TTL display: derive from `expiresAt - Date.now()`, color-code by urgency (red < 1hr)
+- Tab toggle pattern: shared parent state + conditional render, not separate routes
+- `root.ts` key naming matters — `reminders: remindersRouter` not `remindersRouter: remindersRouter`

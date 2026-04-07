@@ -13,9 +13,14 @@ import {
   transcribeVoice,
   extractBugFromScreenshot,
 } from "./services/ai";
-import { startReminderWorker } from './queues/workers/reminderWorker'
-import { startStandupWorker, registerCronJobs } from './queues/workers/standupWorker'
-import { reminderQueue } from './queues/queue'
+import { startReminderWorker } from "./queues/workers/reminderWorker";
+import {
+  startStandupWorker,
+  registerCronJobs,
+} from "./queues/workers/standupWorker";
+import { reminderQueue } from "./queues/queue";
+import { PrismaClient } from '@devvault/db'
+const prisma = new PrismaClient()
 
 const bot = new Bot(process.env.BOT_TOKEN!);
 
@@ -282,6 +287,73 @@ bot.on("message:text", async (ctx) => {
       });
 
       await ctx.reply(formatTaskConfirmation(task, "✅ Task created"));
+    } else if (parsed.intent === "add_reminder") {
+      const remindAt = new Date(parsed.remindAt);
+
+      if (isNaN(remindAt.getTime())) {
+        await ctx.reply(
+          '❌ Couldn\'t parse the reminder time. Try: "remind me in 2 hours" or "remind me Friday 5pm"',
+        );
+        return;
+      }
+
+      const defaultWorkspace =
+        user.workspaces?.find((ws) => ws.isDefault) ?? user.workspaces?.[0];
+
+      const reminder = await prisma.reminder.create({
+        data: {
+          userId: user.id,
+          title: parsed.title,
+          remindAt,
+          repeatRule: parsed.repeatRule,
+          category: parsed.category ?? "PROFESSIONAL",
+          status: "PENDING",
+          workspaceId: defaultWorkspace?.id ?? null,
+        },
+      });
+
+      // Schedule BullMQ job
+      const delay = Math.max(0, remindAt.getTime() - Date.now());
+      await reminderQueue.add(
+        "reminder-delivery",
+        { reminderId: reminder.id },
+        { delay, jobId: reminder.id },
+      );
+
+      const details = [
+        parsed.category ?? "PROFESSIONAL",
+        parsed.repeatRule
+          ? `Repeats ${parsed.repeatRule.toLowerCase()}`
+          : "One-time",
+      ].join(" · ");
+
+      await ctx.reply(
+        `⏰ Reminder set\n\n${parsed.title}\n${remindAt.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })} · ${details}`,
+      );
+    } else if (parsed.intent === "show_reminders") {
+      const reminders = await prisma.reminder.findMany({
+        where: { userId: user.id, status: "PENDING" },
+        orderBy: { remindAt: "asc" },
+        take: 10,
+      });
+
+      if (reminders.length === 0) {
+        await ctx.reply(
+          'No upcoming reminders. Use "remind me..." to create one.',
+        );
+        return;
+      }
+
+      const lines = reminders.map((r, i) => {
+        const date = r.remindAt.toLocaleString("en-US", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        });
+        const repeat = r.repeatRule ? ` 🔁 ${r.repeatRule.toLowerCase()}` : "";
+        return `${i + 1}. ${r.title}\n   ${date}${repeat}`;
+      });
+
+      await ctx.reply(`⏰ Upcoming Reminders\n\n${lines.join("\n\n")}`);
     } else {
       await ctx.reply(
         "I understood your message, but this feature isn't available yet.\n\n" +
@@ -457,6 +529,75 @@ bot.on("message:photo", async (ctx) => {
   }
 });
 
+// ─── Reminder Callback Queries ────────────────────────────────────────────────
+
+bot.callbackQuery(/^reminder:(.+):(.+)$/, async (ctx) => {
+  const action = ctx.match[1]; // done | snooze_1h | snooze_1d | snooze_1w | dismiss
+  const reminderId = ctx.match[2];
+
+  await ctx.answerCallbackQuery(); // removes spinner immediately
+
+  try {
+    if (action === "done") {
+      await prisma.reminder.update({
+        where: { id: reminderId },
+        data: { status: "DELIVERED", deliveredAt: new Date() },
+      });
+      await ctx.editMessageText("✅ Reminder completed.");
+
+    } else if (action === "dismiss") {
+      const job = await reminderQueue.getJob(reminderId);
+      if (job) await job.remove();
+      await prisma.reminder.update({
+        where: { id: reminderId },
+        data: { status: "DISMISSED" },
+      });
+      await ctx.editMessageText("🗑 Reminder dismissed.");
+
+    } else if (action.startsWith("snooze_")) {
+      const minutesMap: Record<string, number> = {
+        snooze_1h: 60,
+        snooze_1d: 1440,
+        snooze_1w: 10080,
+      };
+      const minutes = minutesMap[action];
+      if (!minutes) return;
+
+      const snoozedUntil = new Date(Date.now() + minutes * 60 * 1000);
+
+      await prisma.reminder.update({
+        where: { id: reminderId },
+        data: { status: "SNOOZED", snoozedUntil },
+      });
+
+      // Reschedule
+      const oldJob = await reminderQueue.getJob(reminderId);
+      if (oldJob) await oldJob.remove();
+
+      const reminder = await prisma.reminder.findUnique({
+        where: { id: reminderId },
+        include: { user: { select: { telegramId: true } } },
+      });
+
+      if (reminder && reminder.user) {
+        await reminderQueue.add(
+          "reminder-delivery",
+          { reminderId: reminder.id },
+          {
+            delay: minutes * 60 * 1000,
+            jobId: reminder.id,
+          }
+        );
+      }
+
+      const label = action === "snooze_1h" ? "1 hour" : action === "snooze_1d" ? "1 day" : "1 week";
+      await ctx.editMessageText(`⏰ Snoozed for ${label}. I'll remind you again.`);
+    }
+  } catch (error) {
+    console.error("Callback query error:", error);
+  }
+});
+
 // ─── Error Handler ────────────────────────────────────────────────────────────
 
 bot.catch((err) => {
@@ -466,18 +607,14 @@ bot.catch((err) => {
 // ─── Workers & Cron ───────────────────────────────────────────────────────────
 
 startReminderWorker(async (telegramId, text, options) => {
-  await bot.api.sendMessage(telegramId, text, options as any)
-})
+  await bot.api.sendMessage(telegramId, text, options as any);
+});
 
-startStandupWorker(
-  async (telegramId, text) => {
-    await bot.api.sendMessage(telegramId, text, { parse_mode: 'Markdown' })
-  },
-  reminderQueue
-)
-
-;(async () => {
-  await registerCronJobs()
-  bot.start()
-})()
+startStandupWorker(async (telegramId, text) => {
+  await bot.api.sendMessage(telegramId, text, { parse_mode: "Markdown" });
+}, reminderQueue);
+(async () => {
+  await registerCronJobs();
+  bot.start();
+})();
 console.log("DevVault bot is running...");

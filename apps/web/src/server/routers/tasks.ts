@@ -344,6 +344,19 @@ export const tasksRouter = router({
       return { success: true };
     }),
 
+  // LIST COMPLETED (last 50, ordered by completion time)
+  listCompleted: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.task.findMany({
+      where: {
+        workspace: { userId: ctx.session.user.id },
+        status: "DONE",
+      },
+      include: { workspace: { select: { id: true, name: true, color: true } } },
+      orderBy: { updatedAt: "desc" },
+      take: 50,
+    });
+  }),
+
   // Count of Incomplete Tasks For Logged In User Grouped By Priority
   numberOfIncompleteTasks: protectedProcedure.query(async ({ ctx }) => {
     const counts = await ctx.prisma.task.groupBy({
