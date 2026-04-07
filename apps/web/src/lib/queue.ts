@@ -5,5 +5,19 @@ const connection = {
   port: Number(process.env.REDIS_PORT ?? 6379),
 }
 
-export const reminderQueue = new Queue('reminders', { connection })
-export const standupQueue = new Queue('standups', { connection })
+let _reminderQueue: Queue | null = null
+let _standupQueue: Queue | null = null
+
+export function getReminderQueue(): Queue {
+  if (!_reminderQueue) {
+    _reminderQueue = new Queue('reminders', { connection })
+  }
+  return _reminderQueue
+}
+
+export function getStandupQueue(): Queue {
+  if (!_standupQueue) {
+    _standupQueue = new Queue('standups', { connection })
+  }
+  return _standupQueue
+}

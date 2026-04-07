@@ -1,7 +1,7 @@
 import { router, protectedProcedure } from '../trpc'
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
-import { reminderQueue } from '@/lib/queue'
+import { getReminderQueue } from '@/lib/queue'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -51,7 +51,7 @@ async function scheduleReminderJob(reminder: {
 }) {
   const delay = msUntil(reminder.remindAt)
 
-  await reminderQueue.add(
+  await getReminderQueue().add(
     'reminder-delivery',
     {
       reminderId: reminder.id,
@@ -234,7 +234,7 @@ export const remindersRouter = router({
 
         if (user) {
           // Remove old job first then re-add (in case delay changed)
-          const oldJob = await reminderQueue.getJob(id)
+          const oldJob = await getReminderQueue().getJob(id)
           if (oldJob) await oldJob.remove()
 
           await scheduleReminderJob({
@@ -282,7 +282,7 @@ export const remindersRouter = router({
       })
 
       if (user) {
-        const oldJob = await reminderQueue.getJob(input.id)
+        const oldJob = await getReminderQueue().getJob(input.id)
         if (oldJob) await oldJob.remove()
 
         await scheduleReminderJob({
@@ -312,7 +312,7 @@ export const remindersRouter = router({
       }
 
       // Remove from queue so it never fires
-      const job = await reminderQueue.getJob(input.id)
+      const job = await getReminderQueue().getJob(input.id)
       if (job) await job.remove()
 
       return ctx.prisma.reminder.update({
@@ -334,7 +334,7 @@ export const remindersRouter = router({
       }
 
       // Remove BullMQ job before deleting from DB
-      const job = await reminderQueue.getJob(input.id)
+      const job = await getReminderQueue().getJob(input.id)
       if (job) await job.remove()
 
       return ctx.prisma.reminder.delete({ where: { id: input.id } })
