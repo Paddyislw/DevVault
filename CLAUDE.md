@@ -87,6 +87,7 @@ app/
 ├── ideas/page.tsx
 ├── api-endpoints/page.tsx    ← API Playground
 ├── reminders/page.tsx
+├── env/page.tsx
 ├── settings/page.tsx
 ├── login/page.tsx            ← Telegram login
 ├── globals.css               ← ALL design tokens as CSS variables
@@ -166,10 +167,17 @@ components/
 │   └── AddReminderModal.tsx
 ├── snippets/
 │   ├── index.ts
+│   ├── SnippetsPage.tsx         ← Snippets | Scratchpad tab toggle, no modals
+│   ├── SnippetList.tsx
+│   ├── SnippetDetail.tsx        ← inline create (snippetId=null) + inline edit + view
 │   ├── ScratchpadList.tsx
-│   ├── ScratchpadDetail.tsx
-│   ├── AddScratchpadModal.tsx
-│   └── PromoteModal.tsx
+│   ├── ScratchpadDetail.tsx     ← inline create (pad=null) + always-editable + promote
+│   ├── PromoteModal.tsx         ← only modal left — promote scratchpad to snippet
+│   └── constants.ts             ← LANGUAGES array export
+├── env/
+│   ├── index.ts
+│   ├── EnvManagerPage.tsx
+│   └── AddEnvModal.tsx
 └── ui/                       ← shadcn components only
 
 hooks/
@@ -195,7 +203,8 @@ server/
 │   ├── ideas.ts
 │   ├── activity.ts
 │   ├── apiEndpoints.ts
-│   └── reminders.ts
+│   ├── reminders.ts
+│   └── envSets.ts
 ├── root.ts
 └── trpc.ts
 ```
@@ -663,6 +672,17 @@ prisma.task.findMany({
 | `delete` | mutation | Hard delete + remove job |
 | `upcomingCount` | query | Count of PENDING/SNOOZED reminders in next 7 days (sidebar badge) |
 
+### `api.envSets.*`
+| Procedure | Type | Description |
+|---|---|---|
+| `create` | mutation | Create env set, checks duplicate project+env combo |
+| `list` | query | All env sets for user, optional workspaceId filter |
+| `byId` | query | Single env set |
+| `update` | mutation | Update variables JSON |
+| `delete` | mutation | Hard delete |
+| `listProjects` | query | Distinct project names for sidebar |
+| `compare` | query | Returns two env sets side by side |
+
 ---
 
 ## Bot Patterns
@@ -792,21 +812,24 @@ Free tier changes domain on every restart. Update both:
 - [x] Workspaces tRPC router extended — create, update, delete with ownership checks and default workspace protection
 - [x] Settings page — workspace list, create/edit modal (color picker, emoji grid, type selector, live preview), delete confirmation with task-count guard
 - [x] WorkspaceIcon component — Lucide icon map for known names (user, briefcase), emoji fallback for custom icons
-- [x] Snippets + Scratchpad UI — tab toggle inside Snippets page, quick paste modal with TTL, promote to snippet
+- [x] Snippets + Scratchpad UI — tab toggle, inline create/edit (no modals), light mode Monaco, ⌘S save, Esc cancel/discard
+- [x] Scratchpad — always-editable, TTL display, promote to snippet
+- [x] Completed tasks view — tab inside Today page, grouped by date, reopen button on hover
 - [x] Reminders tRPC router (create, list, update, snooze, dismiss, delete, upcomingCount)
-- [x] Reminders web UI — list with status/category filters, inline snooze (1h/1d/1w), dismiss, delete, create modal
-- [x] Reminder NLP in bot — "remind me to...", "remind me every Monday...", "show my reminders"
+- [x] Reminders web UI — list with status/category filters, inline snooze (1h/1d/1w), create modal
+- [x] Reminder NLP in bot — "remind me to...", "show my reminders", show_reminders intent
 - [x] Redis + BullMQ infrastructure — connection, queues, workers, cron jobs
 - [x] Standup cron (daily 04:30 UTC / 10:00 AM IST)
 - [x] Weekly recap cron (Monday 02:30 UTC / 8:00 AM IST)
 - [x] Overdue task scanner (nightly 18:29 UTC / 11:59 PM IST)
 - [x] Reminder delivery via BullMQ — delayed jobs with inline Telegram buttons
+- [x] Env Manager tRPC router (create, list, byId, update, delete, listProjects, compare)
+- [x] Env Manager UI — split panel, project list left, env tabs (DEV/STAGING/PROD), key-value editor, copy as .env, paste .env import
+- [x] Bot callback query handlers for reminder buttons 
 
 ## What's NOT Built Yet
-- [ ] Bot callback query handlers for reminder buttons (code ready, needs applying)
-- [ ] Env Manager UI (Week 5)
 - [ ] Telegram Mini App (Week 8)
-- [ ] Global search (Week 9)
+- [ ] Global search Cmd+K (Week 9)
 - [ ] PWA (Week 9)
 - [ ] Polish + Security audit (Week 10)
 - [ ] Template packaging + demo videos (Week 11)
@@ -880,3 +903,11 @@ Free tier changes domain on every restart. Update both:
 - Scratchpad TTL display: derive from `expiresAt - Date.now()`, color-code by urgency (red < 1hr)
 - Tab toggle pattern: shared parent state + conditional render, not separate routes
 - `root.ts` key naming matters — `reminders: remindersRouter` not `remindersRouter: remindersRouter`
+- Inline create pattern: component accepts null id/entity → renders in create mode with empty form + Save button → on success returns new id to parent → parent selects it in list
+- No-modal snippet/scratchpad flow: "New" button sets isCreating=true + deselects list → detail panel shows blank editor → Save creates entity → auto-selects in list
+- Monaco theme must be consistent across ALL instances — one vs-dark in a modal breaks the light theme feel of the entire page
+- Scratchpads are always-editable (isDirty tracking) vs snippets which toggle readOnly on pencil click — matches the "scratch" vs "permanent" mental model
+- ⌘S/Ctrl+S keyboard save: useEffect with isEditing guard, window-level listener, e.preventDefault() to block browser save dialog
+- LANGUAGES constant extracted to constants.ts — shared by SnippetDetail, ScratchpadDetail, avoids circular imports after AddSnippetModal removal
+- Completed tasks tab: reuse tasks.list with status=DONE filter, group by updatedAt date, same workspace filter tabs as Today view
+- EnvSet variables stored as JSON string — parse on read, stringify on write, .env format conversion is client-side only
