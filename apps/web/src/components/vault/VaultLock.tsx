@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { api } from '@/lib/trpc'
-import { Lock, Eye, EyeOff } from 'lucide-react'
+import { Lock, Eye, EyeOff, AlertTriangle } from 'lucide-react'
 
 interface Props {
   onUnlock: (masterPassword: string) => void
@@ -11,6 +11,9 @@ export function VaultLock({ onUnlock }: Props) {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
+  const [resetOpen, setResetOpen] = useState(false)
+  const [resetConfirm, setResetConfirm] = useState('')
+  const utils = api.useUtils()
 
   const verify = api.credentials.verifyMasterPassword.useMutation({
     onSuccess: (data) => {
@@ -22,6 +25,15 @@ export function VaultLock({ onUnlock }: Props) {
       }
     },
     onError: () => setError('Something went wrong. Try again.'),
+  })
+
+  const resetVault = api.credentials.resetVault.useMutation({
+    onSuccess: () => {
+      // hasMasterPassword flips to false → VaultPage shows the setup screen
+      utils.credentials.hasMasterPassword.invalidate()
+      utils.credentials.list.invalidate()
+    },
+    onError: () => setError('Reset failed. Try again.'),
   })
 
   function handleSubmit() {
@@ -75,6 +87,54 @@ export function VaultLock({ onUnlock }: Props) {
             {verify.isPending ? 'Unlocking...' : 'Unlock vault'}
           </button>
         </div>
+
+        {/* ── Forgot password / reset ── */}
+        {!resetOpen ? (
+          <button
+            onClick={() => setResetOpen(true)}
+            className="self-start text-[12px] text-text-tertiary hover:text-text-secondary transition-colors"
+          >
+            Forgot your password?
+          </button>
+        ) : (
+          <div className="flex flex-col gap-3 p-4 bg-red-50 border border-red-200 rounded-md">
+            <div className="flex items-start gap-2.5">
+              <AlertTriangle size={14} strokeWidth={1.5} className="text-red-500 flex-shrink-0 mt-0.5" />
+              <div className="text-[12px] text-red-600 leading-relaxed">
+                <p className="font-medium">There is no way to recover the password.</p>
+                <p className="mt-1">
+                  Your credentials are encrypted with a key derived from it — without the
+                  password they cannot be decrypted, by anyone. Resetting the vault
+                  <strong> permanently deletes all saved credentials</strong> and lets you
+                  start over with a new password.
+                </p>
+              </div>
+            </div>
+
+            <input
+              value={resetConfirm}
+              onChange={e => setResetConfirm(e.target.value)}
+              placeholder='Type "RESET" to confirm'
+              className="bg-white border border-red-200 rounded px-3 py-2 text-sm text-text-primary placeholder:text-text-ghost outline-none focus:border-red-400 transition-colors"
+            />
+
+            <div className="flex items-center justify-end gap-2">
+              <button
+                onClick={() => { setResetOpen(false); setResetConfirm('') }}
+                className="px-3 py-1.5 text-[12px] text-text-secondary hover:text-text-primary transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => resetVault.mutate()}
+                disabled={resetConfirm !== 'RESET' || resetVault.isPending}
+                className="px-3 py-1.5 text-[12px] bg-red-500 text-white rounded font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {resetVault.isPending ? 'Resetting…' : 'Delete everything & reset'}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

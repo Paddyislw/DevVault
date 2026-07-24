@@ -499,6 +499,55 @@ function Toggle({
   );
 }
 
+function WorkspaceFilterChips({
+  selected,
+  onChange,
+}: {
+  selected: string[];
+  onChange: (ids: string[]) => void;
+}) {
+  const { data: workspaces = [] } = api.workspaces.list.useQuery();
+  const allActive = selected.length === 0;
+
+  function toggle(id: string) {
+    let next: string[];
+    if (allActive) {
+      next = [id];
+    } else if (selected.includes(id)) {
+      next = selected.filter((x) => x !== id);
+    } else {
+      next = [...selected, id];
+    }
+    // Selecting every workspace = same as "All" — store as empty
+    if (next.length === workspaces.length) next = [];
+    onChange(next);
+  }
+
+  const chipClass = (active: boolean) =>
+    `px-2 py-0.5 text-[11px] rounded-full border transition-colors ${
+      active
+        ? "bg-accent border-accent text-white"
+        : "border-border-default text-text-secondary hover:border-border-strong hover:text-text-primary"
+    }`;
+
+  return (
+    <div className="flex items-center gap-1.5 flex-wrap">
+      <button onClick={() => onChange([])} className={chipClass(allActive)}>
+        All
+      </button>
+      {workspaces.map((ws) => (
+        <button
+          key={ws.id}
+          onClick={() => toggle(ws.id)}
+          className={chipClass(!allActive && selected.includes(ws.id))}
+        >
+          {ws.name}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function DigestForm({ initial }: { initial: DigestSettings }) {
   const [form, setForm] = useState(initial);
   const [baseline, setBaseline] = useState(initial);
@@ -528,9 +577,14 @@ function DigestForm({ initial }: { initial: DigestSettings }) {
     update.mutate({
       standupEnabled: form.standupEnabled,
       standupTime: form.standupTime,
+      standupWorkspaceIds: form.standupWorkspaceIds,
       recapEnabled: form.recapEnabled,
       recapDay: form.recapDay,
       recapTime: form.recapTime,
+      recapWorkspaceIds: form.recapWorkspaceIds,
+      remainingEnabled: form.remainingEnabled,
+      remainingTime: form.remainingTime,
+      remainingWorkspaceIds: form.remainingWorkspaceIds,
     });
   }
 
@@ -575,18 +629,27 @@ function DigestForm({ initial }: { initial: DigestSettings }) {
             />
           </div>
           {form.standupEnabled && (
-            <div className="flex items-center gap-2.5">
-              <label className="label">Time</label>
-              <input
-                type="time"
-                step={900}
-                value={form.standupTime}
-                onChange={(e) =>
-                  set("standupTime", snapToQuarterHour(e.target.value))
-                }
-                className={timeInputClass}
-              />
-            </div>
+            <>
+              <div className="flex items-center gap-2.5">
+                <label className="label">Time</label>
+                <input
+                  type="time"
+                  step={900}
+                  value={form.standupTime}
+                  onChange={(e) =>
+                    set("standupTime", snapToQuarterHour(e.target.value))
+                  }
+                  className={timeInputClass}
+                />
+              </div>
+              <div className="flex items-start gap-2.5">
+                <label className="label pt-1">Workspaces</label>
+                <WorkspaceFilterChips
+                  selected={form.standupWorkspaceIds}
+                  onChange={(ids) => set("standupWorkspaceIds", ids)}
+                />
+              </div>
+            </>
           )}
         </div>
 
@@ -609,30 +672,83 @@ function DigestForm({ initial }: { initial: DigestSettings }) {
             />
           </div>
           {form.recapEnabled && (
-            <div className="flex items-center gap-2.5">
-              <label className="label">Every</label>
-              <select
-                value={form.recapDay}
-                onChange={(e) => set("recapDay", Number(e.target.value))}
-                className={timeInputClass}
-              >
-                {WEEKDAY_OPTIONS.map((d) => (
-                  <option key={d.value} value={d.value}>
-                    {d.label}
-                  </option>
-                ))}
-              </select>
-              <label className="label">At</label>
-              <input
-                type="time"
-                step={900}
-                value={form.recapTime}
-                onChange={(e) =>
-                  set("recapTime", snapToQuarterHour(e.target.value))
-                }
-                className={timeInputClass}
-              />
+            <>
+              <div className="flex items-center gap-2.5">
+                <label className="label">Every</label>
+                <select
+                  value={form.recapDay}
+                  onChange={(e) => set("recapDay", Number(e.target.value))}
+                  className={timeInputClass}
+                >
+                  {WEEKDAY_OPTIONS.map((d) => (
+                    <option key={d.value} value={d.value}>
+                      {d.label}
+                    </option>
+                  ))}
+                </select>
+                <label className="label">At</label>
+                <input
+                  type="time"
+                  step={900}
+                  value={form.recapTime}
+                  onChange={(e) =>
+                    set("recapTime", snapToQuarterHour(e.target.value))
+                  }
+                  className={timeInputClass}
+                />
+              </div>
+              <div className="flex items-start gap-2.5">
+                <label className="label pt-1">Workspaces</label>
+                <WorkspaceFilterChips
+                  selected={form.recapWorkspaceIds}
+                  onChange={(ids) => set("recapWorkspaceIds", ids)}
+                />
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className="border-t border-border-subtle" />
+
+        {/* Remaining tasks */}
+        <div className="px-4 py-4 flex flex-col gap-3">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm font-medium text-text-primary">
+                Remaining Tasks
+              </span>
+              <span className="text-[12px] text-text-tertiary leading-relaxed">
+                Unfinished tasks that slipped past their due date, grouped by
+                workspace. Skipped when there&apos;s nothing left over.
+              </span>
             </div>
+            <Toggle
+              checked={form.remainingEnabled}
+              onChange={(v) => set("remainingEnabled", v)}
+            />
+          </div>
+          {form.remainingEnabled && (
+            <>
+              <div className="flex items-center gap-2.5">
+                <label className="label">Time</label>
+                <input
+                  type="time"
+                  step={900}
+                  value={form.remainingTime}
+                  onChange={(e) =>
+                    set("remainingTime", snapToQuarterHour(e.target.value))
+                  }
+                  className={timeInputClass}
+                />
+              </div>
+              <div className="flex items-start gap-2.5">
+                <label className="label pt-1">Workspaces</label>
+                <WorkspaceFilterChips
+                  selected={form.remainingWorkspaceIds}
+                  onChange={(ids) => set("remainingWorkspaceIds", ids)}
+                />
+              </div>
+            </>
           )}
         </div>
       </div>

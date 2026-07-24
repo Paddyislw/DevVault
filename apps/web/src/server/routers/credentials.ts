@@ -58,6 +58,20 @@ export const credentialsRouter = router({
       return { verified, needsSetup: false };
     }),
 
+  // Forgot master password — credentials are encrypted with a key derived
+  // from the password itself, so they are unrecoverable without it. Reset
+  // deletes all of them and clears the hash so a new password can be set.
+  resetVault: protectedProcedure.mutation(async ({ ctx }) => {
+    const { count } = await ctx.prisma.credential.deleteMany({
+      where: { workspace: { userId: ctx.session.user.id } },
+    });
+    await ctx.prisma.user.update({
+      where: { id: ctx.session.user.id },
+      data: { masterPasswordHash: null },
+    });
+    return { deletedCredentials: count };
+  }),
+
   // Check if master password is set
   hasMasterPassword: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUnique({

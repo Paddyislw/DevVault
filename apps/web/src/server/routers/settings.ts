@@ -11,9 +11,14 @@ import {
 const updateDigestSchema = z.object({
   standupEnabled: z.boolean(),
   standupTime: z.string().regex(DIGEST_TIME_RE, "Time must be HH:mm"),
+  standupWorkspaceIds: z.array(z.string()).max(50),
   recapEnabled: z.boolean(),
   recapDay: z.number().int().min(0).max(6),
   recapTime: z.string().regex(DIGEST_TIME_RE, "Time must be HH:mm"),
+  recapWorkspaceIds: z.array(z.string()).max(50),
+  remainingEnabled: z.boolean(),
+  remainingTime: z.string().regex(DIGEST_TIME_RE, "Time must be HH:mm"),
+  remainingWorkspaceIds: z.array(z.string()).max(50),
 });
 
 export const settingsRouter = router({

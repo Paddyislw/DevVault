@@ -7,6 +7,7 @@ import {
   getLocalTime,
   getLocalDayBounds,
   isInSlot,
+  type DigestSettings,
 } from '../../services/digest'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
@@ -42,14 +43,24 @@ function bulletList(lines: string[], emptyLabel: string): string {
   return lines.map(line => `• ${line}`).join('\n')
 }
 
+/** Workspace where-clause honoring the digest's workspace selection ([] = all). */
+function workspaceWhere(userId: string, workspaceIds: string[]) {
+  return {
+    userId,
+    ...(workspaceIds.length ? { id: { in: workspaceIds } } : {}),
+  }
+}
+
 // ─── Standup Generator ────────────────────────────────────────────────────────
 
 async function generateStandup(
   userId: string,
   telegramId: string,
-  timezone: string,
+  settings: DigestSettings,
   sendMessage: (telegramId: string, text: string) => Promise<void>
 ) {
+  const { timezone, standupWorkspaceIds } = settings
+  const wsWhere = workspaceWhere(userId, standupWorkspaceIds)
   const now = new Date()
   const { todayEnd, yesterdayStart, yesterdayEnd, dateKey } = getLocalDayBounds(timezone, now)
 
@@ -68,7 +79,7 @@ async function generateStandup(
     // Completed yesterday
     prisma.task.findMany({
       where: {
-        workspace: { userId },
+        workspace: wsWhere,
         status: 'DONE',
         updatedAt: { gte: yesterdayStart, lte: yesterdayEnd },
       },
@@ -78,7 +89,7 @@ async function generateStandup(
     // Pending today (not done, not cancelled, not someday)
     prisma.task.findMany({
       where: {
-        workspace: { userId },
+        workspace: wsWhere,
         status: { notIn: ['DONE', 'CANCELLED'] },
         isSomeday: false,
         isBacklog: false,
@@ -95,7 +106,7 @@ async function generateStandup(
     // Blocked tasks
     prisma.task.findMany({
       where: {
-        workspace: { userId },
+        workspace: wsWhere,
         status: 'BLOCKED',
       },
       select: { title: true, workspace: { select: { name: true } } },
@@ -153,9 +164,11 @@ async function generateStandup(
 async function generateWeeklyRecap(
   userId: string,
   telegramId: string,
-  timezone: string,
+  settings: DigestSettings,
   sendMessage: (telegramId: string, text: string) => Promise<void>
 ) {
+  const { timezone, recapWorkspaceIds } = settings
+  const wsWhere = workspaceWhere(userId, recapWorkspaceIds)
   const now = new Date()
   const { todayStart, weekStart } = getLocalDayBounds(timezone, now)
 
@@ -173,21 +186,21 @@ async function generateWeeklyRecap(
   // happened (web or bot), unlike ActivityLog which only web task writes feed
   const [completedTasks, createdTasks, snippetsSaved, notesSaved, bookmarksSaved] = await Promise.all([
     prisma.task.findMany({
-      where: { workspace: { userId }, status: 'DONE', updatedAt: { gte: weekStart } },
+      where: { workspace: wsWhere, status: 'DONE', updatedAt: { gte: weekStart } },
       select: { updatedAt: true },
     }),
     prisma.task.findMany({
-      where: { workspace: { userId }, createdAt: { gte: weekStart } },
+      where: { workspace: wsWhere, createdAt: { gte: weekStart } },
       select: { createdAt: true },
     }),
     prisma.snippet.count({
-      where: { workspace: { userId }, createdAt: { gte: weekStart } },
+      where: { workspace: wsWhere, createdAt: { gte: weekStart } },
     }),
     prisma.note.count({
-      where: { workspace: { userId }, createdAt: { gte: weekStart } },
+      where: { workspace: wsWhere, createdAt: { gte: weekStart } },
     }),
     prisma.bookmark.count({
-      where: { workspace: { userId }, createdAt: { gte: weekStart } },
+      where: { workspace: wsWhere, createdAt: { gte: weekStart } },
     }),
   ])
 
@@ -275,6 +288,87 @@ Stats this week:
   console.log(`Weekly recap delivered to ${telegramId}`)
 }
 
+// ─── Remaining Tasks Generator ────────────────────────────────────────────────
+
+// In-memory once-per-day guard (no DB table for this digest). Slot matching
+// already limits delivery to one scan per day; this covers same-process retries.
+const remainingSentKeys = new Set<string>()
+
+async function generateRemainingTasks(
+  userId: string,
+  telegramId: string,
+  settings: DigestSettings,
+  sendMessage: (telegramId: string, text: string) => Promise<void>
+) {
+  const { timezone, remainingWorkspaceIds } = settings
+  const now = new Date()
+  const { todayStart, dateKey } = getLocalDayBounds(timezone, now)
+
+  const sentKey = `${userId}:${dateKey.toISOString()}`
+  if (remainingSentKeys.has(sentKey)) {
+    console.log(`Remaining-tasks digest already sent for user ${userId} today`)
+    return
+  }
+
+  // Tasks that were due before today and still aren't done — what slipped
+  const remaining = await prisma.task.findMany({
+    where: {
+      workspace: workspaceWhere(userId, remainingWorkspaceIds),
+      status: { notIn: ['DONE', 'CANCELLED'] },
+      isSomeday: false,
+      isBacklog: false,
+      dueDate: { lt: todayStart },
+    },
+    select: {
+      title: true,
+      priority: true,
+      dueDate: true,
+      workspace: { select: { name: true } },
+    },
+    orderBy: [{ priority: 'asc' }, { dueDate: 'asc' }],
+    take: 30, // cap for readability
+  })
+
+  remainingSentKeys.add(sentKey)
+  if (remainingSentKeys.size > 1000) remainingSentKeys.clear()
+
+  // Nothing slipped → stay quiet instead of sending noise
+  if (remaining.length === 0) {
+    console.log(`No remaining tasks for user ${userId} — skipping digest`)
+    return
+  }
+
+  // Group by workspace, keeping priority order within each group
+  const byWorkspace = new Map<string, typeof remaining>()
+  for (const task of remaining) {
+    const list = byWorkspace.get(task.workspace.name) ?? []
+    list.push(task)
+    byWorkspace.set(task.workspace.name, list)
+  }
+
+  const fmtDue = (d: Date | null) =>
+    d ? d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: timezone }) : ''
+
+  const sections = Array.from(byWorkspace.entries()).map(([wsName, tasks]) => {
+    const lines = tasks.map(
+      t =>
+        `${PRIORITY_EMOJI[t.priority] ?? '⚪'} ${escapeMd(t.title)} — _was due ${fmtDue(t.dueDate)}_`
+    )
+    return `*${escapeMd(wsName)}*\n${bulletList(lines, 'None')}`
+  })
+
+  const dateLabel = now.toLocaleDateString('en-IN', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'short',
+    timeZone: timezone,
+  })
+  const message = `⏳ *Remaining Tasks*\n_${dateLabel}_\n\n${sections.join('\n\n')}`
+  await sendMessage(telegramId, message)
+
+  console.log(`Remaining-tasks digest delivered to ${telegramId} (${remaining.length} tasks)`)
+}
+
 // ─── Digest Scan ──────────────────────────────────────────────────────────────
 
 /**
@@ -299,7 +393,7 @@ async function runDigestScan(
       const local = getLocalTime(settings.timezone, now)
 
       if (settings.standupEnabled && isInSlot(settings.standupTime, local)) {
-        await generateStandup(user.id, user.telegramId, settings.timezone, sendMessage)
+        await generateStandup(user.id, user.telegramId, settings, sendMessage)
       }
 
       if (
@@ -307,7 +401,11 @@ async function runDigestScan(
         local.weekday === settings.recapDay &&
         isInSlot(settings.recapTime, local)
       ) {
-        await generateWeeklyRecap(user.id, user.telegramId, settings.timezone, sendMessage)
+        await generateWeeklyRecap(user.id, user.telegramId, settings, sendMessage)
+      }
+
+      if (settings.remainingEnabled && isInSlot(settings.remainingTime, local)) {
+        await generateRemainingTasks(user.id, user.telegramId, settings, sendMessage)
       }
     })
   )
