@@ -613,8 +613,37 @@ startReminderWorker(async (telegramId, text, options) => {
 startStandupWorker(async (telegramId, text) => {
   await bot.api.sendMessage(telegramId, text, { parse_mode: "Markdown" });
 }, reminderQueue);
+
+// Graceful shutdown — releases the getUpdates lock immediately, so the next
+// deploy's instance doesn't hit 409 against our lingering long-poll
+process.once("SIGTERM", () => bot.stop());
+process.once("SIGINT", () => bot.stop());
+
+// Telegram allows one getUpdates poller per token. After a crash/redeploy the
+// previous instance's long-poll can linger up to ~30s server-side, so a fresh
+// instance may 409. Retry instead of crash-looping — waiting longer than the
+// 30s poll timeout guarantees a stale lock expires between attempts.
+const POLL_RETRY_MS = 35_000;
+
 (async () => {
-  await registerCronJobs();
-  bot.start();
+  try {
+    await registerCronJobs();
+  } catch (err) {
+    console.error("Cron registration failed (bot will still serve commands):", err);
+  }
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    try {
+      await bot.start();
+      break; // clean stop via SIGTERM/SIGINT
+    } catch (err) {
+      console.error(
+        `Polling failed — likely another instance holds getUpdates. Retrying in ${POLL_RETRY_MS / 1000}s...`,
+        err instanceof Error ? err.message : err,
+      );
+      await new Promise((r) => setTimeout(r, POLL_RETRY_MS));
+    }
+  }
 })();
 console.log("DevVault bot is running...");
