@@ -14,6 +14,7 @@ import {
 import { api } from "@/lib/trpc";
 import type { RouterOutputs } from "@/lib/trpc";
 import { PageHeader } from "@/components/shared/page-header";
+import type { DigestSettings } from "@/lib/digest";
 
 type Workspace = RouterOutputs["workspaces"]["list"][number];
 
@@ -452,6 +453,226 @@ function WorkspaceRow({
   );
 }
 
+// ─── Telegram Digests ─────────────────────────────────────────────────────────
+
+const WEEKDAY_OPTIONS = [
+  { value: 1, label: "Monday" },
+  { value: 2, label: "Tuesday" },
+  { value: 3, label: "Wednesday" },
+  { value: 4, label: "Thursday" },
+  { value: 5, label: "Friday" },
+  { value: 6, label: "Saturday" },
+  { value: 0, label: "Sunday" },
+];
+
+/** Delivery is slot-based (every 15 min) — snap the picked time to the slot. */
+function snapToQuarterHour(time: string): string {
+  const [h, m] = time.slice(0, 5).split(":").map(Number);
+  if (Number.isNaN(h) || Number.isNaN(m)) return time;
+  const snapped = Math.floor(m / 15) * 15;
+  return `${String(h).padStart(2, "0")}:${String(snapped).padStart(2, "0")}`;
+}
+
+function Toggle({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={`relative h-5 w-9 rounded-full flex-shrink-0 transition-colors ${
+        checked ? "bg-accent" : "bg-border-strong"
+      }`}
+    >
+      <span
+        className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+          checked ? "translate-x-4" : ""
+        }`}
+      />
+    </button>
+  );
+}
+
+function DigestForm({ initial }: { initial: DigestSettings }) {
+  const [form, setForm] = useState(initial);
+  const [baseline, setBaseline] = useState(initial);
+  const utils = api.useUtils();
+  const [error, setError] = useState<string | null>(null);
+
+  const update = api.settings.updateDigest.useMutation({
+    onSuccess: (saved) => {
+      setForm(saved);
+      setBaseline(saved);
+      utils.settings.getDigest.invalidate();
+    },
+    onError: (e) => setError(e.message),
+  });
+
+  const dirty = JSON.stringify(form) !== JSON.stringify(baseline);
+
+  function set<K extends keyof DigestSettings>(
+    key: K,
+    value: DigestSettings[K],
+  ) {
+    setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  function handleSave() {
+    setError(null);
+    update.mutate({
+      standupEnabled: form.standupEnabled,
+      standupTime: form.standupTime,
+      recapEnabled: form.recapEnabled,
+      recapDay: form.recapDay,
+      recapTime: form.recapTime,
+    });
+  }
+
+  const timeInputClass =
+    "bg-surface-0 border border-border-default rounded-md px-2 py-1 text-sm text-text-primary focus:outline-none focus:border-border-strong transition-colors";
+
+  return (
+    <>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-[13px] font-medium text-text-primary">
+            Telegram Digests
+          </h2>
+          <p className="text-[12px] text-text-tertiary mt-0.5 leading-relaxed">
+            Automatic summaries sent to you by the DevVault bot.
+          </p>
+        </div>
+        <button
+          onClick={handleSave}
+          disabled={!dirty || update.isPending}
+          className="px-3 py-1.5 text-sm bg-accent text-white rounded-md font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+        >
+          {update.isPending ? "Saving..." : "Save"}
+        </button>
+      </div>
+
+      <div className="border border-border-default rounded-lg bg-surface-1 overflow-hidden">
+        {/* Daily standup */}
+        <div className="px-4 py-4 flex flex-col gap-3">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm font-medium text-text-primary">
+                Daily Standup
+              </span>
+              <span className="text-[12px] text-text-tertiary leading-relaxed">
+                Yesterday · Today · Blockers, every morning.
+              </span>
+            </div>
+            <Toggle
+              checked={form.standupEnabled}
+              onChange={(v) => set("standupEnabled", v)}
+            />
+          </div>
+          {form.standupEnabled && (
+            <div className="flex items-center gap-2.5">
+              <label className="label">Time</label>
+              <input
+                type="time"
+                step={900}
+                value={form.standupTime}
+                onChange={(e) =>
+                  set("standupTime", snapToQuarterHour(e.target.value))
+                }
+                className={timeInputClass}
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="border-t border-border-subtle" />
+
+        {/* Weekly recap */}
+        <div className="px-4 py-4 flex flex-col gap-3">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm font-medium text-text-primary">
+                Weekly Recap
+              </span>
+              <span className="text-[12px] text-text-tertiary leading-relaxed">
+                Your week in numbers, plus one productivity tip.
+              </span>
+            </div>
+            <Toggle
+              checked={form.recapEnabled}
+              onChange={(v) => set("recapEnabled", v)}
+            />
+          </div>
+          {form.recapEnabled && (
+            <div className="flex items-center gap-2.5">
+              <label className="label">Every</label>
+              <select
+                value={form.recapDay}
+                onChange={(e) => set("recapDay", Number(e.target.value))}
+                className={timeInputClass}
+              >
+                {WEEKDAY_OPTIONS.map((d) => (
+                  <option key={d.value} value={d.value}>
+                    {d.label}
+                  </option>
+                ))}
+              </select>
+              <label className="label">At</label>
+              <input
+                type="time"
+                step={900}
+                value={form.recapTime}
+                onChange={(e) =>
+                  set("recapTime", snapToQuarterHour(e.target.value))
+                }
+                className={timeInputClass}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {error && (
+        <p className="text-xs text-red-500 flex items-center gap-1.5 bg-red-50 border border-red-100 rounded-md px-3 py-2">
+          <AlertTriangle size={12} strokeWidth={1.5} className="flex-shrink-0" />
+          {error}
+        </p>
+      )}
+
+      <p className="text-[11px] text-text-tertiary leading-relaxed">
+        Times are in IST (Asia/Kolkata), aligned to 15-minute intervals.
+      </p>
+    </>
+  );
+}
+
+function DigestSection() {
+  const { data, isLoading } = api.settings.getDigest.useQuery();
+
+  return (
+    <section className="flex flex-col gap-3">
+      {isLoading || !data ? (
+        <div className="space-y-1.5">
+          {[1, 2].map((i) => (
+            <div
+              key={i}
+              className="h-11 animate-pulse rounded-md bg-surface-2"
+              style={{ opacity: 1 - i * 0.3 }}
+            />
+          ))}
+        </div>
+      ) : (
+        <DigestForm initial={data} />
+      )}
+    </section>
+  );
+}
+
 // ─── Settings Page ────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
@@ -538,6 +759,8 @@ export default function SettingsPage() {
               )}
             </div>
           </section>
+
+          <DigestSection />
         </div>
       </div>
 

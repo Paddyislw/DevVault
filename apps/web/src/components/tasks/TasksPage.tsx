@@ -1,7 +1,8 @@
 // components/tasks/TasksPage.tsx
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PriorityGroup } from "./PriorityGroup";
 import { api } from "@/lib/trpc";
 import { useQueryClient } from "@tanstack/react-query";
@@ -43,15 +44,44 @@ function formatCompletedDate(date: Date | string): string {
 }
 
 export function TasksPage() {
-  const [viewTab, setViewTab] = useState<ViewTab>("today");
   const [modalOpen, setModalOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
-  const [activeWorkspace, setActiveWorkspace] = useState<string | null>(null);
   const [stickyWorkspaceId, setStickyWorkspaceId] = useState<string | null>(
     null,
   );
 
   const { data: workspaces = [] } = api.workspaces.list.useQuery();
+
+  // ── URL-driven state — ?tab=completed & ?ws=<workspace-slug> ─────────────
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const viewTab: ViewTab =
+    searchParams.get("tab") === "completed" ? "completed" : "today";
+  const wsSlug = searchParams.get("ws");
+  const activeWorkspace = useMemo(
+    () => workspaces.find((w) => w.slug === wsSlug)?.id ?? null,
+    [workspaces, wsSlug],
+  );
+
+  const setParams = useCallback(
+    (updates: Record<string, string | null>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      for (const [key, value] of Object.entries(updates)) {
+        if (value === null) params.delete(key);
+        else params.set(key, value);
+      }
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    },
+    [router, pathname, searchParams],
+  );
+
+  const setViewTab = (tab: ViewTab) =>
+    setParams({ tab: tab === "today" ? null : tab });
+  const setActiveWorkspaceSlug = (slug: string | null) =>
+    setParams({ ws: slug });
 
   // ── Today data ────────────────────────────────────────────────────────────
   const {
@@ -132,8 +162,48 @@ export function TasksPage() {
     completeMutation.mutate({ id, completed: false });
   };
 
-  // Group filtered tasks by priority
+  const reorderMutation = api.tasks.reorder.useMutation({
+    onMutate: async ({ ids }) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previousTasks = tasks;
+      const positions = new Map(ids.map((id, index) => [id, index + 1]));
+      queryClient.setQueryData(
+        queryKey,
+        tasks.map((task) =>
+          positions.has(task.id)
+            ? { ...task, position: positions.get(task.id)! }
+            : task,
+        ),
+      );
+      return { previousTasks };
+    },
+    onError: (_err, _input, context) => {
+      queryClient.setQueryData(queryKey, context?.previousTasks);
+    },
+    onSettled: () => refetch(),
+  });
+
+  const handleReorder = (orderedIds: string[]) => {
+    reorderMutation.mutate({ ids: orderedIds });
+  };
+
+  // Group filtered tasks by priority.
+  // Within a group: done tasks sink to the bottom; manually positioned tasks
+  // (position > 0) keep their drag order; the rest fall back to creation order.
   const grouped = useMemo(() => {
+    const sortGroup = (list: typeof filteredTasks) =>
+      [...list].sort((a, b) => {
+        const doneDiff =
+          Number(a.status === "DONE") - Number(b.status === "DONE");
+        if (doneDiff !== 0) return doneDiff;
+        if (a.position > 0 && b.position > 0 && a.position !== b.position)
+          return a.position - b.position;
+        if (a.position > 0 !== b.position > 0) return a.position > 0 ? -1 : 1;
+        return (
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+      });
+
     const groups: Record<string, typeof filteredTasks> = {
       P1: [],
       P2: [],
@@ -144,6 +214,9 @@ export function TasksPage() {
       if (groups[task.priority]) {
         groups[task.priority].push(task);
       }
+    }
+    for (const key of Object.keys(groups)) {
+      groups[key] = sortGroup(groups[key]);
     }
     return groups;
   }, [filteredTasks]);
@@ -174,8 +247,9 @@ export function TasksPage() {
     return c;
   }, [tasks, completedTasks, viewTab]);
 
+  // Active filter tab wins — sticky last-used workspace only applies on "All"
   const defaultWorkspaceForModal =
-    stickyWorkspaceId ?? activeWorkspace ?? undefined;
+    activeWorkspace ?? stickyWorkspaceId ?? undefined;
 
   // ── Loading ──
   const isLoadingCurrent = viewTab === "today" ? isLoading : completedLoading;
@@ -292,7 +366,7 @@ export function TasksPage() {
       {workspaces.length > 1 && (
         <div className="flex items-center gap-1.5 border-b border-border-subtle px-6 py-2.5">
           <button
-            onClick={() => setActiveWorkspace(null)}
+            onClick={() => setActiveWorkspaceSlug(null)}
             className={`flex items-center gap-1.5 rounded px-2.5 py-1 text-[12px] font-medium transition-colors ${
               activeWorkspace === null
                 ? "bg-accent text-white"
@@ -312,7 +386,7 @@ export function TasksPage() {
             return (
               <button
                 key={ws.id}
-                onClick={() => setActiveWorkspace(isActive ? null : ws.id)}
+                onClick={() => setActiveWorkspaceSlug(isActive ? null : ws.slug)}
                 className={`flex items-center gap-1.5 rounded px-2.5 py-1 text-[12px] font-medium transition-colors ${
                   isActive
                     ? "bg-accent text-white"
@@ -361,6 +435,7 @@ export function TasksPage() {
                   tasks={group as any}
                   onComplete={handleComplete}
                   onEdit={setEditTask}
+                  onReorder={handleReorder}
                 />
               );
             })

@@ -127,10 +127,56 @@ export function AddTaskModal({
   }, [onClose]);
 
   const createTask = api.tasks.create.useMutation({
-    onSuccess: () => {
-      onWorkspaceUsed?.(form.workspaceId);
-      utils.tasks.listToday.invalidate();
+    // Optimistic create — close instantly, show the task now, roll back on error
+    onMutate: async (input) => {
+      onWorkspaceUsed?.(input.workspaceId);
       onClose();
+
+      await utils.tasks.listToday.cancel();
+      const previous = utils.tasks.listToday.getData();
+
+      // Someday/backlog tasks don't belong in the Today list
+      if (!input.isSomeday && !input.isBacklog) {
+        const ws = workspaces?.find((w) => w.id === input.workspaceId);
+        const now = new Date();
+        const optimistic = {
+          id: `optimistic-${now.getTime()}`,
+          workspaceId: input.workspaceId,
+          title: input.title,
+          description: input.description ?? null,
+          priority: input.priority ?? "P3",
+          status: input.status ?? "TODO",
+          dueDate: input.dueDate ? new Date(input.dueDate) : null,
+          isBacklog: false,
+          isSomeday: false,
+          position: 0,
+          parentTaskId: null,
+          createdAt: now,
+          updatedAt: now,
+          attachments: [],
+          subtasks: [],
+          workspace: {
+            id: input.workspaceId,
+            name: ws?.name ?? "",
+            color: ws?.color ?? null,
+          },
+        } as unknown as NonNullable<typeof previous>[number];
+
+        utils.tasks.listToday.setData(undefined, (old) =>
+          old ? [...old, optimistic] : [optimistic],
+        );
+      }
+
+      return { previous };
+    },
+    onError: (_err, _input, context) => {
+      if (context?.previous) {
+        utils.tasks.listToday.setData(undefined, context.previous);
+      }
+    },
+    // Reconcile with the server (real id, ordering) + refresh Someday/Scheduled lists
+    onSettled: () => {
+      utils.tasks.invalidate();
     },
   });
 

@@ -1,5 +1,11 @@
+import { Suspense } from "react";
 import { TasksPage } from "@/components/tasks";
 
 export default function TodayPage() {
-  return <TasksPage />;
+  // Suspense boundary required — TasksPage reads useSearchParams (?tab, ?ws)
+  return (
+    <Suspense>
+      <TasksPage />
+    </Suspense>
+  );
 }

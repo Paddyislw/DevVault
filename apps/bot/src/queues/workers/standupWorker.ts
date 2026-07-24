@@ -2,6 +2,12 @@ import { Worker, Queue, Job } from 'bullmq'
 import { redisConnection } from '../connection'
 import { prisma } from '@devvault/db'
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import {
+  parseDigestSettings,
+  getLocalTime,
+  getLocalDayBounds,
+  isInSlot,
+} from '../../services/digest'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
@@ -11,30 +17,29 @@ const standupQueue = new Queue('standups', { connection: redisConnection })
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type StandupJobData = {
-  type: 'standup-daily' | 'recap-weekly' | 'overdue-scan'
+  // 'standup-daily' | 'recap-weekly' are legacy fixed-time crons — no-ops now,
+  // kept in the union so stray queued jobs don't crash the worker
+  type: 'digest-scan' | 'overdue-scan' | 'standup-daily' | 'recap-weekly'
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Formatting Helpers ───────────────────────────────────────────────────────
 
-function getDateRange() {
-  const now = new Date()
+const PRIORITY_EMOJI: Record<string, string> = {
+  P1: '🔴',
+  P2: '🟠',
+  P3: '🔵',
+  P4: '⚪',
+}
 
-  const todayStart = new Date(now)
-  todayStart.setHours(0, 0, 0, 0)
+/** Escapes user content for Telegram legacy-Markdown parse mode. */
+function escapeMd(text: string): string {
+  return text.replace(/([_*`\[])/g, '\\$1')
+}
 
-  const todayEnd = new Date(now)
-  todayEnd.setHours(23, 59, 59, 999)
-
-  const yesterdayStart = new Date(todayStart)
-  yesterdayStart.setDate(yesterdayStart.getDate() - 1)
-
-  const yesterdayEnd = new Date(todayEnd)
-  yesterdayEnd.setDate(yesterdayEnd.getDate() - 1)
-
-  const weekStart = new Date(todayStart)
-  weekStart.setDate(weekStart.getDate() - 7)
-
-  return { todayStart, todayEnd, yesterdayStart, yesterdayEnd, weekStart }
+/** Renders a fixed-style bullet list; italic placeholder when empty. */
+function bulletList(lines: string[], emptyLabel: string): string {
+  if (lines.length === 0) return `• _${emptyLabel}_`
+  return lines.map(line => `• ${line}`).join('\n')
 }
 
 // ─── Standup Generator ────────────────────────────────────────────────────────
@@ -42,13 +47,15 @@ function getDateRange() {
 async function generateStandup(
   userId: string,
   telegramId: string,
+  timezone: string,
   sendMessage: (telegramId: string, text: string) => Promise<void>
 ) {
-  const { todayStart, todayEnd, yesterdayStart, yesterdayEnd } = getDateRange()
+  const now = new Date()
+  const { todayEnd, yesterdayStart, yesterdayEnd, dateKey } = getLocalDayBounds(timezone, now)
 
   // Check if standup already sent today (idempotency guard)
   const existingStandup = await prisma.standup.findUnique({
-    where: { userId_date: { userId, date: todayStart } },
+    where: { userId_date: { userId, date: dateKey } },
   })
 
   if (existingStandup) {
@@ -95,39 +102,47 @@ async function generateStandup(
     }),
   ])
 
-  // Build prompt for Gemini
-  const dataForAI = {
-    completedYesterday: completedYesterday.map(t => `${t.priority}: ${t.title} (${t.workspace.name})`),
-    pendingToday: pendingToday.map(t => `${t.priority}: ${t.title} (${t.workspace.name})`),
-    blockers: blockedTasks.map(t => `${t.title} (${t.workspace.name})`),
-  }
-
-  const prompt = `Generate a concise daily standup update for a developer. 
-Format it with three sections: Yesterday, Today, Blockers.
-Keep it brief and professional. Use bullet points. No fluff.
-
-Data:
-Yesterday completed: ${dataForAI.completedYesterday.join(', ') || 'Nothing completed'}
-Today pending: ${dataForAI.pendingToday.join(', ') || 'Nothing scheduled'}
-Blockers: ${dataForAI.blockers.join(', ') || 'None'}
-
-Respond in plain text with emoji bullets. No markdown headers, use bold with asterisks for section names.`
-
-  const result = await model.generateContent(prompt)
-  const content = result.response.text().trim()
+  // Deterministic formatting — same bullet style every day, no AI variance
+  const content = [
+    '*Yesterday*',
+    bulletList(
+      completedYesterday.map(t => `${escapeMd(t.title)} — ${escapeMd(t.workspace.name)}`),
+      'Nothing completed'
+    ),
+    '',
+    '*Today*',
+    bulletList(
+      pendingToday.map(
+        t => `${PRIORITY_EMOJI[t.priority] ?? '⚪'} ${escapeMd(t.title)} — ${escapeMd(t.workspace.name)}`
+      ),
+      'Nothing scheduled'
+    ),
+    '',
+    '*Blockers*',
+    bulletList(
+      blockedTasks.map(t => `${escapeMd(t.title)} — ${escapeMd(t.workspace.name)}`),
+      'None'
+    ),
+  ].join('\n')
 
   // Cache in DB
   await prisma.standup.create({
     data: {
       userId,
-      date: todayStart,
+      date: dateKey,
       content,
       deliveredVia: 'telegram',
     },
   })
 
   // Send via Telegram
-  const message = `📋 *Daily Standup*\n_${new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}_\n\n${content}`
+  const dateLabel = now.toLocaleDateString('en-IN', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'short',
+    timeZone: timezone,
+  })
+  const message = `📋 *Daily Standup*\n_${dateLabel}_\n\n${content}`
   await sendMessage(telegramId, message)
 
   console.log(`Standup delivered to ${telegramId}`)
@@ -138,78 +153,105 @@ Respond in plain text with emoji bullets. No markdown headers, use bold with ast
 async function generateWeeklyRecap(
   userId: string,
   telegramId: string,
+  timezone: string,
   sendMessage: (telegramId: string, text: string) => Promise<void>
 ) {
-  const { todayStart, weekStart } = getDateRange()
+  const now = new Date()
+  const { todayStart, weekStart } = getLocalDayBounds(timezone, now)
 
-  // Aggregate stats from ActivityLog — pure SQL, no AI needed for numbers
-  const [
-    tasksCompleted,
-    tasksCreated,
-    snippetsSaved,
-    notesSaved,
-    bookmarksSaved,
-    activityByDay,
-  ] = await Promise.all([
-    prisma.activityLog.count({
-      where: { userId, action: 'completed', entityType: 'task', createdAt: { gte: weekStart } },
+  // Idempotency guard — at most one weekly recap per local day
+  const existingRecap = await prisma.recap.findFirst({
+    where: { userId, type: 'WEEKLY', createdAt: { gte: todayStart } },
+  })
+
+  if (existingRecap) {
+    console.log(`Weekly recap already sent for user ${userId} today`)
+    return
+  }
+
+  // Count from the source tables directly — works no matter where the action
+  // happened (web or bot), unlike ActivityLog which only web task writes feed
+  const [completedTasks, createdTasks, snippetsSaved, notesSaved, bookmarksSaved] = await Promise.all([
+    prisma.task.findMany({
+      where: { workspace: { userId }, status: 'DONE', updatedAt: { gte: weekStart } },
+      select: { updatedAt: true },
     }),
-    prisma.activityLog.count({
-      where: { userId, action: 'created', entityType: 'task', createdAt: { gte: weekStart } },
+    prisma.task.findMany({
+      where: { workspace: { userId }, createdAt: { gte: weekStart } },
+      select: { createdAt: true },
     }),
-    prisma.activityLog.count({
-      where: { userId, action: 'created', entityType: 'snippet', createdAt: { gte: weekStart } },
+    prisma.snippet.count({
+      where: { workspace: { userId }, createdAt: { gte: weekStart } },
     }),
-    prisma.activityLog.count({
-      where: { userId, action: 'created', entityType: 'note', createdAt: { gte: weekStart } },
+    prisma.note.count({
+      where: { workspace: { userId }, createdAt: { gte: weekStart } },
     }),
-    prisma.activityLog.count({
-      where: { userId, action: 'created', entityType: 'bookmark', createdAt: { gte: weekStart } },
-    }),
-    // Activity count per day to find most productive day
-    prisma.activityLog.groupBy({
-      by: ['createdAt'],
-      where: { userId, createdAt: { gte: weekStart } },
-      _count: { id: true },
+    prisma.bookmark.count({
+      where: { workspace: { userId }, createdAt: { gte: weekStart } },
     }),
   ])
 
-  // Find most productive day
+  // Most productive day — by task activity, in the user's timezone
+  const WEEKDAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   const dayMap: Record<string, number> = {}
-  activityByDay.forEach(entry => {
-    const day = new Date(entry.createdAt).toLocaleDateString('en-US', { weekday: 'long' })
-    dayMap[day] = (dayMap[day] ?? 0) + entry._count.id
-  })
+  for (const t of completedTasks) {
+    const day = WEEKDAY_NAMES[getLocalTime(timezone, t.updatedAt).weekday]
+    dayMap[day] = (dayMap[day] ?? 0) + 1
+  }
+  for (const t of createdTasks) {
+    const day = WEEKDAY_NAMES[getLocalTime(timezone, t.createdAt).weekday]
+    dayMap[day] = (dayMap[day] ?? 0) + 1
+  }
   const mostProductiveDay = Object.entries(dayMap).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'N/A'
 
   const stats = {
-    tasksCompleted,
-    tasksCreated,
+    tasksCompleted: completedTasks.length,
+    tasksCreated: createdTasks.length,
     snippetsSaved,
     notesSaved,
     bookmarksSaved,
-    completionRate: tasksCreated > 0 ? Math.round((tasksCompleted / tasksCreated) * 100) : 0,
+    completionRate:
+      createdTasks.length > 0 ? Math.round((completedTasks.length / createdTasks.length) * 100) : 0,
     mostProductiveDay,
   }
 
-  // Send stats to Gemini for narrative
-  const prompt = `Generate an encouraging weekly recap for a developer. Be honest but motivating.
-Include one actionable productivity tip at the end.
-Keep it under 150 words. Use emoji. Casual tone.
+  // Deterministic stats block — numbers never depend on the AI
+  const statLines = [
+    `• Tasks completed: ${stats.tasksCompleted}`,
+    `• Tasks created: ${stats.tasksCreated}`,
+    `• Snippets saved: ${stats.snippetsSaved}`,
+    `• Notes saved: ${stats.notesSaved}`,
+    `• Bookmarks saved: ${stats.bookmarksSaved}`,
+  ]
+  if (stats.tasksCreated > 0) {
+    statLines.push(`• Completion rate: ${stats.completionRate}%`)
+  }
+  if (stats.mostProductiveDay !== 'N/A') {
+    statLines.push(`• Most productive day: ${stats.mostProductiveDay}`)
+  }
+
+  // Short AI note on top of the fixed stats — recap still sends if Gemini fails
+  let aiNote = 'Keep shipping — see you next week 👋'
+  try {
+    const prompt = `Write a short encouraging note (2-3 sentences, under 60 words) for a developer's weekly recap, ending with one actionable productivity tip. Be honest but motivating, casual tone, plain text only — no headers, no bullet lists, no markdown besides *bold*.
 
 Stats this week:
 - Tasks completed: ${stats.tasksCompleted}
-- Tasks created: ${stats.tasksCreated}  
+- Tasks created: ${stats.tasksCreated}
 - Completion rate: ${stats.completionRate}%
 - Snippets saved: ${stats.snippetsSaved}
 - Notes saved: ${stats.notesSaved}
 - Bookmarks saved: ${stats.bookmarksSaved}
-- Most productive day: ${stats.mostProductiveDay}
+- Most productive day: ${stats.mostProductiveDay}`
 
-Respond in plain text with asterisks for bold. No markdown headers.`
+    const result = await model.generateContent(prompt)
+    const text = result.response.text().trim()
+    if (text) aiNote = text
+  } catch (err) {
+    console.error('Recap AI note failed, using fallback:', err)
+  }
 
-  const result = await model.generateContent(prompt)
-  const content = result.response.text().trim()
+  const content = `${statLines.join('\n')}\n\n${aiNote}`
 
   // Cache in DB
   await prisma.recap.create({
@@ -224,11 +266,51 @@ Respond in plain text with asterisks for bold. No markdown headers.`
   })
 
   // Send via Telegram
-  const weekLabel = `${weekStart.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} – ${new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`
+  const fmt = (d: Date) =>
+    d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', timeZone: timezone })
+  const weekLabel = `${fmt(weekStart)} – ${fmt(now)}`
   const message = `📊 *Weekly Recap*\n_${weekLabel}_\n\n${content}`
   await sendMessage(telegramId, message)
 
   console.log(`Weekly recap delivered to ${telegramId}`)
+}
+
+// ─── Digest Scan ──────────────────────────────────────────────────────────────
+
+/**
+ * Runs every 15 minutes. For each user, checks their digest settings and
+ * delivers the standup/recap whose configured time falls in the current slot.
+ * Generators are idempotent per local day, so a re-run can't double-send.
+ */
+async function runDigestScan(
+  sendMessage: (telegramId: string, text: string) => Promise<void>
+) {
+  const users = await prisma.user.findMany({
+    select: { id: true, telegramId: true, aiSettings: true },
+  })
+
+  const now = new Date()
+
+  await Promise.allSettled(
+    users.map(async user => {
+      if (!user.telegramId) return
+
+      const settings = parseDigestSettings(user.aiSettings)
+      const local = getLocalTime(settings.timezone, now)
+
+      if (settings.standupEnabled && isInSlot(settings.standupTime, local)) {
+        await generateStandup(user.id, user.telegramId, settings.timezone, sendMessage)
+      }
+
+      if (
+        settings.recapEnabled &&
+        local.weekday === settings.recapDay &&
+        isInSlot(settings.recapTime, local)
+      ) {
+        await generateWeeklyRecap(user.id, user.telegramId, settings.timezone, sendMessage)
+      }
+    })
+  )
 }
 
 // ─── Overdue Task Scanner ─────────────────────────────────────────────────────
@@ -304,23 +386,23 @@ async function scanOverdueTasks(
  * so calling this multiple times is safe (idempotent by name).
  */
 export async function registerCronJobs() {
-  // Daily standup — 10:00 AM IST = 04:30 UTC
-  await standupQueue.add(
-    'standup-daily',
-    { type: 'standup-daily' },
-    {
-      repeat: { pattern: '30 4 * * *' }, // cron: 04:30 UTC = 10:00 AM IST
-      jobId: 'standup-daily-cron',
+  // Remove legacy fixed-time crons — replaced by the per-user digest scan
+  const repeatableJobs = await standupQueue.getRepeatableJobs()
+  for (const job of repeatableJobs) {
+    if (job.name === 'standup-daily' || job.name === 'recap-weekly') {
+      await standupQueue.removeRepeatableByKey(job.key)
+      console.log(`Removed legacy repeatable job: ${job.name}`)
     }
-  )
+  }
 
-  // Weekly recap — Monday 8:00 AM IST = Monday 02:30 UTC
+  // Digest scan — every 15 minutes; delivers per-user standups/recaps
+  // at whatever time each user configured in Settings
   await standupQueue.add(
-    'recap-weekly',
-    { type: 'recap-weekly' },
+    'digest-scan',
+    { type: 'digest-scan' },
     {
-      repeat: { pattern: '30 2 * * 1' }, // cron: Monday 02:30 UTC = Monday 8:00 AM IST
-      jobId: 'recap-weekly-cron',
+      repeat: { pattern: '*/15 * * * *' },
+      jobId: 'digest-scan-cron',
     }
   )
 
@@ -334,7 +416,7 @@ export async function registerCronJobs() {
     }
   )
 
-  console.log('✅ Cron jobs registered: standup-daily, recap-weekly, overdue-scan')
+  console.log('✅ Cron jobs registered: digest-scan (every 15 min), overdue-scan')
 }
 
 // ─── Start Worker ─────────────────────────────────────────────────────────────
@@ -350,32 +432,13 @@ export function startStandupWorker(
 
       console.log(`Processing standup job: ${type}`)
 
-      if (type === 'standup-daily') {
-        // Fetch all users with telegramId
-        const users = await prisma.user.findMany({
-          select: { id: true, telegramId: true },
-        })
-
-        // Run in parallel — Promise.allSettled so one failure doesn't block others
-        await Promise.allSettled(
-          users.map(user =>
-            generateStandup(user.id, user.telegramId, sendMessage)
-          )
-        )
-
-      } else if (type === 'recap-weekly') {
-        const users = await prisma.user.findMany({
-          select: { id: true, telegramId: true },
-        })
-
-        await Promise.allSettled(
-          users.map(user =>
-            generateWeeklyRecap(user.id, user.telegramId, sendMessage)
-          )
-        )
-
+      if (type === 'digest-scan') {
+        await runDigestScan(sendMessage)
       } else if (type === 'overdue-scan') {
         await scanOverdueTasks(reminderQueueInstance)
+      } else {
+        // Legacy 'standup-daily' / 'recap-weekly' jobs left in Redis — skip
+        console.log(`Skipping legacy job type: ${type}`)
       }
     },
     {

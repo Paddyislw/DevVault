@@ -26,7 +26,6 @@ export function SomedayPage() {
   const {
     data: tasks = [],
     isLoading,
-    isFetching,
     refetch,
   } = api.tasks.list.useQuery(queryParams);
 
@@ -217,20 +216,7 @@ export function SomedayPage() {
 
       {/* ── Task groups ── */}
       <div className="flex-1 overflow-y-auto py-3">
-        {isFetching ? (
-          /* ── Loading skeleton for tab switch ── */
-          <div className="flex h-full items-center justify-center">
-            <div className="space-y-2 w-full max-w-lg px-4">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="h-10 animate-pulse rounded-md bg-surface-3"
-                  style={{ opacity: 1 - i * 0.2 }}
-                />
-              ))}
-            </div>
-          </div>
-        ) : totalTasks === 0 ? (
+        {totalTasks === 0 ? (
           /* ── Empty state ── */
           <div className="flex h-full flex-col items-center justify-center gap-3">
             <p className="text-[14px] text-text-secondary">

@@ -28,6 +28,7 @@ const config: Config = {
   			'warning': 'var(--warning)',
   			'border-default': 'var(--border-default)',
   			'border-subtle': 'var(--border-subtle)',
+  			'border-strong': 'var(--border-strong)',
   			// shadcn/ui compatibility
   			background: 'var(--background)',
   			foreground: 'var(--foreground)',

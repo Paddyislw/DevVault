@@ -285,6 +285,34 @@ export const tasksRouter = router({
       });
     }),
 
+  // REORDER — persists manual ordering; positions are 1-based list indexes
+  reorder: protectedProcedure
+    .input(z.object({ ids: z.array(z.string()).min(1).max(200) }))
+    .mutation(async ({ ctx, input }) => {
+      const { session, prisma } = ctx;
+
+      const owned = await prisma.task.count({
+        where: {
+          id: { in: input.ids },
+          workspace: { userId: session.user.id },
+        },
+      });
+      if (owned !== input.ids.length) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      await prisma.$transaction(
+        input.ids.map((id, index) =>
+          prisma.task.update({
+            where: { id },
+            data: { position: index + 1 },
+          }),
+        ),
+      );
+
+      return { success: true };
+    }),
+
   // MARK COMPLETE (convenience mutation)
   complete: protectedProcedure
     .input(z.object({ id: z.string(), completed: z.boolean() }))
