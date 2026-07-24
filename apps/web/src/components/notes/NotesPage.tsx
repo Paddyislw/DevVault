@@ -4,6 +4,7 @@ import { api } from '@/lib/trpc'
 import type { RouterOutputs } from '@/lib/trpc'
 import { NoteList } from './NoteList'
 import { NoteViewer } from './NoteViewer'
+import { NoteEditor } from './NoteEditor'
 import { CommandsView } from './CommandsView'
 import { AddNoteModal } from './AddNoteModal'
 import { Plus } from 'lucide-react'
@@ -11,11 +12,18 @@ import { Plus } from 'lucide-react'
 type Note = RouterOutputs['notes']['list'][number]
 type NoteType = 'NOTE' | 'COMMAND'
 
+// Notes create/edit inline (Notion-style); the modal remains for commands only
+type EditorState =
+  | { mode: 'closed' }
+  | { mode: 'create' }
+  | { mode: 'edit'; note: Note }
+
 export function NotesPage() {
   const [activeType, setActiveType] = useState<NoteType>('NOTE')
   const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [modalOpen, setModalOpen] = useState(false)
-  const [editNote, setEditNote] = useState<Note | null>(null)
+  const [editor, setEditor] = useState<EditorState>({ mode: 'closed' })
+  const [commandModalOpen, setCommandModalOpen] = useState(false)
+  const [editCommand, setEditCommand] = useState<Note | null>(null)
   const [search, setSearch] = useState('')
 
   const { data: notes = [], isLoading } = api.notes.list.useQuery({
@@ -24,6 +32,15 @@ export function NotesPage() {
   })
 
   const selected = notes.find(n => n.id === selectedId) ?? notes[0] ?? null
+
+  function handleNew() {
+    if (activeType === 'COMMAND') {
+      setEditCommand(null)
+      setCommandModalOpen(true)
+    } else {
+      setEditor({ mode: 'create' })
+    }
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -46,7 +63,11 @@ export function NotesPage() {
             {(['NOTE', 'COMMAND'] as NoteType[]).map(type => (
               <button
                 key={type}
-                onClick={() => { setActiveType(type); setSelectedId(null) }}
+                onClick={() => {
+                  setActiveType(type)
+                  setSelectedId(null)
+                  setEditor({ mode: 'closed' })
+                }}
                 className={`px-3 py-1.5 text-[12px] font-medium transition-colors ${
                   activeType === type
                     ? 'bg-accent text-white'
@@ -59,7 +80,7 @@ export function NotesPage() {
           </div>
 
           <button
-            onClick={() => { setEditNote(null); setModalOpen(true) }}
+            onClick={handleNew}
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-accent text-white rounded font-medium hover:opacity-90 transition-opacity"
           >
             <Plus size={14} strokeWidth={1.5} />
@@ -72,7 +93,7 @@ export function NotesPage() {
         <CommandsView
           commands={notes}
           isLoading={isLoading}
-          onEdit={(n) => { setEditNote(n); setModalOpen(true) }}
+          onEdit={(n) => { setEditCommand(n); setCommandModalOpen(true) }}
         />
       ) : (
         <div className="flex flex-1 overflow-hidden">
@@ -80,24 +101,35 @@ export function NotesPage() {
             notes={notes}
             isLoading={isLoading}
             selectedId={selected?.id ?? null}
-            onSelect={setSelectedId}
+            onSelect={(id) => { setSelectedId(id); setEditor({ mode: 'closed' }) }}
             search={search}
             onSearchChange={setSearch}
             activeType={activeType}
           />
-          <NoteViewer
-            note={selected}
-            onEdit={(n) => { setEditNote(n); setModalOpen(true) }}
-          />
+          {editor.mode !== 'closed' ? (
+            <NoteEditor
+              key={editor.mode === 'edit' ? editor.note.id : 'create'}
+              note={editor.mode === 'edit' ? editor.note : undefined}
+              onSaved={(id) => { setSelectedId(id); setEditor({ mode: 'closed' }) }}
+              onCancel={() => setEditor({ mode: 'closed' })}
+            />
+          ) : (
+            <NoteViewer
+              key={selected?.id ?? 'none'}
+              note={selected}
+              onEdit={(n) => setEditor({ mode: 'edit', note: n })}
+            />
+          )}
         </div>
       )}
 
+      {/* Modal is commands-only now — notes edit inline */}
       <AddNoteModal
-        key={editNote?.id ?? 'new'}
-        open={modalOpen || !!editNote}
-        onClose={() => { setModalOpen(false); setEditNote(null) }}
-        note={editNote ?? undefined}
-        defaultType={activeType}
+        key={editCommand?.id ?? 'new-command'}
+        open={commandModalOpen || !!editCommand}
+        onClose={() => { setCommandModalOpen(false); setEditCommand(null) }}
+        note={editCommand ?? undefined}
+        defaultType="COMMAND"
       />
     </div>
   )

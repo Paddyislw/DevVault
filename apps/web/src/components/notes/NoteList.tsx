@@ -15,6 +15,22 @@ interface Props {
   activeType: 'NOTE' | 'COMMAND'
 }
 
+function formatListDate(date: Date | string): string {
+  return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+/** Strips markdown syntax so list previews read as plain text. */
+function previewText(content: string | null | undefined): string {
+  if (!content?.trim()) return 'No content'
+  return content
+    .replace(/```[a-z]*/gi, ' ') // code fences
+    .replace(/^\s*\|[\s|:-]+\|\s*$/gm, ' ') // table separator rows
+    .replace(/[#|`*_>]+/g, ' ') // md tokens
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 140) || 'No content'
+}
+
 export function NoteList({ notes, isLoading, selectedId, onSelect, search, onSearchChange, activeType }: Props) {
   const utils = api.useUtils()
 
@@ -23,7 +39,7 @@ export function NoteList({ notes, isLoading, selectedId, onSelect, search, onSea
   })
 
   return (
-    <div className="w-72 flex-shrink-0 border-r border-border-default flex flex-col">
+    <div className="w-72 flex-shrink-0 border-r border-border-default flex flex-col bg-surface-1">
       {/* Search */}
       <div className="px-3 py-3 border-b border-border-subtle">
         <div className="flex items-center gap-2 bg-surface-0 border border-border-default rounded px-2.5 py-1.5">
@@ -70,14 +86,19 @@ export function NoteList({ notes, isLoading, selectedId, onSelect, search, onSea
                       {note.isPinned && (
                         <Pin size={10} strokeWidth={1.5} className="text-accent flex-shrink-0" />
                       )}
-                      <p className="text-[13px] text-text-primary truncate">{note.title}</p>
+                      <p className="text-[13px] font-medium text-text-primary truncate flex-1">
+                        {note.title}
+                      </p>
+                      <span className="text-[10px] text-text-ghost flex-shrink-0">
+                        {formatListDate(note.updatedAt)}
+                      </span>
                     </div>
                     {activeType === 'NOTE' ? (
-                      <p className="text-[11px] text-text-ghost mt-0.5 truncate">
-                        {note.content?.slice(0, 60) || 'No content'}
+                      <p className="text-[11px] text-text-tertiary mt-1 leading-snug line-clamp-2">
+                        {previewText(note.content)}
                       </p>
                     ) : (
-                      <div className="flex items-center gap-2 mt-0.5">
+                      <div className="flex items-center gap-2 mt-1">
                         {note.language && (
                           <span className="text-[11px] text-text-tertiary">{note.language}</span>
                         )}
@@ -92,7 +113,7 @@ export function NoteList({ notes, isLoading, selectedId, onSelect, search, onSea
                   </div>
                   <button
                     onClick={e => { e.stopPropagation(); togglePin.mutate({ id: note.id }) }}
-                    className={`flex-shrink-0 transition-colors ${
+                    className={`flex-shrink-0 mt-0.5 transition-colors ${
                       note.isPinned
                         ? 'text-accent'
                         : 'text-text-ghost opacity-0 group-hover:opacity-100'

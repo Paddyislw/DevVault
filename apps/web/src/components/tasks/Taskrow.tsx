@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronRight, AlertCircle, Pencil } from "lucide-react";
+import { ChevronRight, AlertCircle, Pencil, AlignLeft } from "lucide-react";
 import { TaskStatusBadge } from "./Taskstatusbadge";
 import { TaskDetail } from "./Taskdetail";
 import type { RouterOutputs } from "@/lib/trpc";
@@ -77,6 +77,16 @@ export function TaskRow({ task, onComplete, onEdit }: TaskRowProps) {
         >
           {task.title}
         </span>
+
+        {/* Description indicator */}
+        {task.description?.trim() && (
+          <AlignLeft
+            size={12}
+            strokeWidth={1.5}
+            className="shrink-0 text-text-ghost"
+            aria-label="Has description"
+          />
+        )}
 
         {/* Subtask count */}
         {task.subtasks.length > 0 && (
