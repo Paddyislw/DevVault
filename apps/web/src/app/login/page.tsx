@@ -1,7 +1,8 @@
 import { TelegramLogin } from "@/components/auth/telegram-login";
+import { DevLogin } from "@/components/auth/dev-login";
+import { devLoginEnabled } from "@/lib/auth";
 
 export default function LoginPage() {
-  console.log('NEXT_PUBLIC_BOT_USERNAME',process.env.NEXT_PUBLIC_BOT_USERNAME)
   return (
     <div className="flex min-h-screen items-center justify-center bg-surface-0">
       <div className="w-full max-w-sm px-8">
@@ -26,6 +27,10 @@ export default function LoginPage() {
         <p className="mt-8 text-center text-[12px] text-text-ghost">
           Your bot data syncs automatically with the dashboard.
         </p>
+
+        {devLoginEnabled && (
+          <DevLogin defaultTelegramId={process.env.DEV_TELEGRAM_ID} />
+        )}
       </div>
     </div>
   );

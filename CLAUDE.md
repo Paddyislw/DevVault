@@ -503,6 +503,18 @@ type Workspace = RouterOutputs['workspaces']['list'][number]
 - `protectedProcedure` in tRPC throws UNAUTHORIZED if no session
 - `<AuthGate>` wraps dashboard layout — redirects to `/login` if no session
 
+### Dev login bypass
+The Telegram widget can't render on `localhost`, so a second `dev` CredentialsProvider
+signs you in directly by `telegramId`, skipping hash verification.
+
+- Gated on `process.env.NODE_ENV === "development" && process.env.DEV_LOGIN === "true"`
+- The provider is not even added to `authOptions.providers` unless both hold, and
+  `authorize()` re-checks the flag at call time
+- `DEV_TELEGRAM_ID` prefills the input so it's one click to log in as your real user
+- UI: `components/auth/dev-login.tsx`, rendered from `/login` only when `devLoginEnabled`
+- Both providers share `findOrCreateUser()` in `lib/auth.ts`, so a dev login creates the
+  same Personal + Work default workspaces as a real Telegram login
+
 ---
 
 ## Database
@@ -713,26 +725,53 @@ bot.command('tasks', async (ctx) => {
 
 ### apps/web/.env.local
 ```env
-DATABASE_URL=
-NEXTAUTH_URL=https://YOUR_NGROK_URL
+DATABASE_URL=           # Railway Postgres
+NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=
 BOT_TOKEN=
 NEXT_PUBLIC_BOT_USERNAME=devvault_dev_bot
+REDIS_HOST=            # Railway Redis host
+REDIS_PORT=            # Railway Redis port
+REDIS_PASSWORD=        # Railway Redis password
+DEV_LOGIN=true         # dev-only login bypass — NEVER set in production
+DEV_TELEGRAM_ID=       # your telegram user id, prefills the dev login box
 ```
 
 ### apps/bot/.env
 ```env
-DATABASE_URL=
+DATABASE_URL=          # Railway Postgres
 BOT_TOKEN=
 GEMINI_API_KEY=
-REDIS_HOST=localhost
-REDIS_PORT=6379
+REDIS_HOST=            # Railway Redis host
+REDIS_PORT=            # Railway Redis port
+REDIS_PASSWORD=        # Railway Redis password
 ```
 
-### ngrok note
-Free tier changes domain on every restart. Update both:
-1. `NEXTAUTH_URL` in `apps/web/.env.local`
-2. Webhook URL in BotFather
+### Local dev — no tunnel needed
+**Do not use ngrok for day-to-day development.**
+
+- The bot uses **long polling** (`bot.start()` in `apps/bot/src/index.ts`), not webhooks.
+  It dials out to Telegram, so there is nothing to point at a public URL. There is no
+  webhook to set in BotFather.
+- The only thing that ever needed a public HTTPS domain is the **Telegram Login Widget**,
+  which won't render on `localhost` (BotFather `/setdomain` rejects it). The dev login
+  bypass replaces it locally — see Auth section.
+
+So: `NEXTAUTH_URL=http://localhost:3000`, `pnpm run dev`, sign in with the dev box on
+`/login`. Full HMR, no domain juggling.
+
+Only reach for a tunnel when you're specifically testing the real Telegram Login Widget
+or a Mini App. In that case use a **static** ngrok domain (free tier includes one
+reserved domain) and set it on the **dev** bot via `/setdomain` once — never touch the
+production bot's domain.
+
+**Never run the local bot and the deployed bot on the same `BOT_TOKEN`** — two long
+pollers on one token causes Telegram 409 Conflict errors. Use a separate dev bot token.
+
+### Infrastructure note
+- **Database**: Railway Postgres (not Neon)
+- **Redis**: Railway-managed Redis (not Upstash)
+- Queue initialization uses lazy pattern (`getReminderQueue()` / `getStandupQueue()` in `apps/web/src/lib/queue.ts`) — avoids Redis connection at import time in Next.js edge/SSR contexts
 
 ---
 
@@ -825,7 +864,8 @@ Free tier changes domain on every restart. Update both:
 - [x] Reminder delivery via BullMQ — delayed jobs with inline Telegram buttons
 - [x] Env Manager tRPC router (create, list, byId, update, delete, listProjects, compare)
 - [x] Env Manager UI — split panel, project list left, env tabs (DEV/STAGING/PROD), key-value editor, copy as .env, paste .env import
-- [x] Bot callback query handlers for reminder buttons 
+- [x] Bot callback query handlers for reminder buttons
+- [x] Railway deployment — Postgres + Redis provisioned, env vars configured, web + bot deployed
 
 ## What's NOT Built Yet
 - [ ] Telegram Mini App (Week 8)
@@ -840,6 +880,7 @@ Free tier changes domain on every restart. Update both:
 ## Known Issues / TODOs
 
 - [ ] Remove console.log statements from TasksPage.tsx (3 left)
+- [ ] apps/web/next.config.js has `ignoreDuringBuilds: true` for both eslint and typescript — remove these after fixing underlying lint/type errors
 
 ---
 
@@ -911,3 +952,6 @@ Free tier changes domain on every restart. Update both:
 - LANGUAGES constant extracted to constants.ts — shared by SnippetDetail, ScratchpadDetail, avoids circular imports after AddSnippetModal removal
 - Completed tasks tab: reuse tasks.list with status=DONE filter, group by updatedAt date, same workspace filter tabs as Today view
 - EnvSet variables stored as JSON string — parse on read, stringify on write, .env format conversion is client-side only
+- Railway Redis requires `REDIS_PASSWORD` — plain `{ host, port }` connection won't authenticate; use `{ host, port, password }` in connection object
+- Lazy queue init (`getReminderQueue()` returns cached instance) — avoids Redis connecting at module import time, which crashes Next.js during build/SSR
+- `packages/db` compiles to `dist/` for production; `package.json` `main` field points to `./dist/index.js` — run `pnpm --filter db build` after schema changes before deploying

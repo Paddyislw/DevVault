@@ -29,8 +29,71 @@ function verifyTelegramAuth(data: Record<string, string>, botToken: string): boo
   return hmac === hash;
 }
 
+// Find or create the user + their two default workspaces.
+// Shared by the Telegram provider and the dev provider.
+async function findOrCreateUser(telegramId: string, name: string) {
+  const existing = await prisma.user.findUnique({ where: { telegramId } });
+  if (existing) return existing;
+
+  return prisma.user.create({
+    data: {
+      telegramId,
+      name,
+      workspaces: {
+        create: [
+          {
+            name: "Personal",
+            slug: "personal",
+            color: "#3b82f6",
+            isDefault: true,
+            type: "PERSONAL",
+          },
+          {
+            name: "Work",
+            slug: "work",
+            color: "#22c55e",
+            isDefault: true,
+            type: "WORK",
+          },
+        ],
+      },
+    },
+  });
+}
+
+// Only ever true on a local dev server with the flag explicitly set.
+export const devLoginEnabled =
+  process.env.NODE_ENV === "development" && process.env.DEV_LOGIN === "true";
+
+const devProvider = CredentialsProvider({
+  id: "dev",
+  name: "Dev Login",
+  credentials: {
+    telegramId: { label: "Telegram ID", type: "text" },
+  },
+  async authorize(credentials) {
+    // Re-check at call time — never trust that the provider list was built
+    // in the environment it's running in.
+    if (!devLoginEnabled) return null;
+
+    const telegramId = credentials?.telegramId || process.env.DEV_TELEGRAM_ID;
+    if (!telegramId) {
+      console.warn("[dev login] no telegramId given and DEV_TELEGRAM_ID unset");
+      return null;
+    }
+
+    const user = await findOrCreateUser(telegramId, `Dev User ${telegramId}`);
+    return {
+      id: user.id,
+      name: user.name,
+      telegramId: user.telegramId,
+    };
+  },
+});
+
 export const authOptions: NextAuthOptions = {
   providers: [
+    ...(devLoginEnabled ? [devProvider] : []),
     CredentialsProvider({
       id: "telegram",
       name: "Telegram",
@@ -59,38 +122,10 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Find or create user in DB
-        const telegramId = data.id;
-        let user = await prisma.user.findUnique({
-          where: { telegramId },
-        });
-
-        if (!user) {
-          // First web login — create user + default workspaces
-          user = await prisma.user.create({
-            data: {
-              telegramId,
-              name: [data.first_name, data.last_name].filter(Boolean).join(" "),
-              workspaces: {
-                create: [
-                  {
-                    name: "Personal",
-                    slug: "personal",
-                    color: "#3b82f6",
-                    isDefault: true,
-                    type: "PERSONAL",
-                  },
-                  {
-                    name: "Work",
-                    slug: "work",
-                    color: "#22c55e",
-                    isDefault: true,
-                    type: "WORK",
-                  },
-                ],
-              },
-            },
-          });
-        }
+        const user = await findOrCreateUser(
+          data.id,
+          [data.first_name, data.last_name].filter(Boolean).join(" ")
+        );
 
         return {
           id: user.id,
