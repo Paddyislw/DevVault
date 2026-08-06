@@ -789,6 +789,106 @@ function DigestSection() {
   );
 }
 
+// ─── Password Login ───────────────────────────────────────────────────────────
+
+function PasswordLoginSection() {
+  const { data, isLoading } = api.settings.hasLoginPassword.useQuery();
+  const utils = api.useUtils();
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const setLoginPassword = api.settings.setLoginPassword.useMutation({
+    onSuccess: () => {
+      setPassword("");
+      setConfirm("");
+      setSuccess(true);
+      utils.settings.hasLoginPassword.invalidate();
+    },
+    onError: (e) => setError(e.message),
+  });
+
+  function handleSave() {
+    setError(null);
+    setSuccess(false);
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
+    if (password !== confirm) {
+      setError("Passwords don't match");
+      return;
+    }
+    setLoginPassword.mutate({ password });
+  }
+
+  return (
+    <section className="flex flex-col gap-3">
+      <div>
+        <h2 className="text-[13px] font-medium text-text-primary">
+          Password Login
+        </h2>
+        <p className="text-[12px] text-text-tertiary mt-0.5 leading-relaxed">
+          Sign in with your Telegram ID and this password instead of the
+          Telegram widget — useful on a device where you don&apos;t want to
+          link your personal Telegram account.
+        </p>
+      </div>
+
+      <div className="border border-border-default rounded-lg bg-surface-1 p-4 flex flex-col gap-3">
+        {isLoading ? (
+          <div className="h-9 animate-pulse rounded-md bg-surface-2" />
+        ) : (
+          <>
+            {data?.hasPassword && (
+              <p className="text-[12px] text-text-tertiary">
+                A password is already set. Saving a new one replaces it.
+              </p>
+            )}
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="New password"
+              className="bg-surface-0 border border-border-default rounded-md px-3 py-2 text-sm text-text-primary placeholder:text-text-ghost focus:outline-none focus:border-border-strong transition-colors"
+            />
+            <input
+              type="password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              placeholder="Confirm password"
+              onKeyDown={(e) => e.key === "Enter" && handleSave()}
+              className="bg-surface-0 border border-border-default rounded-md px-3 py-2 text-sm text-text-primary placeholder:text-text-ghost focus:outline-none focus:border-border-strong transition-colors"
+            />
+            <button
+              onClick={handleSave}
+              disabled={setLoginPassword.isPending || !password || !confirm}
+              className="self-start px-3 py-1.5 text-sm bg-accent text-white rounded-md font-medium hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {setLoginPassword.isPending ? "Saving..." : "Save password"}
+            </button>
+          </>
+        )}
+
+        {error && (
+          <p className="text-xs text-red-500 flex items-center gap-1.5 bg-red-50 border border-red-100 rounded-md px-3 py-2">
+            <AlertTriangle
+              size={12}
+              strokeWidth={1.5}
+              className="flex-shrink-0"
+            />
+            {error}
+          </p>
+        )}
+        {success && !error && (
+          <p className="text-xs text-green-600">Password saved.</p>
+        )}
+      </div>
+    </section>
+  );
+}
+
 // ─── Settings Page ────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
@@ -877,6 +977,8 @@ export default function SettingsPage() {
           </section>
 
           <DigestSection />
+
+          <PasswordLoginSection />
         </div>
       </div>
 

@@ -144,7 +144,8 @@ model User {
   telegramId         String   @unique
   name               String?
   email              String?
-  masterPasswordHash String?
+  masterPasswordHash String? // vault encryption passphrase — unrelated to app login
+  loginPasswordHash  String? // optional password login, alternative to the Telegram widget
   aiSettings         Json     @default("{}")
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt

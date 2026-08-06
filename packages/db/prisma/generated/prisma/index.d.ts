@@ -3991,6 +3991,7 @@ export namespace Prisma {
     name: string | null
     email: string | null
     masterPasswordHash: string | null
+    loginPasswordHash: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -4001,6 +4002,7 @@ export namespace Prisma {
     name: string | null
     email: string | null
     masterPasswordHash: string | null
+    loginPasswordHash: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -4011,6 +4013,7 @@ export namespace Prisma {
     name: number
     email: number
     masterPasswordHash: number
+    loginPasswordHash: number
     aiSettings: number
     createdAt: number
     updatedAt: number
@@ -4024,6 +4027,7 @@ export namespace Prisma {
     name?: true
     email?: true
     masterPasswordHash?: true
+    loginPasswordHash?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -4034,6 +4038,7 @@ export namespace Prisma {
     name?: true
     email?: true
     masterPasswordHash?: true
+    loginPasswordHash?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -4044,6 +4049,7 @@ export namespace Prisma {
     name?: true
     email?: true
     masterPasswordHash?: true
+    loginPasswordHash?: true
     aiSettings?: true
     createdAt?: true
     updatedAt?: true
@@ -4128,6 +4134,7 @@ export namespace Prisma {
     name: string | null
     email: string | null
     masterPasswordHash: string | null
+    loginPasswordHash: string | null
     aiSettings: JsonValue
     createdAt: Date
     updatedAt: Date
@@ -4156,6 +4163,7 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     masterPasswordHash?: boolean
+    loginPasswordHash?: boolean
     aiSettings?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -4174,6 +4182,7 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     masterPasswordHash?: boolean
+    loginPasswordHash?: boolean
     aiSettings?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -4185,6 +4194,7 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     masterPasswordHash?: boolean
+    loginPasswordHash?: boolean
     aiSettings?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -4217,6 +4227,7 @@ export namespace Prisma {
       name: string | null
       email: string | null
       masterPasswordHash: string | null
+      loginPasswordHash: string | null
       aiSettings: Prisma.JsonValue
       createdAt: Date
       updatedAt: Date
@@ -4624,6 +4635,7 @@ export namespace Prisma {
     readonly name: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
     readonly masterPasswordHash: FieldRef<"User", 'String'>
+    readonly loginPasswordHash: FieldRef<"User", 'String'>
     readonly aiSettings: FieldRef<"User", 'Json'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
@@ -22567,6 +22579,7 @@ export namespace Prisma {
     name: 'name',
     email: 'email',
     masterPasswordHash: 'masterPasswordHash',
+    loginPasswordHash: 'loginPasswordHash',
     aiSettings: 'aiSettings',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -23259,6 +23272,7 @@ export namespace Prisma {
     name?: StringNullableFilter<"User"> | string | null
     email?: StringNullableFilter<"User"> | string | null
     masterPasswordHash?: StringNullableFilter<"User"> | string | null
+    loginPasswordHash?: StringNullableFilter<"User"> | string | null
     aiSettings?: JsonFilter<"User">
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
@@ -23276,6 +23290,7 @@ export namespace Prisma {
     name?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
     masterPasswordHash?: SortOrderInput | SortOrder
+    loginPasswordHash?: SortOrderInput | SortOrder
     aiSettings?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -23296,6 +23311,7 @@ export namespace Prisma {
     name?: StringNullableFilter<"User"> | string | null
     email?: StringNullableFilter<"User"> | string | null
     masterPasswordHash?: StringNullableFilter<"User"> | string | null
+    loginPasswordHash?: StringNullableFilter<"User"> | string | null
     aiSettings?: JsonFilter<"User">
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
@@ -23313,6 +23329,7 @@ export namespace Prisma {
     name?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
     masterPasswordHash?: SortOrderInput | SortOrder
+    loginPasswordHash?: SortOrderInput | SortOrder
     aiSettings?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -23330,6 +23347,7 @@ export namespace Prisma {
     name?: StringNullableWithAggregatesFilter<"User"> | string | null
     email?: StringNullableWithAggregatesFilter<"User"> | string | null
     masterPasswordHash?: StringNullableWithAggregatesFilter<"User"> | string | null
+    loginPasswordHash?: StringNullableWithAggregatesFilter<"User"> | string | null
     aiSettings?: JsonWithAggregatesFilter<"User">
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -24847,6 +24865,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24864,6 +24883,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24881,6 +24901,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24898,6 +24919,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24915,6 +24937,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24926,6 +24949,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24937,6 +24961,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26815,6 +26840,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     masterPasswordHash?: SortOrder
+    loginPasswordHash?: SortOrder
     aiSettings?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -26826,6 +26852,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     masterPasswordHash?: SortOrder
+    loginPasswordHash?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -26836,6 +26863,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     masterPasswordHash?: SortOrder
+    loginPasswordHash?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -30544,6 +30572,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -30560,6 +30589,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -30998,6 +31028,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31014,6 +31045,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32845,6 +32877,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32861,6 +32894,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32893,6 +32927,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32909,6 +32944,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32925,6 +32961,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32941,6 +32978,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32973,6 +33011,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32989,6 +33028,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33005,6 +33045,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -33021,6 +33062,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -33053,6 +33095,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33069,6 +33112,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33085,6 +33129,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -33101,6 +33146,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -33184,6 +33230,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33200,6 +33247,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33273,6 +33321,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -33289,6 +33338,7 @@ export namespace Prisma {
     name?: string | null
     email?: string | null
     masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -33321,6 +33371,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33337,6 +33388,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
     aiSettings?: JsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

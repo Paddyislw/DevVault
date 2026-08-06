@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@devvault/db";
 import crypto from "crypto";
+import { verifyPassword } from "./password";
 
 function verifyTelegramAuth(data: Record<string, string>, botToken: string): boolean {
   // Only include fields that Telegram actually sends
@@ -91,9 +92,41 @@ const devProvider = CredentialsProvider({
   },
 });
 
+// Password login — alternative to the Telegram widget, for accounts that
+// already linked Telegram once and set a password from Settings. A user
+// with no loginPasswordHash can never sign in through this provider, so
+// setting the password (which requires an authenticated session) is the
+// only way to enable it.
+const passwordProvider = CredentialsProvider({
+  id: "password",
+  name: "Password",
+  credentials: {
+    telegramId: { label: "Telegram ID", type: "text" },
+    password: { label: "Password", type: "password" },
+  },
+  async authorize(credentials) {
+    const telegramId = credentials?.telegramId;
+    const password = credentials?.password;
+    if (!telegramId || !password) return null;
+
+    const user = await prisma.user.findUnique({ where: { telegramId } });
+    if (!user || !user.loginPasswordHash) return null;
+
+    const valid = await verifyPassword(password, user.loginPasswordHash);
+    if (!valid) return null;
+
+    return {
+      id: user.id,
+      name: user.name,
+      telegramId: user.telegramId,
+    };
+  },
+});
+
 export const authOptions: NextAuthOptions = {
   providers: [
     ...(devLoginEnabled ? [devProvider] : []),
+    passwordProvider,
     CredentialsProvider({
       id: "telegram",
       name: "Telegram",

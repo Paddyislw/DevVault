@@ -7,6 +7,7 @@ import {
   DIGEST_TIME_RE,
   type DigestSettings,
 } from "@/lib/digest";
+import { hashPassword } from "@/lib/password";
 
 const updateDigestSchema = z.object({
   standupEnabled: z.boolean(),
@@ -60,5 +61,27 @@ export const settingsRouter = router({
       });
 
       return digest;
+    }),
+
+  // Password login — alternative to the Telegram widget. Only ever settable
+  // from an authenticated session, so it can't be used to create access —
+  // only to add a second way in for an account that already has it.
+  hasLoginPassword: protectedProcedure.query(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: { id: ctx.session.user.id },
+      select: { loginPasswordHash: true },
+    });
+    return { hasPassword: !!user?.loginPasswordHash };
+  }),
+
+  setLoginPassword: protectedProcedure
+    .input(z.object({ password: z.string().min(8) }))
+    .mutation(async ({ ctx, input }) => {
+      const hash = await hashPassword(input.password);
+      await ctx.prisma.user.update({
+        where: { id: ctx.session.user.id },
+        data: { loginPasswordHash: hash },
+      });
+      return { success: true };
     }),
 });

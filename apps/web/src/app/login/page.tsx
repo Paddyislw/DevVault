@@ -1,4 +1,5 @@
 import { TelegramLogin } from "@/components/auth/telegram-login";
+import { PasswordLogin } from "@/components/auth/password-login";
 import { DevLogin } from "@/components/auth/dev-login";
 import { devLoginEnabled } from "@/lib/auth";
 
@@ -27,6 +28,8 @@ export default function LoginPage() {
         <p className="mt-8 text-center text-[12px] text-text-ghost">
           Your bot data syncs automatically with the dashboard.
         </p>
+
+        <PasswordLogin />
 
         {devLoginEnabled && (
           <DevLogin defaultTelegramId={process.env.DEV_TELEGRAM_ID} />
