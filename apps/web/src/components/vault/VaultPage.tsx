@@ -1,16 +1,20 @@
 'use client'
 import { useState } from 'react'
+import type { RouterOutputs } from '@/lib/trpc'
 import { api } from '@/lib/trpc'
 import { VaultSetup } from './VaultSetup'
 import { VaultLock } from './VaultLock'
 import { CredentialList } from './CredentialList'
-import { AddCredentialModal } from './AddCredentialModal'
+import { CredentialFormModal } from './CredentialFormModal'
 import { PageHeader } from '@/components/shared/page-header'
 import { Plus, Lock } from 'lucide-react'
+
+type Credential = RouterOutputs['credentials']['list'][number]
 
 export function VaultPage() {
   const [masterPassword, setMasterPassword] = useState<string | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
+  const [editingCredential, setEditingCredential] = useState<Credential | null>(null)
   const [activeCategory, setActiveCategory] = useState<string | undefined>()
 
   const { data: passwordStatus, refetch } = api.credentials.hasMasterPassword.useQuery()
@@ -74,12 +78,20 @@ export function VaultPage() {
         masterPassword={masterPassword}
         activeCategory={activeCategory}
         onCategoryChange={setActiveCategory}
+        onEdit={setEditingCredential}
       />
 
-      <AddCredentialModal
+      <CredentialFormModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         masterPassword={masterPassword}
+      />
+
+      <CredentialFormModal
+        open={!!editingCredential}
+        onClose={() => setEditingCredential(null)}
+        masterPassword={masterPassword}
+        credential={editingCredential}
       />
     </div>
   )

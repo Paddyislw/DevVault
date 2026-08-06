@@ -12543,6 +12543,8 @@ export namespace Prisma {
     workspaceId: string | null
     name: string | null
     service: string | null
+    username: string | null
+    notes: string | null
     encryptedData: string | null
     iv: string | null
     salt: string | null
@@ -12557,6 +12559,8 @@ export namespace Prisma {
     workspaceId: string | null
     name: string | null
     service: string | null
+    username: string | null
+    notes: string | null
     encryptedData: string | null
     iv: string | null
     salt: string | null
@@ -12571,6 +12575,8 @@ export namespace Prisma {
     workspaceId: number
     name: number
     service: number
+    username: number
+    notes: number
     encryptedData: number
     iv: number
     salt: number
@@ -12587,6 +12593,8 @@ export namespace Prisma {
     workspaceId?: true
     name?: true
     service?: true
+    username?: true
+    notes?: true
     encryptedData?: true
     iv?: true
     salt?: true
@@ -12601,6 +12609,8 @@ export namespace Prisma {
     workspaceId?: true
     name?: true
     service?: true
+    username?: true
+    notes?: true
     encryptedData?: true
     iv?: true
     salt?: true
@@ -12615,6 +12625,8 @@ export namespace Prisma {
     workspaceId?: true
     name?: true
     service?: true
+    username?: true
+    notes?: true
     encryptedData?: true
     iv?: true
     salt?: true
@@ -12702,6 +12714,8 @@ export namespace Prisma {
     workspaceId: string
     name: string
     service: string | null
+    username: string | null
+    notes: string | null
     encryptedData: string
     iv: string
     salt: string
@@ -12733,6 +12747,8 @@ export namespace Prisma {
     workspaceId?: boolean
     name?: boolean
     service?: boolean
+    username?: boolean
+    notes?: boolean
     encryptedData?: boolean
     iv?: boolean
     salt?: boolean
@@ -12748,6 +12764,8 @@ export namespace Prisma {
     workspaceId?: boolean
     name?: boolean
     service?: boolean
+    username?: boolean
+    notes?: boolean
     encryptedData?: boolean
     iv?: boolean
     salt?: boolean
@@ -12763,6 +12781,8 @@ export namespace Prisma {
     workspaceId?: boolean
     name?: boolean
     service?: boolean
+    username?: boolean
+    notes?: boolean
     encryptedData?: boolean
     iv?: boolean
     salt?: boolean
@@ -12789,6 +12809,8 @@ export namespace Prisma {
       workspaceId: string
       name: string
       service: string | null
+      username: string | null
+      notes: string | null
       encryptedData: string
       iv: string
       salt: string
@@ -13194,6 +13216,8 @@ export namespace Prisma {
     readonly workspaceId: FieldRef<"Credential", 'String'>
     readonly name: FieldRef<"Credential", 'String'>
     readonly service: FieldRef<"Credential", 'String'>
+    readonly username: FieldRef<"Credential", 'String'>
+    readonly notes: FieldRef<"Credential", 'String'>
     readonly encryptedData: FieldRef<"Credential", 'String'>
     readonly iv: FieldRef<"Credential", 'String'>
     readonly salt: FieldRef<"Credential", 'String'>
@@ -22704,6 +22728,8 @@ export namespace Prisma {
     workspaceId: 'workspaceId',
     name: 'name',
     service: 'service',
+    username: 'username',
+    notes: 'notes',
     encryptedData: 'encryptedData',
     iv: 'iv',
     salt: 'salt',
@@ -23975,6 +24001,8 @@ export namespace Prisma {
     workspaceId?: StringFilter<"Credential"> | string
     name?: StringFilter<"Credential"> | string
     service?: StringNullableFilter<"Credential"> | string | null
+    username?: StringNullableFilter<"Credential"> | string | null
+    notes?: StringNullableFilter<"Credential"> | string | null
     encryptedData?: StringFilter<"Credential"> | string
     iv?: StringFilter<"Credential"> | string
     salt?: StringFilter<"Credential"> | string
@@ -23990,6 +24018,8 @@ export namespace Prisma {
     workspaceId?: SortOrder
     name?: SortOrder
     service?: SortOrderInput | SortOrder
+    username?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
     encryptedData?: SortOrder
     iv?: SortOrder
     salt?: SortOrder
@@ -24008,6 +24038,8 @@ export namespace Prisma {
     workspaceId?: StringFilter<"Credential"> | string
     name?: StringFilter<"Credential"> | string
     service?: StringNullableFilter<"Credential"> | string | null
+    username?: StringNullableFilter<"Credential"> | string | null
+    notes?: StringNullableFilter<"Credential"> | string | null
     encryptedData?: StringFilter<"Credential"> | string
     iv?: StringFilter<"Credential"> | string
     salt?: StringFilter<"Credential"> | string
@@ -24023,6 +24055,8 @@ export namespace Prisma {
     workspaceId?: SortOrder
     name?: SortOrder
     service?: SortOrderInput | SortOrder
+    username?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
     encryptedData?: SortOrder
     iv?: SortOrder
     salt?: SortOrder
@@ -24043,6 +24077,8 @@ export namespace Prisma {
     workspaceId?: StringWithAggregatesFilter<"Credential"> | string
     name?: StringWithAggregatesFilter<"Credential"> | string
     service?: StringNullableWithAggregatesFilter<"Credential"> | string | null
+    username?: StringNullableWithAggregatesFilter<"Credential"> | string | null
+    notes?: StringNullableWithAggregatesFilter<"Credential"> | string | null
     encryptedData?: StringWithAggregatesFilter<"Credential"> | string
     iv?: StringWithAggregatesFilter<"Credential"> | string
     salt?: StringWithAggregatesFilter<"Credential"> | string
@@ -25652,6 +25688,8 @@ export namespace Prisma {
     id?: string
     name: string
     service?: string | null
+    username?: string | null
+    notes?: string | null
     encryptedData: string
     iv: string
     salt: string
@@ -25667,6 +25705,8 @@ export namespace Prisma {
     workspaceId: string
     name: string
     service?: string | null
+    username?: string | null
+    notes?: string | null
     encryptedData: string
     iv: string
     salt: string
@@ -25680,6 +25720,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     service?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     encryptedData?: StringFieldUpdateOperationsInput | string
     iv?: StringFieldUpdateOperationsInput | string
     salt?: StringFieldUpdateOperationsInput | string
@@ -25695,6 +25737,8 @@ export namespace Prisma {
     workspaceId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     service?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     encryptedData?: StringFieldUpdateOperationsInput | string
     iv?: StringFieldUpdateOperationsInput | string
     salt?: StringFieldUpdateOperationsInput | string
@@ -25709,6 +25753,8 @@ export namespace Prisma {
     workspaceId: string
     name: string
     service?: string | null
+    username?: string | null
+    notes?: string | null
     encryptedData: string
     iv: string
     salt: string
@@ -25722,6 +25768,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     service?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     encryptedData?: StringFieldUpdateOperationsInput | string
     iv?: StringFieldUpdateOperationsInput | string
     salt?: StringFieldUpdateOperationsInput | string
@@ -25736,6 +25784,8 @@ export namespace Prisma {
     workspaceId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     service?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     encryptedData?: StringFieldUpdateOperationsInput | string
     iv?: StringFieldUpdateOperationsInput | string
     salt?: StringFieldUpdateOperationsInput | string
@@ -27439,6 +27489,8 @@ export namespace Prisma {
     workspaceId?: SortOrder
     name?: SortOrder
     service?: SortOrder
+    username?: SortOrder
+    notes?: SortOrder
     encryptedData?: SortOrder
     iv?: SortOrder
     salt?: SortOrder
@@ -27453,6 +27505,8 @@ export namespace Prisma {
     workspaceId?: SortOrder
     name?: SortOrder
     service?: SortOrder
+    username?: SortOrder
+    notes?: SortOrder
     encryptedData?: SortOrder
     iv?: SortOrder
     salt?: SortOrder
@@ -27467,6 +27521,8 @@ export namespace Prisma {
     workspaceId?: SortOrder
     name?: SortOrder
     service?: SortOrder
+    username?: SortOrder
+    notes?: SortOrder
     encryptedData?: SortOrder
     iv?: SortOrder
     salt?: SortOrder
@@ -30789,6 +30845,8 @@ export namespace Prisma {
     id?: string
     name: string
     service?: string | null
+    username?: string | null
+    notes?: string | null
     encryptedData: string
     iv: string
     salt: string
@@ -30802,6 +30860,8 @@ export namespace Prisma {
     id?: string
     name: string
     service?: string | null
+    username?: string | null
+    notes?: string | null
     encryptedData: string
     iv: string
     salt: string
@@ -31221,6 +31281,8 @@ export namespace Prisma {
     workspaceId?: StringFilter<"Credential"> | string
     name?: StringFilter<"Credential"> | string
     service?: StringNullableFilter<"Credential"> | string | null
+    username?: StringNullableFilter<"Credential"> | string | null
+    notes?: StringNullableFilter<"Credential"> | string | null
     encryptedData?: StringFilter<"Credential"> | string
     iv?: StringFilter<"Credential"> | string
     salt?: StringFilter<"Credential"> | string
@@ -33920,6 +33982,8 @@ export namespace Prisma {
     id?: string
     name: string
     service?: string | null
+    username?: string | null
+    notes?: string | null
     encryptedData: string
     iv: string
     salt: string
@@ -34192,6 +34256,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     service?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     encryptedData?: StringFieldUpdateOperationsInput | string
     iv?: StringFieldUpdateOperationsInput | string
     salt?: StringFieldUpdateOperationsInput | string
@@ -34205,6 +34271,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     service?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     encryptedData?: StringFieldUpdateOperationsInput | string
     iv?: StringFieldUpdateOperationsInput | string
     salt?: StringFieldUpdateOperationsInput | string
@@ -34218,6 +34286,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     service?: NullableStringFieldUpdateOperationsInput | string | null
+    username?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
     encryptedData?: StringFieldUpdateOperationsInput | string
     iv?: StringFieldUpdateOperationsInput | string
     salt?: StringFieldUpdateOperationsInput | string

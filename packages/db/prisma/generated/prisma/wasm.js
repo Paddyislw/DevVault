@@ -240,6 +240,8 @@ exports.Prisma.CredentialScalarFieldEnum = {
   workspaceId: 'workspaceId',
   name: 'name',
   service: 'service',
+  username: 'username',
+  notes: 'notes',
   encryptedData: 'encryptedData',
   iv: 'iv',
   salt: 'salt',

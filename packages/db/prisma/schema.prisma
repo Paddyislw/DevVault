@@ -337,6 +337,8 @@ model Credential {
   workspaceId   String
   name          String
   service       String?
+  username      String?
+  notes         String?
   encryptedData String
   iv            String
   salt          String

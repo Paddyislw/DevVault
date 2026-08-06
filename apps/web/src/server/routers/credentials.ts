@@ -88,6 +88,8 @@ export const credentialsRouter = router({
         workspaceId: z.string(),
         name: z.string().min(1),
         service: z.string().optional(),
+        username: z.string().optional(),
+        notes: z.string().optional(),
         value: z.string().min(1), // plaintext — encrypted immediately, never stored
         category: z
           .enum(["API_KEY", "DATABASE", "SERVICE", "SSH", "OTHER"])
@@ -133,10 +135,63 @@ export const credentialsRouter = router({
           workspaceId: input.workspaceId,
           name: input.name,
           service: input.service ?? null,
+          username: input.username ?? null,
+          notes: input.notes ?? null,
           encryptedData,
           iv,
           salt,
           category: input.category,
+        },
+      });
+    }),
+
+  // Update — edits metadata in place; only re-encrypts when a new value is given
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string().min(1),
+        service: z.string().optional(),
+        username: z.string().optional(),
+        notes: z.string().optional(),
+        category: z.enum(["API_KEY", "DATABASE", "SERVICE", "SSH", "OTHER"]),
+        value: z.string().optional(), // omit to keep the existing secret
+        masterPassword: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await assertOwnership(ctx.prisma, ctx.session.user.id, input.id);
+
+      const user = await ctx.prisma.user.findUnique({
+        where: { id: ctx.session.user.id },
+        select: { masterPasswordHash: true },
+      });
+      if (!user?.masterPasswordHash) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Set master password first" });
+      }
+      const valid = await verifyMasterPassword(
+        input.masterPassword,
+        user.masterPasswordHash,
+      );
+      if (!valid)
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Wrong master password",
+        });
+
+      const secretFields = input.value
+        ? await encryptCredential(input.value, input.masterPassword)
+        : {};
+
+      return ctx.prisma.credential.update({
+        where: { id: input.id },
+        data: {
+          name: input.name,
+          service: input.service ?? null,
+          username: input.username ?? null,
+          notes: input.notes ?? null,
+          category: input.category,
+          ...secretFields,
         },
       });
     }),
@@ -162,6 +217,8 @@ export const credentialsRouter = router({
           id: true,
           name: true,
           service: true,
+          username: true,
+          notes: true,
           category: true,
           lastCopiedAt: true,
           createdAt: true,
