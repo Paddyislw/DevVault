@@ -23,6 +23,7 @@ import { PrismaClient } from '@devvault/db'
 const prisma = new PrismaClient()
 
 const bot = new Bot(process.env.BOT_TOKEN!);
+const WEB_APP_URL = process.env.WEB_APP_URL;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -186,6 +187,7 @@ bot.command("help", async (ctx) => {
       `/tasks — View today's tasks\n` +
       `/backlog — View someday/backlog tasks\n` +
       `/workspaces — List your workspaces\n` +
+      `/app — Open the DevVault Mini App\n` +
       `/help — Show this message\n\n` +
       `🎤 Voice — Send a voice note to create tasks\n` +
       `📸 Photo — Send an error screenshot to create a bug task`,
@@ -238,6 +240,20 @@ bot.command("backlog", async (ctx) => {
     console.error("Error in /backlog:", error);
     await ctx.reply("Something went wrong. Please try again.");
   }
+});
+
+bot.command("app", async (ctx) => {
+  if (!WEB_APP_URL) {
+    await ctx.reply("Mini App isn't configured yet.");
+    return;
+  }
+  await ctx.reply("Open DevVault:", {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: "Open DevVault", web_app: { url: `${WEB_APP_URL}/miniapp` } }],
+      ],
+    },
+  });
 });
 
 bot.command("workspaces", async (ctx) => {
@@ -630,6 +646,20 @@ const POLL_RETRY_MS = 35_000;
     await registerCronJobs();
   } catch (err) {
     console.error("Cron registration failed (bot will still serve commands):", err);
+  }
+
+  if (WEB_APP_URL) {
+    try {
+      await bot.api.setChatMenuButton({
+        menu_button: {
+          type: "web_app",
+          text: "Open DevVault",
+          web_app: { url: `${WEB_APP_URL}/miniapp` },
+        },
+      });
+    } catch (err) {
+      console.error("Menu button registration failed (bot will still serve commands):", err);
+    }
   }
 
   // eslint-disable-next-line no-constant-condition

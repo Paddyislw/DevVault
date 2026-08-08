@@ -18,6 +18,12 @@ const AuthGate = ({ children }: Props): React.ReactNode => {
     return <>{children}</>;
   }
 
+  // Mini App runs inside Telegram's WebView and manages its own sign-in via
+  // initData — no Sidebar chrome, no redirect-to-/login.
+  if (pathname?.startsWith("/miniapp")) {
+    return <>{children}</>;
+  }
+
   if (status === "loading") {
     return null;
   }

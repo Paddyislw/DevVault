@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@devvault/db";
 import crypto from "crypto";
 import { verifyPassword } from "./password";
+import { verifyInitData } from "./telegram-webapp";
 
 function verifyTelegramAuth(data: Record<string, string>, botToken: string): boolean {
   // Only include fields that Telegram actually sends
@@ -123,10 +124,39 @@ const passwordProvider = CredentialsProvider({
   },
 });
 
+// Telegram Mini App login — verifies the initData Telegram injects when the
+// page is opened inside its own WebView, rather than the Login Widget flow.
+const miniAppProvider = CredentialsProvider({
+  id: "telegram-miniapp",
+  name: "Telegram Mini App",
+  credentials: {
+    initData: { label: "Init Data", type: "text" },
+  },
+  async authorize(credentials) {
+    const initData = credentials?.initData;
+    if (!initData) return null;
+
+    const result = verifyInitData(initData, process.env.BOT_TOKEN!);
+    if (!result.valid || !result.user) return null;
+
+    const user = await findOrCreateUser(
+      result.user.id,
+      [result.user.first_name, result.user.last_name].filter(Boolean).join(" "),
+    );
+
+    return {
+      id: user.id,
+      name: user.name,
+      telegramId: user.telegramId,
+    };
+  },
+});
+
 export const authOptions: NextAuthOptions = {
   providers: [
     ...(devLoginEnabled ? [devProvider] : []),
     passwordProvider,
+    miniAppProvider,
     CredentialsProvider({
       id: "telegram",
       name: "Telegram",
