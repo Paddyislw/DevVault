@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
+import { ListChecks, Lock } from "lucide-react";
 import { MiniTasks } from "@/components/miniapp/MiniTasks";
 import { MiniVault } from "@/components/miniapp/MiniVault";
 
@@ -103,7 +104,7 @@ export default function MiniAppPage() {
   if (stage !== "ready") {
     return (
       <div className="flex h-screen items-center justify-center bg-surface-0">
-        <div className="h-6 w-6 animate-pulse rounded-full bg-surface-2" />
+        <div className="h-2 w-2 animate-pulse rounded-full bg-accent" />
       </div>
     );
   }
@@ -114,22 +115,27 @@ export default function MiniAppPage() {
         {tab === "tasks" ? <MiniTasks /> : <MiniVault />}
       </div>
 
-      <div className="flex border-t border-border-subtle">
+      <div
+        className="flex border-t border-border-subtle bg-surface-1"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
         <button
           onClick={() => setTab("tasks")}
-          className={`flex-1 py-3 text-sm font-medium transition-colors ${
+          className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 transition-colors ${
             tab === "tasks" ? "text-accent" : "text-text-tertiary"
           }`}
         >
-          Tasks
+          <ListChecks size={20} strokeWidth={tab === "tasks" ? 2.25 : 1.5} />
+          <span className="text-[11px] font-medium">Tasks</span>
         </button>
         <button
           onClick={() => setTab("vault")}
-          className={`flex-1 py-3 text-sm font-medium transition-colors ${
+          className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 transition-colors ${
             tab === "vault" ? "text-accent" : "text-text-tertiary"
           }`}
         >
-          Vault
+          <Lock size={20} strokeWidth={tab === "vault" ? 2.25 : 1.5} />
+          <span className="text-[11px] font-medium">Vault</span>
         </button>
       </div>
     </div>
