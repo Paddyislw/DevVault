@@ -131,8 +131,8 @@ export const tasksRouter = router({
       if (input.priority !== undefined) where.priority = input.priority;
       if (input.isBacklog !== undefined) where.isBacklog = input.isBacklog;
       if (input.isSomeday !== undefined) where.isSomeday = input.isSomeday;
-      if (input.parentTaskId !== undefined)
-        where.parentTaskId = input.parentTaskId;
+      // Default to top-level tasks only — pass a specific id to fetch that task's subtasks instead
+      where.parentTaskId = input.parentTaskId ?? null;
 
       // Date range filtering
       if (input.dueBefore || input.dueAfter) {
@@ -170,6 +170,7 @@ export const tasksRouter = router({
         workspace: { userId: ctx.session.user.id },
         isSomeday: false,
         isBacklog: false,
+        parentTaskId: null, // subtasks surface nested under their parent, not as top-level rows
         OR: [
           // Overdue + incomplete
           {
@@ -210,6 +211,7 @@ export const tasksRouter = router({
           status: { notIn: ["DONE", "CANCELLED"] },
           dueDate: { gte: startOfTomorrow },
           isSomeday: false,
+          parentTaskId: null, // subtasks surface nested under their parent, not as top-level rows
         },
         include: {
           attachments: true,

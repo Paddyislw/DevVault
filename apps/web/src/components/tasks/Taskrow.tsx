@@ -146,6 +146,7 @@ export function TaskRow({ task, onComplete, onEdit }: TaskRowProps) {
           attachments={task.attachments}
           subtasks={task.subtasks}
           taskId={task.id}
+          workspaceId={task.workspace.id}
         />
       )}
     </div>

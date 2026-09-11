@@ -1,6 +1,7 @@
 "use client";
 
-import { Code2, Link2, FileText, Image, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Code2, Link2, FileText, Image, Trash2, Plus, X } from "lucide-react";
 import { api } from "@/lib/trpc";
 
 // Matches your Prisma TaskAttachment type
@@ -21,6 +22,7 @@ interface Subtask {
 
 interface TaskDetailProps {
   taskId: string;
+  workspaceId: string;
   description: string | null;
   attachments: Attachment[];
   subtasks: Subtask[];
@@ -35,6 +37,7 @@ const ATTACHMENT_ICON = {
 
 export function TaskDetail({
   taskId,
+  workspaceId,
   description,
   attachments,
   subtasks,
@@ -42,11 +45,35 @@ export function TaskDetail({
   const hasContent =
     description || attachments.length > 0 || subtasks.length > 0;
 
+  const [subtaskTitle, setSubtaskTitle] = useState("");
+
   const utils = api.useUtils();
 
   const deleteTask = api.tasks.delete.useMutation({
     onSuccess: () => utils.tasks.listToday.invalidate(),
   });
+
+  const addSubtask = api.tasks.create.useMutation({
+    onSuccess: () => {
+      setSubtaskTitle("");
+      utils.tasks.invalidate();
+    },
+  });
+
+  const toggleSubtask = api.tasks.complete.useMutation({
+    onSuccess: () => utils.tasks.invalidate(),
+  });
+
+  const deleteSubtask = api.tasks.delete.useMutation({
+    onSuccess: () => utils.tasks.invalidate(),
+  });
+
+  function handleAddSubtask(e: React.FormEvent) {
+    e.preventDefault();
+    const title = subtaskTitle.trim();
+    if (!title || addSubtask.isPending) return;
+    addSubtask.mutate({ title, workspaceId, parentTaskId: taskId });
+  }
 
   return (
     <div className="border-t border-border-subtle bg-surface-0 px-[52px] py-3">
@@ -62,34 +89,66 @@ export function TaskDetail({
       )}
 
       {/* Subtasks */}
-      {subtasks.length > 0 && (
-        <div className="mt-3">
-          <p className="label mb-1.5">Subtasks</p>
-          <div className="space-y-1">
+      <div className="mt-3">
+        <p className="label mb-1.5">Subtasks</p>
+        {subtasks.length > 0 && (
+          <div className="space-y-1 mb-1.5">
             {subtasks.map((sub) => (
               <div
                 key={sub.id}
-                className="flex items-center gap-2 text-[13px] text-text-secondary"
+                className="group/subtask flex items-center gap-2 text-[13px] text-text-secondary"
               >
-                <div
-                  className={`h-3.5 w-3.5 rounded-sm border ${
+                <button
+                  type="button"
+                  onClick={() =>
+                    toggleSubtask.mutate({
+                      id: sub.id,
+                      completed: sub.status !== "DONE",
+                    })
+                  }
+                  className={`h-3.5 w-3.5 shrink-0 rounded-sm border transition-colors ${
                     sub.status === "DONE"
                       ? "border-[#2D6A4F] bg-[#D4EDDA]"
                       : "border-border-default bg-transparent"
                   }`}
                 />
                 <span
-                  className={
+                  className={`flex-1 truncate ${
                     sub.status === "DONE" ? "line-through text-text-ghost" : ""
-                  }
+                  }`}
                 >
                   {sub.title}
                 </span>
+                <button
+                  type="button"
+                  onClick={() => deleteSubtask.mutate({ id: sub.id })}
+                  className="shrink-0 text-text-ghost opacity-0 transition-opacity hover:text-red-500 group-hover/subtask:opacity-100"
+                >
+                  <X size={12} strokeWidth={1.5} />
+                </button>
               </div>
             ))}
           </div>
-        </div>
-      )}
+        )}
+        <form
+          onSubmit={handleAddSubtask}
+          className="flex items-center gap-2 text-[13px]"
+        >
+          <Plus
+            size={12}
+            strokeWidth={1.5}
+            className="shrink-0 text-text-ghost"
+          />
+          <input
+            type="text"
+            value={subtaskTitle}
+            onChange={(e) => setSubtaskTitle(e.target.value)}
+            placeholder="Add subtask..."
+            disabled={addSubtask.isPending}
+            className="flex-1 bg-transparent text-text-primary placeholder:text-text-ghost outline-none disabled:opacity-40"
+          />
+        </form>
+      </div>
 
       {/* Attachments */}
       {attachments.length > 0 && (
