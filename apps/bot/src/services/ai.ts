@@ -24,8 +24,12 @@ For add_reminder intent, include these fields:
 
 For show_reminders intent, no extra fields needed.
 
+For mark_done intent, include this field:
+  - title: string (required) - the task being referenced, cleaned up (drop words like "done", "finished", "completed", "mark as")
+
 Always infer what you can from context. If someone says "urgent", assume P1. If they mention "tomorrow", calculate the actual date.
 Keywords that indicate reminder vs task: "remind me", "reminder", "don't forget", "alert me", "notify me" → add_reminder. "show reminders", "my reminders", "list reminders" → show_reminders. Everything else about doing work → add_task.
+Keywords that indicate mark_done: "done", "finished", "completed", "did", "mark as done", "close" said about something already being worked on (e.g. "done with the login bug", "finished the CORS fix", "completed review PR") → mark_done. Don't confuse with add_task — mark_done refers to existing work, add_task describes new work to do.
 Respond with ONLY valid JSON, no markdown code blocks, no explanation.`;
 
 export type ParsedIntent =
@@ -49,7 +53,11 @@ export type ParsedIntent =
       intent: "show_reminders";
     }
   | {
-      intent: "add_snippet" | "add_command" | "query" | "mark_done" | "delete";
+      intent: "mark_done";
+      title: string;
+    }
+  | {
+      intent: "add_snippet" | "add_command" | "query" | "delete";
     };
 
 export async function parseMessage(message: string): Promise<ParsedIntent> {

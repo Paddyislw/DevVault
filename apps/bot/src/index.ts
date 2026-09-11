@@ -6,7 +6,9 @@ import {
   getSomedayTasks,
   getBacklogTasks,
   formatTasksByPriority,
+  formatTasksByWorkspace,
   createTask,
+  completeTaskByTitle,
 } from "./services/task";
 import {
   parseMessage,
@@ -190,7 +192,10 @@ bot.command("help", async (ctx) => {
       `/app — Open the DevVault Mini App\n` +
       `/help — Show this message\n\n` +
       `🎤 Voice — Send a voice note to create tasks\n` +
-      `📸 Photo — Send an error screenshot to create a bug task`,
+      `📸 Photo — Send an error screenshot to create a bug task\n\n` +
+      `Just type things too:\n` +
+      `"Fix the login bug tomorrow P1 work" — creates a task\n` +
+      `"Done with the login bug" — marks a task complete`,
   );
 });
 
@@ -200,7 +205,7 @@ bot.command("tasks", async (ctx) => {
 
   try {
     const tasks = await getTodayTasks(user.id);
-    const message = formatTasksByPriority(
+    const message = formatTasksByWorkspace(
       tasks,
       "📋 Today's Tasks",
       "No tasks for today. Enjoy your day! ✨",
@@ -370,6 +375,25 @@ bot.on("message:text", async (ctx) => {
       });
 
       await ctx.reply(`⏰ Upcoming Reminders\n\n${lines.join("\n\n")}`);
+    } else if (parsed.intent === "mark_done") {
+      const result = await completeTaskByTitle(user.id, parsed.title);
+
+      if (result.status === "not_found") {
+        await ctx.reply(
+          `❌ Couldn't find an open task matching "${parsed.title}".`,
+        );
+      } else if (result.status === "ambiguous") {
+        const lines = result.matches
+          .map((t) => `• ${t.title} (${t.workspace.name})`)
+          .join("\n");
+        await ctx.reply(
+          `Found a few matching tasks — be more specific:\n\n${lines}`,
+        );
+      } else {
+        await ctx.reply(
+          `✅ Marked complete\n${result.task.title}\n${result.task.workspace.name}`,
+        );
+      }
     } else {
       await ctx.reply(
         "I understood your message, but this feature isn't available yet.\n\n" +

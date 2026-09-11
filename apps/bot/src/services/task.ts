@@ -132,6 +132,52 @@ export async function getBacklogTasks(
   });
 }
 
+export type CompleteTaskResult =
+  | { status: "completed"; task: TaskWithWorkspace }
+  | { status: "not_found" }
+  | { status: "ambiguous"; matches: TaskWithWorkspace[] };
+
+/**
+ * Finds an open task by fuzzy title match and marks it DONE.
+ * Used by the "done with X" / "finished X" text-message flow.
+ */
+export async function completeTaskByTitle(
+  userId: string,
+  titleQuery: string,
+): Promise<CompleteTaskResult> {
+  const candidates = await prisma.task.findMany({
+    where: {
+      workspace: { userId },
+      status: { notIn: ["DONE", "CANCELLED"] },
+      title: { contains: titleQuery, mode: "insensitive" },
+    },
+    include: { workspace: { select: { name: true } } },
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (candidates.length === 0) return { status: "not_found" };
+
+  let match = candidates[0];
+  if (candidates.length > 1) {
+    const exact = candidates.find(
+      (t) => t.title.toLowerCase() === titleQuery.toLowerCase(),
+    );
+    if (exact) {
+      match = exact;
+    } else {
+      return { status: "ambiguous", matches: candidates.slice(0, 5) };
+    }
+  }
+
+  const task = await prisma.task.update({
+    where: { id: match.id },
+    data: { status: "DONE" },
+    include: { workspace: { select: { name: true } } },
+  });
+
+  return { status: "completed", task };
+}
+
 const PRIORITY_EMOJI: Record<TaskPriority, string> = {
   P1: "🔴",
   P2: "🟠",
@@ -196,4 +242,42 @@ export function formatTasksByPriority(
   }
 
   return sections.join("\n");
+}
+
+export function formatTasksByWorkspace(
+  tasks: TaskWithWorkspace[],
+  title: string,
+  emptyMessage: string,
+  footerHint?: string,
+): string {
+  if (tasks.length === 0) {
+    return `${title}\n\n${emptyMessage}`;
+  }
+
+  const grouped = new Map<string, TaskWithWorkspace[]>();
+  for (const task of tasks) {
+    const key = task.workspace.name;
+    if (!grouped.has(key)) grouped.set(key, []);
+    grouped.get(key)!.push(task);
+  }
+
+  const workspaceNames = [...grouped.keys()].sort((a, b) =>
+    a.localeCompare(b),
+  );
+
+  const sections: string[] = [title, ""];
+
+  for (const name of workspaceNames) {
+    sections.push(`📁 ${name}`);
+    for (const task of grouped.get(name)!) {
+      sections.push(`${PRIORITY_EMOJI[task.priority]} ${task.title}`);
+    }
+    sections.push("");
+  }
+
+  if (footerHint) {
+    sections.push(footerHint);
+  }
+
+  return sections.join("\n").trim();
 }
