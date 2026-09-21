@@ -108,6 +108,16 @@ export type ProjectIdea = $Result.DefaultSelection<Prisma.$ProjectIdeaPayload>
  * 
  */
 export type PingResult = $Result.DefaultSelection<Prisma.$PingResultPayload>
+/**
+ * Model Habit
+ * 
+ */
+export type Habit = $Result.DefaultSelection<Prisma.$HabitPayload>
+/**
+ * Model HabitEntry
+ * 
+ */
+export type HabitEntry = $Result.DefaultSelection<Prisma.$HabitEntryPayload>
 
 /**
  * Enums
@@ -638,6 +648,26 @@ export class PrismaClient<
     * ```
     */
   get pingResult(): Prisma.PingResultDelegate<ExtArgs>;
+
+  /**
+   * `prisma.habit`: Exposes CRUD operations for the **Habit** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Habits
+    * const habits = await prisma.habit.findMany()
+    * ```
+    */
+  get habit(): Prisma.HabitDelegate<ExtArgs>;
+
+  /**
+   * `prisma.habitEntry`: Exposes CRUD operations for the **HabitEntry** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more HabitEntries
+    * const habitEntries = await prisma.habitEntry.findMany()
+    * ```
+    */
+  get habitEntry(): Prisma.HabitEntryDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -1097,7 +1127,9 @@ export namespace Prisma {
     Recap: 'Recap',
     Reminder: 'Reminder',
     ProjectIdea: 'ProjectIdea',
-    PingResult: 'PingResult'
+    PingResult: 'PingResult',
+    Habit: 'Habit',
+    HabitEntry: 'HabitEntry'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1113,7 +1145,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "customStatus" | "user" | "workspace" | "task" | "taskAttachment" | "tag" | "snippet" | "scratchpad" | "note" | "credential" | "bookmark" | "envSet" | "apiEndpoint" | "activityLog" | "standup" | "recap" | "reminder" | "projectIdea" | "pingResult"
+      modelProps: "customStatus" | "user" | "workspace" | "task" | "taskAttachment" | "tag" | "snippet" | "scratchpad" | "note" | "credential" | "bookmark" | "envSet" | "apiEndpoint" | "activityLog" | "standup" | "recap" | "reminder" | "projectIdea" | "pingResult" | "habit" | "habitEntry"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2447,6 +2479,146 @@ export namespace Prisma {
           }
         }
       }
+      Habit: {
+        payload: Prisma.$HabitPayload<ExtArgs>
+        fields: Prisma.HabitFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.HabitFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.HabitFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitPayload>
+          }
+          findFirst: {
+            args: Prisma.HabitFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.HabitFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitPayload>
+          }
+          findMany: {
+            args: Prisma.HabitFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitPayload>[]
+          }
+          create: {
+            args: Prisma.HabitCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitPayload>
+          }
+          createMany: {
+            args: Prisma.HabitCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.HabitCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitPayload>[]
+          }
+          delete: {
+            args: Prisma.HabitDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitPayload>
+          }
+          update: {
+            args: Prisma.HabitUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitPayload>
+          }
+          deleteMany: {
+            args: Prisma.HabitDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.HabitUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.HabitUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitPayload>
+          }
+          aggregate: {
+            args: Prisma.HabitAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateHabit>
+          }
+          groupBy: {
+            args: Prisma.HabitGroupByArgs<ExtArgs>
+            result: $Utils.Optional<HabitGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.HabitCountArgs<ExtArgs>
+            result: $Utils.Optional<HabitCountAggregateOutputType> | number
+          }
+        }
+      }
+      HabitEntry: {
+        payload: Prisma.$HabitEntryPayload<ExtArgs>
+        fields: Prisma.HabitEntryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.HabitEntryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitEntryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.HabitEntryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitEntryPayload>
+          }
+          findFirst: {
+            args: Prisma.HabitEntryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitEntryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.HabitEntryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitEntryPayload>
+          }
+          findMany: {
+            args: Prisma.HabitEntryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitEntryPayload>[]
+          }
+          create: {
+            args: Prisma.HabitEntryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitEntryPayload>
+          }
+          createMany: {
+            args: Prisma.HabitEntryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.HabitEntryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitEntryPayload>[]
+          }
+          delete: {
+            args: Prisma.HabitEntryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitEntryPayload>
+          }
+          update: {
+            args: Prisma.HabitEntryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitEntryPayload>
+          }
+          deleteMany: {
+            args: Prisma.HabitEntryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.HabitEntryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.HabitEntryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HabitEntryPayload>
+          }
+          aggregate: {
+            args: Prisma.HabitEntryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateHabitEntry>
+          }
+          groupBy: {
+            args: Prisma.HabitEntryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<HabitEntryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.HabitEntryCountArgs<ExtArgs>
+            result: $Utils.Optional<HabitEntryCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2645,6 +2817,7 @@ export namespace Prisma {
     recaps: number
     reminders: number
     projectIdeas: number
+    habits: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2654,6 +2827,7 @@ export namespace Prisma {
     recaps?: boolean | UserCountOutputTypeCountRecapsArgs
     reminders?: boolean | UserCountOutputTypeCountRemindersArgs
     projectIdeas?: boolean | UserCountOutputTypeCountProjectIdeasArgs
+    habits?: boolean | UserCountOutputTypeCountHabitsArgs
   }
 
   // Custom InputTypes
@@ -2707,6 +2881,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountProjectIdeasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectIdeaWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountHabitsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HabitWhereInput
   }
 
 
@@ -2939,6 +3120,37 @@ export namespace Prisma {
    */
   export type ApiEndpointCountOutputTypeCountPingResultsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PingResultWhereInput
+  }
+
+
+  /**
+   * Count Type HabitCountOutputType
+   */
+
+  export type HabitCountOutputType = {
+    entries: number
+  }
+
+  export type HabitCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    entries?: boolean | HabitCountOutputTypeCountEntriesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * HabitCountOutputType without action
+   */
+  export type HabitCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HabitCountOutputType
+     */
+    select?: HabitCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * HabitCountOutputType without action
+   */
+  export type HabitCountOutputTypeCountEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HabitEntryWhereInput
   }
 
 
@@ -4173,6 +4385,7 @@ export namespace Prisma {
     recaps?: boolean | User$recapsArgs<ExtArgs>
     reminders?: boolean | User$remindersArgs<ExtArgs>
     projectIdeas?: boolean | User$projectIdeasArgs<ExtArgs>
+    habits?: boolean | User$habitsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4207,6 +4420,7 @@ export namespace Prisma {
     recaps?: boolean | User$recapsArgs<ExtArgs>
     reminders?: boolean | User$remindersArgs<ExtArgs>
     projectIdeas?: boolean | User$projectIdeasArgs<ExtArgs>
+    habits?: boolean | User$habitsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4220,6 +4434,7 @@ export namespace Prisma {
       recaps: Prisma.$RecapPayload<ExtArgs>[]
       reminders: Prisma.$ReminderPayload<ExtArgs>[]
       projectIdeas: Prisma.$ProjectIdeaPayload<ExtArgs>[]
+      habits: Prisma.$HabitPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4601,6 +4816,7 @@ export namespace Prisma {
     recaps<T extends User$recapsArgs<ExtArgs> = {}>(args?: Subset<T, User$recapsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecapPayload<ExtArgs>, T, "findMany"> | Null>
     reminders<T extends User$remindersArgs<ExtArgs> = {}>(args?: Subset<T, User$remindersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReminderPayload<ExtArgs>, T, "findMany"> | Null>
     projectIdeas<T extends User$projectIdeasArgs<ExtArgs> = {}>(args?: Subset<T, User$projectIdeasArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectIdeaPayload<ExtArgs>, T, "findMany"> | Null>
+    habits<T extends User$habitsArgs<ExtArgs> = {}>(args?: Subset<T, User$habitsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5070,6 +5286,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ProjectIdeaScalarFieldEnum | ProjectIdeaScalarFieldEnum[]
+  }
+
+  /**
+   * User.habits
+   */
+  export type User$habitsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Habit
+     */
+    select?: HabitSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitInclude<ExtArgs> | null
+    where?: HabitWhereInput
+    orderBy?: HabitOrderByWithRelationInput | HabitOrderByWithRelationInput[]
+    cursor?: HabitWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: HabitScalarFieldEnum | HabitScalarFieldEnum[]
   }
 
   /**
@@ -22570,6 +22806,1980 @@ export namespace Prisma {
 
 
   /**
+   * Model Habit
+   */
+
+  export type AggregateHabit = {
+    _count: HabitCountAggregateOutputType | null
+    _avg: HabitAvgAggregateOutputType | null
+    _sum: HabitSumAggregateOutputType | null
+    _min: HabitMinAggregateOutputType | null
+    _max: HabitMaxAggregateOutputType | null
+  }
+
+  export type HabitAvgAggregateOutputType = {
+    weeklyTarget: number | null
+    preferredDays: number | null
+  }
+
+  export type HabitSumAggregateOutputType = {
+    weeklyTarget: number | null
+    preferredDays: number[]
+  }
+
+  export type HabitMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    name: string | null
+    description: string | null
+    weeklyTarget: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type HabitMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    name: string | null
+    description: string | null
+    weeklyTarget: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type HabitCountAggregateOutputType = {
+    id: number
+    userId: number
+    name: number
+    description: number
+    weeklyTarget: number
+    preferredDays: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type HabitAvgAggregateInputType = {
+    weeklyTarget?: true
+    preferredDays?: true
+  }
+
+  export type HabitSumAggregateInputType = {
+    weeklyTarget?: true
+    preferredDays?: true
+  }
+
+  export type HabitMinAggregateInputType = {
+    id?: true
+    userId?: true
+    name?: true
+    description?: true
+    weeklyTarget?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type HabitMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    name?: true
+    description?: true
+    weeklyTarget?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type HabitCountAggregateInputType = {
+    id?: true
+    userId?: true
+    name?: true
+    description?: true
+    weeklyTarget?: true
+    preferredDays?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type HabitAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Habit to aggregate.
+     */
+    where?: HabitWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Habits to fetch.
+     */
+    orderBy?: HabitOrderByWithRelationInput | HabitOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: HabitWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Habits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Habits.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Habits
+    **/
+    _count?: true | HabitCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: HabitAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: HabitSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: HabitMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: HabitMaxAggregateInputType
+  }
+
+  export type GetHabitAggregateType<T extends HabitAggregateArgs> = {
+        [P in keyof T & keyof AggregateHabit]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateHabit[P]>
+      : GetScalarType<T[P], AggregateHabit[P]>
+  }
+
+
+
+
+  export type HabitGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HabitWhereInput
+    orderBy?: HabitOrderByWithAggregationInput | HabitOrderByWithAggregationInput[]
+    by: HabitScalarFieldEnum[] | HabitScalarFieldEnum
+    having?: HabitScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: HabitCountAggregateInputType | true
+    _avg?: HabitAvgAggregateInputType
+    _sum?: HabitSumAggregateInputType
+    _min?: HabitMinAggregateInputType
+    _max?: HabitMaxAggregateInputType
+  }
+
+  export type HabitGroupByOutputType = {
+    id: string
+    userId: string
+    name: string
+    description: string | null
+    weeklyTarget: number
+    preferredDays: number[]
+    createdAt: Date
+    updatedAt: Date
+    _count: HabitCountAggregateOutputType | null
+    _avg: HabitAvgAggregateOutputType | null
+    _sum: HabitSumAggregateOutputType | null
+    _min: HabitMinAggregateOutputType | null
+    _max: HabitMaxAggregateOutputType | null
+  }
+
+  type GetHabitGroupByPayload<T extends HabitGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<HabitGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof HabitGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], HabitGroupByOutputType[P]>
+            : GetScalarType<T[P], HabitGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type HabitSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    description?: boolean
+    weeklyTarget?: boolean
+    preferredDays?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    entries?: boolean | Habit$entriesArgs<ExtArgs>
+    _count?: boolean | HabitCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["habit"]>
+
+  export type HabitSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    description?: boolean
+    weeklyTarget?: boolean
+    preferredDays?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["habit"]>
+
+  export type HabitSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    name?: boolean
+    description?: boolean
+    weeklyTarget?: boolean
+    preferredDays?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type HabitInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    entries?: boolean | Habit$entriesArgs<ExtArgs>
+    _count?: boolean | HabitCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type HabitIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $HabitPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Habit"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      entries: Prisma.$HabitEntryPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      name: string
+      description: string | null
+      weeklyTarget: number
+      preferredDays: number[]
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["habit"]>
+    composites: {}
+  }
+
+  type HabitGetPayload<S extends boolean | null | undefined | HabitDefaultArgs> = $Result.GetResult<Prisma.$HabitPayload, S>
+
+  type HabitCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<HabitFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: HabitCountAggregateInputType | true
+    }
+
+  export interface HabitDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Habit'], meta: { name: 'Habit' } }
+    /**
+     * Find zero or one Habit that matches the filter.
+     * @param {HabitFindUniqueArgs} args - Arguments to find a Habit
+     * @example
+     * // Get one Habit
+     * const habit = await prisma.habit.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends HabitFindUniqueArgs>(args: SelectSubset<T, HabitFindUniqueArgs<ExtArgs>>): Prisma__HabitClient<$Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Habit that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {HabitFindUniqueOrThrowArgs} args - Arguments to find a Habit
+     * @example
+     * // Get one Habit
+     * const habit = await prisma.habit.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends HabitFindUniqueOrThrowArgs>(args: SelectSubset<T, HabitFindUniqueOrThrowArgs<ExtArgs>>): Prisma__HabitClient<$Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Habit that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HabitFindFirstArgs} args - Arguments to find a Habit
+     * @example
+     * // Get one Habit
+     * const habit = await prisma.habit.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends HabitFindFirstArgs>(args?: SelectSubset<T, HabitFindFirstArgs<ExtArgs>>): Prisma__HabitClient<$Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Habit that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HabitFindFirstOrThrowArgs} args - Arguments to find a Habit
+     * @example
+     * // Get one Habit
+     * const habit = await prisma.habit.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends HabitFindFirstOrThrowArgs>(args?: SelectSubset<T, HabitFindFirstOrThrowArgs<ExtArgs>>): Prisma__HabitClient<$Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Habits that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HabitFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Habits
+     * const habits = await prisma.habit.findMany()
+     * 
+     * // Get first 10 Habits
+     * const habits = await prisma.habit.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const habitWithIdOnly = await prisma.habit.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends HabitFindManyArgs>(args?: SelectSubset<T, HabitFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Habit.
+     * @param {HabitCreateArgs} args - Arguments to create a Habit.
+     * @example
+     * // Create one Habit
+     * const Habit = await prisma.habit.create({
+     *   data: {
+     *     // ... data to create a Habit
+     *   }
+     * })
+     * 
+     */
+    create<T extends HabitCreateArgs>(args: SelectSubset<T, HabitCreateArgs<ExtArgs>>): Prisma__HabitClient<$Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Habits.
+     * @param {HabitCreateManyArgs} args - Arguments to create many Habits.
+     * @example
+     * // Create many Habits
+     * const habit = await prisma.habit.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends HabitCreateManyArgs>(args?: SelectSubset<T, HabitCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Habits and returns the data saved in the database.
+     * @param {HabitCreateManyAndReturnArgs} args - Arguments to create many Habits.
+     * @example
+     * // Create many Habits
+     * const habit = await prisma.habit.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Habits and only return the `id`
+     * const habitWithIdOnly = await prisma.habit.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends HabitCreateManyAndReturnArgs>(args?: SelectSubset<T, HabitCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Habit.
+     * @param {HabitDeleteArgs} args - Arguments to delete one Habit.
+     * @example
+     * // Delete one Habit
+     * const Habit = await prisma.habit.delete({
+     *   where: {
+     *     // ... filter to delete one Habit
+     *   }
+     * })
+     * 
+     */
+    delete<T extends HabitDeleteArgs>(args: SelectSubset<T, HabitDeleteArgs<ExtArgs>>): Prisma__HabitClient<$Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Habit.
+     * @param {HabitUpdateArgs} args - Arguments to update one Habit.
+     * @example
+     * // Update one Habit
+     * const habit = await prisma.habit.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends HabitUpdateArgs>(args: SelectSubset<T, HabitUpdateArgs<ExtArgs>>): Prisma__HabitClient<$Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Habits.
+     * @param {HabitDeleteManyArgs} args - Arguments to filter Habits to delete.
+     * @example
+     * // Delete a few Habits
+     * const { count } = await prisma.habit.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends HabitDeleteManyArgs>(args?: SelectSubset<T, HabitDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Habits.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HabitUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Habits
+     * const habit = await prisma.habit.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends HabitUpdateManyArgs>(args: SelectSubset<T, HabitUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Habit.
+     * @param {HabitUpsertArgs} args - Arguments to update or create a Habit.
+     * @example
+     * // Update or create a Habit
+     * const habit = await prisma.habit.upsert({
+     *   create: {
+     *     // ... data to create a Habit
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Habit we want to update
+     *   }
+     * })
+     */
+    upsert<T extends HabitUpsertArgs>(args: SelectSubset<T, HabitUpsertArgs<ExtArgs>>): Prisma__HabitClient<$Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Habits.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HabitCountArgs} args - Arguments to filter Habits to count.
+     * @example
+     * // Count the number of Habits
+     * const count = await prisma.habit.count({
+     *   where: {
+     *     // ... the filter for the Habits we want to count
+     *   }
+     * })
+    **/
+    count<T extends HabitCountArgs>(
+      args?: Subset<T, HabitCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], HabitCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Habit.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HabitAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends HabitAggregateArgs>(args: Subset<T, HabitAggregateArgs>): Prisma.PrismaPromise<GetHabitAggregateType<T>>
+
+    /**
+     * Group by Habit.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HabitGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends HabitGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: HabitGroupByArgs['orderBy'] }
+        : { orderBy?: HabitGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, HabitGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetHabitGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Habit model
+   */
+  readonly fields: HabitFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Habit.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__HabitClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    entries<T extends Habit$entriesArgs<ExtArgs> = {}>(args?: Subset<T, Habit$entriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HabitEntryPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Habit model
+   */ 
+  interface HabitFieldRefs {
+    readonly id: FieldRef<"Habit", 'String'>
+    readonly userId: FieldRef<"Habit", 'String'>
+    readonly name: FieldRef<"Habit", 'String'>
+    readonly description: FieldRef<"Habit", 'String'>
+    readonly weeklyTarget: FieldRef<"Habit", 'Int'>
+    readonly preferredDays: FieldRef<"Habit", 'Int[]'>
+    readonly createdAt: FieldRef<"Habit", 'DateTime'>
+    readonly updatedAt: FieldRef<"Habit", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Habit findUnique
+   */
+  export type HabitFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Habit
+     */
+    select?: HabitSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitInclude<ExtArgs> | null
+    /**
+     * Filter, which Habit to fetch.
+     */
+    where: HabitWhereUniqueInput
+  }
+
+  /**
+   * Habit findUniqueOrThrow
+   */
+  export type HabitFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Habit
+     */
+    select?: HabitSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitInclude<ExtArgs> | null
+    /**
+     * Filter, which Habit to fetch.
+     */
+    where: HabitWhereUniqueInput
+  }
+
+  /**
+   * Habit findFirst
+   */
+  export type HabitFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Habit
+     */
+    select?: HabitSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitInclude<ExtArgs> | null
+    /**
+     * Filter, which Habit to fetch.
+     */
+    where?: HabitWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Habits to fetch.
+     */
+    orderBy?: HabitOrderByWithRelationInput | HabitOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Habits.
+     */
+    cursor?: HabitWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Habits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Habits.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Habits.
+     */
+    distinct?: HabitScalarFieldEnum | HabitScalarFieldEnum[]
+  }
+
+  /**
+   * Habit findFirstOrThrow
+   */
+  export type HabitFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Habit
+     */
+    select?: HabitSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitInclude<ExtArgs> | null
+    /**
+     * Filter, which Habit to fetch.
+     */
+    where?: HabitWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Habits to fetch.
+     */
+    orderBy?: HabitOrderByWithRelationInput | HabitOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Habits.
+     */
+    cursor?: HabitWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Habits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Habits.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Habits.
+     */
+    distinct?: HabitScalarFieldEnum | HabitScalarFieldEnum[]
+  }
+
+  /**
+   * Habit findMany
+   */
+  export type HabitFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Habit
+     */
+    select?: HabitSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitInclude<ExtArgs> | null
+    /**
+     * Filter, which Habits to fetch.
+     */
+    where?: HabitWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Habits to fetch.
+     */
+    orderBy?: HabitOrderByWithRelationInput | HabitOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Habits.
+     */
+    cursor?: HabitWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Habits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Habits.
+     */
+    skip?: number
+    distinct?: HabitScalarFieldEnum | HabitScalarFieldEnum[]
+  }
+
+  /**
+   * Habit create
+   */
+  export type HabitCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Habit
+     */
+    select?: HabitSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Habit.
+     */
+    data: XOR<HabitCreateInput, HabitUncheckedCreateInput>
+  }
+
+  /**
+   * Habit createMany
+   */
+  export type HabitCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Habits.
+     */
+    data: HabitCreateManyInput | HabitCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Habit createManyAndReturn
+   */
+  export type HabitCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Habit
+     */
+    select?: HabitSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Habits.
+     */
+    data: HabitCreateManyInput | HabitCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Habit update
+   */
+  export type HabitUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Habit
+     */
+    select?: HabitSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Habit.
+     */
+    data: XOR<HabitUpdateInput, HabitUncheckedUpdateInput>
+    /**
+     * Choose, which Habit to update.
+     */
+    where: HabitWhereUniqueInput
+  }
+
+  /**
+   * Habit updateMany
+   */
+  export type HabitUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Habits.
+     */
+    data: XOR<HabitUpdateManyMutationInput, HabitUncheckedUpdateManyInput>
+    /**
+     * Filter which Habits to update
+     */
+    where?: HabitWhereInput
+  }
+
+  /**
+   * Habit upsert
+   */
+  export type HabitUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Habit
+     */
+    select?: HabitSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Habit to update in case it exists.
+     */
+    where: HabitWhereUniqueInput
+    /**
+     * In case the Habit found by the `where` argument doesn't exist, create a new Habit with this data.
+     */
+    create: XOR<HabitCreateInput, HabitUncheckedCreateInput>
+    /**
+     * In case the Habit was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<HabitUpdateInput, HabitUncheckedUpdateInput>
+  }
+
+  /**
+   * Habit delete
+   */
+  export type HabitDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Habit
+     */
+    select?: HabitSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitInclude<ExtArgs> | null
+    /**
+     * Filter which Habit to delete.
+     */
+    where: HabitWhereUniqueInput
+  }
+
+  /**
+   * Habit deleteMany
+   */
+  export type HabitDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Habits to delete
+     */
+    where?: HabitWhereInput
+  }
+
+  /**
+   * Habit.entries
+   */
+  export type Habit$entriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HabitEntry
+     */
+    select?: HabitEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitEntryInclude<ExtArgs> | null
+    where?: HabitEntryWhereInput
+    orderBy?: HabitEntryOrderByWithRelationInput | HabitEntryOrderByWithRelationInput[]
+    cursor?: HabitEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: HabitEntryScalarFieldEnum | HabitEntryScalarFieldEnum[]
+  }
+
+  /**
+   * Habit without action
+   */
+  export type HabitDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Habit
+     */
+    select?: HabitSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model HabitEntry
+   */
+
+  export type AggregateHabitEntry = {
+    _count: HabitEntryCountAggregateOutputType | null
+    _min: HabitEntryMinAggregateOutputType | null
+    _max: HabitEntryMaxAggregateOutputType | null
+  }
+
+  export type HabitEntryMinAggregateOutputType = {
+    id: string | null
+    habitId: string | null
+    date: Date | null
+    note: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type HabitEntryMaxAggregateOutputType = {
+    id: string | null
+    habitId: string | null
+    date: Date | null
+    note: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type HabitEntryCountAggregateOutputType = {
+    id: number
+    habitId: number
+    date: number
+    note: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type HabitEntryMinAggregateInputType = {
+    id?: true
+    habitId?: true
+    date?: true
+    note?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type HabitEntryMaxAggregateInputType = {
+    id?: true
+    habitId?: true
+    date?: true
+    note?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type HabitEntryCountAggregateInputType = {
+    id?: true
+    habitId?: true
+    date?: true
+    note?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type HabitEntryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which HabitEntry to aggregate.
+     */
+    where?: HabitEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HabitEntries to fetch.
+     */
+    orderBy?: HabitEntryOrderByWithRelationInput | HabitEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: HabitEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HabitEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HabitEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned HabitEntries
+    **/
+    _count?: true | HabitEntryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: HabitEntryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: HabitEntryMaxAggregateInputType
+  }
+
+  export type GetHabitEntryAggregateType<T extends HabitEntryAggregateArgs> = {
+        [P in keyof T & keyof AggregateHabitEntry]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateHabitEntry[P]>
+      : GetScalarType<T[P], AggregateHabitEntry[P]>
+  }
+
+
+
+
+  export type HabitEntryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HabitEntryWhereInput
+    orderBy?: HabitEntryOrderByWithAggregationInput | HabitEntryOrderByWithAggregationInput[]
+    by: HabitEntryScalarFieldEnum[] | HabitEntryScalarFieldEnum
+    having?: HabitEntryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: HabitEntryCountAggregateInputType | true
+    _min?: HabitEntryMinAggregateInputType
+    _max?: HabitEntryMaxAggregateInputType
+  }
+
+  export type HabitEntryGroupByOutputType = {
+    id: string
+    habitId: string
+    date: Date
+    note: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: HabitEntryCountAggregateOutputType | null
+    _min: HabitEntryMinAggregateOutputType | null
+    _max: HabitEntryMaxAggregateOutputType | null
+  }
+
+  type GetHabitEntryGroupByPayload<T extends HabitEntryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<HabitEntryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof HabitEntryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], HabitEntryGroupByOutputType[P]>
+            : GetScalarType<T[P], HabitEntryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type HabitEntrySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    habitId?: boolean
+    date?: boolean
+    note?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    habit?: boolean | HabitDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["habitEntry"]>
+
+  export type HabitEntrySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    habitId?: boolean
+    date?: boolean
+    note?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    habit?: boolean | HabitDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["habitEntry"]>
+
+  export type HabitEntrySelectScalar = {
+    id?: boolean
+    habitId?: boolean
+    date?: boolean
+    note?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type HabitEntryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    habit?: boolean | HabitDefaultArgs<ExtArgs>
+  }
+  export type HabitEntryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    habit?: boolean | HabitDefaultArgs<ExtArgs>
+  }
+
+  export type $HabitEntryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "HabitEntry"
+    objects: {
+      habit: Prisma.$HabitPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      habitId: string
+      date: Date
+      note: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["habitEntry"]>
+    composites: {}
+  }
+
+  type HabitEntryGetPayload<S extends boolean | null | undefined | HabitEntryDefaultArgs> = $Result.GetResult<Prisma.$HabitEntryPayload, S>
+
+  type HabitEntryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<HabitEntryFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: HabitEntryCountAggregateInputType | true
+    }
+
+  export interface HabitEntryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['HabitEntry'], meta: { name: 'HabitEntry' } }
+    /**
+     * Find zero or one HabitEntry that matches the filter.
+     * @param {HabitEntryFindUniqueArgs} args - Arguments to find a HabitEntry
+     * @example
+     * // Get one HabitEntry
+     * const habitEntry = await prisma.habitEntry.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends HabitEntryFindUniqueArgs>(args: SelectSubset<T, HabitEntryFindUniqueArgs<ExtArgs>>): Prisma__HabitEntryClient<$Result.GetResult<Prisma.$HabitEntryPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one HabitEntry that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {HabitEntryFindUniqueOrThrowArgs} args - Arguments to find a HabitEntry
+     * @example
+     * // Get one HabitEntry
+     * const habitEntry = await prisma.habitEntry.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends HabitEntryFindUniqueOrThrowArgs>(args: SelectSubset<T, HabitEntryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__HabitEntryClient<$Result.GetResult<Prisma.$HabitEntryPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first HabitEntry that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HabitEntryFindFirstArgs} args - Arguments to find a HabitEntry
+     * @example
+     * // Get one HabitEntry
+     * const habitEntry = await prisma.habitEntry.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends HabitEntryFindFirstArgs>(args?: SelectSubset<T, HabitEntryFindFirstArgs<ExtArgs>>): Prisma__HabitEntryClient<$Result.GetResult<Prisma.$HabitEntryPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first HabitEntry that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HabitEntryFindFirstOrThrowArgs} args - Arguments to find a HabitEntry
+     * @example
+     * // Get one HabitEntry
+     * const habitEntry = await prisma.habitEntry.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends HabitEntryFindFirstOrThrowArgs>(args?: SelectSubset<T, HabitEntryFindFirstOrThrowArgs<ExtArgs>>): Prisma__HabitEntryClient<$Result.GetResult<Prisma.$HabitEntryPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more HabitEntries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HabitEntryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all HabitEntries
+     * const habitEntries = await prisma.habitEntry.findMany()
+     * 
+     * // Get first 10 HabitEntries
+     * const habitEntries = await prisma.habitEntry.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const habitEntryWithIdOnly = await prisma.habitEntry.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends HabitEntryFindManyArgs>(args?: SelectSubset<T, HabitEntryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HabitEntryPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a HabitEntry.
+     * @param {HabitEntryCreateArgs} args - Arguments to create a HabitEntry.
+     * @example
+     * // Create one HabitEntry
+     * const HabitEntry = await prisma.habitEntry.create({
+     *   data: {
+     *     // ... data to create a HabitEntry
+     *   }
+     * })
+     * 
+     */
+    create<T extends HabitEntryCreateArgs>(args: SelectSubset<T, HabitEntryCreateArgs<ExtArgs>>): Prisma__HabitEntryClient<$Result.GetResult<Prisma.$HabitEntryPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many HabitEntries.
+     * @param {HabitEntryCreateManyArgs} args - Arguments to create many HabitEntries.
+     * @example
+     * // Create many HabitEntries
+     * const habitEntry = await prisma.habitEntry.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends HabitEntryCreateManyArgs>(args?: SelectSubset<T, HabitEntryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many HabitEntries and returns the data saved in the database.
+     * @param {HabitEntryCreateManyAndReturnArgs} args - Arguments to create many HabitEntries.
+     * @example
+     * // Create many HabitEntries
+     * const habitEntry = await prisma.habitEntry.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many HabitEntries and only return the `id`
+     * const habitEntryWithIdOnly = await prisma.habitEntry.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends HabitEntryCreateManyAndReturnArgs>(args?: SelectSubset<T, HabitEntryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HabitEntryPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a HabitEntry.
+     * @param {HabitEntryDeleteArgs} args - Arguments to delete one HabitEntry.
+     * @example
+     * // Delete one HabitEntry
+     * const HabitEntry = await prisma.habitEntry.delete({
+     *   where: {
+     *     // ... filter to delete one HabitEntry
+     *   }
+     * })
+     * 
+     */
+    delete<T extends HabitEntryDeleteArgs>(args: SelectSubset<T, HabitEntryDeleteArgs<ExtArgs>>): Prisma__HabitEntryClient<$Result.GetResult<Prisma.$HabitEntryPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one HabitEntry.
+     * @param {HabitEntryUpdateArgs} args - Arguments to update one HabitEntry.
+     * @example
+     * // Update one HabitEntry
+     * const habitEntry = await prisma.habitEntry.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends HabitEntryUpdateArgs>(args: SelectSubset<T, HabitEntryUpdateArgs<ExtArgs>>): Prisma__HabitEntryClient<$Result.GetResult<Prisma.$HabitEntryPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more HabitEntries.
+     * @param {HabitEntryDeleteManyArgs} args - Arguments to filter HabitEntries to delete.
+     * @example
+     * // Delete a few HabitEntries
+     * const { count } = await prisma.habitEntry.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends HabitEntryDeleteManyArgs>(args?: SelectSubset<T, HabitEntryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more HabitEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HabitEntryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many HabitEntries
+     * const habitEntry = await prisma.habitEntry.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends HabitEntryUpdateManyArgs>(args: SelectSubset<T, HabitEntryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one HabitEntry.
+     * @param {HabitEntryUpsertArgs} args - Arguments to update or create a HabitEntry.
+     * @example
+     * // Update or create a HabitEntry
+     * const habitEntry = await prisma.habitEntry.upsert({
+     *   create: {
+     *     // ... data to create a HabitEntry
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the HabitEntry we want to update
+     *   }
+     * })
+     */
+    upsert<T extends HabitEntryUpsertArgs>(args: SelectSubset<T, HabitEntryUpsertArgs<ExtArgs>>): Prisma__HabitEntryClient<$Result.GetResult<Prisma.$HabitEntryPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of HabitEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HabitEntryCountArgs} args - Arguments to filter HabitEntries to count.
+     * @example
+     * // Count the number of HabitEntries
+     * const count = await prisma.habitEntry.count({
+     *   where: {
+     *     // ... the filter for the HabitEntries we want to count
+     *   }
+     * })
+    **/
+    count<T extends HabitEntryCountArgs>(
+      args?: Subset<T, HabitEntryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], HabitEntryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a HabitEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HabitEntryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends HabitEntryAggregateArgs>(args: Subset<T, HabitEntryAggregateArgs>): Prisma.PrismaPromise<GetHabitEntryAggregateType<T>>
+
+    /**
+     * Group by HabitEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HabitEntryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends HabitEntryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: HabitEntryGroupByArgs['orderBy'] }
+        : { orderBy?: HabitEntryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, HabitEntryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetHabitEntryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the HabitEntry model
+   */
+  readonly fields: HabitEntryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for HabitEntry.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__HabitEntryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    habit<T extends HabitDefaultArgs<ExtArgs> = {}>(args?: Subset<T, HabitDefaultArgs<ExtArgs>>): Prisma__HabitClient<$Result.GetResult<Prisma.$HabitPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the HabitEntry model
+   */ 
+  interface HabitEntryFieldRefs {
+    readonly id: FieldRef<"HabitEntry", 'String'>
+    readonly habitId: FieldRef<"HabitEntry", 'String'>
+    readonly date: FieldRef<"HabitEntry", 'DateTime'>
+    readonly note: FieldRef<"HabitEntry", 'String'>
+    readonly createdAt: FieldRef<"HabitEntry", 'DateTime'>
+    readonly updatedAt: FieldRef<"HabitEntry", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * HabitEntry findUnique
+   */
+  export type HabitEntryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HabitEntry
+     */
+    select?: HabitEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which HabitEntry to fetch.
+     */
+    where: HabitEntryWhereUniqueInput
+  }
+
+  /**
+   * HabitEntry findUniqueOrThrow
+   */
+  export type HabitEntryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HabitEntry
+     */
+    select?: HabitEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which HabitEntry to fetch.
+     */
+    where: HabitEntryWhereUniqueInput
+  }
+
+  /**
+   * HabitEntry findFirst
+   */
+  export type HabitEntryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HabitEntry
+     */
+    select?: HabitEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which HabitEntry to fetch.
+     */
+    where?: HabitEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HabitEntries to fetch.
+     */
+    orderBy?: HabitEntryOrderByWithRelationInput | HabitEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for HabitEntries.
+     */
+    cursor?: HabitEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HabitEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HabitEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of HabitEntries.
+     */
+    distinct?: HabitEntryScalarFieldEnum | HabitEntryScalarFieldEnum[]
+  }
+
+  /**
+   * HabitEntry findFirstOrThrow
+   */
+  export type HabitEntryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HabitEntry
+     */
+    select?: HabitEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which HabitEntry to fetch.
+     */
+    where?: HabitEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HabitEntries to fetch.
+     */
+    orderBy?: HabitEntryOrderByWithRelationInput | HabitEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for HabitEntries.
+     */
+    cursor?: HabitEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HabitEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HabitEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of HabitEntries.
+     */
+    distinct?: HabitEntryScalarFieldEnum | HabitEntryScalarFieldEnum[]
+  }
+
+  /**
+   * HabitEntry findMany
+   */
+  export type HabitEntryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HabitEntry
+     */
+    select?: HabitEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which HabitEntries to fetch.
+     */
+    where?: HabitEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HabitEntries to fetch.
+     */
+    orderBy?: HabitEntryOrderByWithRelationInput | HabitEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing HabitEntries.
+     */
+    cursor?: HabitEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HabitEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HabitEntries.
+     */
+    skip?: number
+    distinct?: HabitEntryScalarFieldEnum | HabitEntryScalarFieldEnum[]
+  }
+
+  /**
+   * HabitEntry create
+   */
+  export type HabitEntryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HabitEntry
+     */
+    select?: HabitEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a HabitEntry.
+     */
+    data: XOR<HabitEntryCreateInput, HabitEntryUncheckedCreateInput>
+  }
+
+  /**
+   * HabitEntry createMany
+   */
+  export type HabitEntryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many HabitEntries.
+     */
+    data: HabitEntryCreateManyInput | HabitEntryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * HabitEntry createManyAndReturn
+   */
+  export type HabitEntryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HabitEntry
+     */
+    select?: HabitEntrySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many HabitEntries.
+     */
+    data: HabitEntryCreateManyInput | HabitEntryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitEntryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * HabitEntry update
+   */
+  export type HabitEntryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HabitEntry
+     */
+    select?: HabitEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a HabitEntry.
+     */
+    data: XOR<HabitEntryUpdateInput, HabitEntryUncheckedUpdateInput>
+    /**
+     * Choose, which HabitEntry to update.
+     */
+    where: HabitEntryWhereUniqueInput
+  }
+
+  /**
+   * HabitEntry updateMany
+   */
+  export type HabitEntryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update HabitEntries.
+     */
+    data: XOR<HabitEntryUpdateManyMutationInput, HabitEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which HabitEntries to update
+     */
+    where?: HabitEntryWhereInput
+  }
+
+  /**
+   * HabitEntry upsert
+   */
+  export type HabitEntryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HabitEntry
+     */
+    select?: HabitEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitEntryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the HabitEntry to update in case it exists.
+     */
+    where: HabitEntryWhereUniqueInput
+    /**
+     * In case the HabitEntry found by the `where` argument doesn't exist, create a new HabitEntry with this data.
+     */
+    create: XOR<HabitEntryCreateInput, HabitEntryUncheckedCreateInput>
+    /**
+     * In case the HabitEntry was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<HabitEntryUpdateInput, HabitEntryUncheckedUpdateInput>
+  }
+
+  /**
+   * HabitEntry delete
+   */
+  export type HabitEntryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HabitEntry
+     */
+    select?: HabitEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitEntryInclude<ExtArgs> | null
+    /**
+     * Filter which HabitEntry to delete.
+     */
+    where: HabitEntryWhereUniqueInput
+  }
+
+  /**
+   * HabitEntry deleteMany
+   */
+  export type HabitEntryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which HabitEntries to delete
+     */
+    where?: HabitEntryWhereInput
+  }
+
+  /**
+   * HabitEntry without action
+   */
+  export type HabitEntryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HabitEntry
+     */
+    select?: HabitEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HabitEntryInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -22883,6 +25093,32 @@ export namespace Prisma {
   };
 
   export type PingResultScalarFieldEnum = (typeof PingResultScalarFieldEnum)[keyof typeof PingResultScalarFieldEnum]
+
+
+  export const HabitScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    name: 'name',
+    description: 'description',
+    weeklyTarget: 'weeklyTarget',
+    preferredDays: 'preferredDays',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type HabitScalarFieldEnum = (typeof HabitScalarFieldEnum)[keyof typeof HabitScalarFieldEnum]
+
+
+  export const HabitEntryScalarFieldEnum: {
+    id: 'id',
+    habitId: 'habitId',
+    date: 'date',
+    note: 'note',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type HabitEntryScalarFieldEnum = (typeof HabitEntryScalarFieldEnum)[keyof typeof HabitEntryScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -23308,6 +25544,7 @@ export namespace Prisma {
     recaps?: RecapListRelationFilter
     reminders?: ReminderListRelationFilter
     projectIdeas?: ProjectIdeaListRelationFilter
+    habits?: HabitListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -23326,6 +25563,7 @@ export namespace Prisma {
     recaps?: RecapOrderByRelationAggregateInput
     reminders?: ReminderOrderByRelationAggregateInput
     projectIdeas?: ProjectIdeaOrderByRelationAggregateInput
+    habits?: HabitOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -23347,6 +25585,7 @@ export namespace Prisma {
     recaps?: RecapListRelationFilter
     reminders?: ReminderListRelationFilter
     projectIdeas?: ProjectIdeaListRelationFilter
+    habits?: HabitListRelationFilter
   }, "id" | "telegramId">
 
   export type UserOrderByWithAggregationInput = {
@@ -24815,6 +27054,142 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"PingResult"> | Date | string
   }
 
+  export type HabitWhereInput = {
+    AND?: HabitWhereInput | HabitWhereInput[]
+    OR?: HabitWhereInput[]
+    NOT?: HabitWhereInput | HabitWhereInput[]
+    id?: StringFilter<"Habit"> | string
+    userId?: StringFilter<"Habit"> | string
+    name?: StringFilter<"Habit"> | string
+    description?: StringNullableFilter<"Habit"> | string | null
+    weeklyTarget?: IntFilter<"Habit"> | number
+    preferredDays?: IntNullableListFilter<"Habit">
+    createdAt?: DateTimeFilter<"Habit"> | Date | string
+    updatedAt?: DateTimeFilter<"Habit"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+    entries?: HabitEntryListRelationFilter
+  }
+
+  export type HabitOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    weeklyTarget?: SortOrder
+    preferredDays?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    entries?: HabitEntryOrderByRelationAggregateInput
+  }
+
+  export type HabitWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: HabitWhereInput | HabitWhereInput[]
+    OR?: HabitWhereInput[]
+    NOT?: HabitWhereInput | HabitWhereInput[]
+    userId?: StringFilter<"Habit"> | string
+    name?: StringFilter<"Habit"> | string
+    description?: StringNullableFilter<"Habit"> | string | null
+    weeklyTarget?: IntFilter<"Habit"> | number
+    preferredDays?: IntNullableListFilter<"Habit">
+    createdAt?: DateTimeFilter<"Habit"> | Date | string
+    updatedAt?: DateTimeFilter<"Habit"> | Date | string
+    user?: XOR<UserRelationFilter, UserWhereInput>
+    entries?: HabitEntryListRelationFilter
+  }, "id">
+
+  export type HabitOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    weeklyTarget?: SortOrder
+    preferredDays?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: HabitCountOrderByAggregateInput
+    _avg?: HabitAvgOrderByAggregateInput
+    _max?: HabitMaxOrderByAggregateInput
+    _min?: HabitMinOrderByAggregateInput
+    _sum?: HabitSumOrderByAggregateInput
+  }
+
+  export type HabitScalarWhereWithAggregatesInput = {
+    AND?: HabitScalarWhereWithAggregatesInput | HabitScalarWhereWithAggregatesInput[]
+    OR?: HabitScalarWhereWithAggregatesInput[]
+    NOT?: HabitScalarWhereWithAggregatesInput | HabitScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Habit"> | string
+    userId?: StringWithAggregatesFilter<"Habit"> | string
+    name?: StringWithAggregatesFilter<"Habit"> | string
+    description?: StringNullableWithAggregatesFilter<"Habit"> | string | null
+    weeklyTarget?: IntWithAggregatesFilter<"Habit"> | number
+    preferredDays?: IntNullableListFilter<"Habit">
+    createdAt?: DateTimeWithAggregatesFilter<"Habit"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Habit"> | Date | string
+  }
+
+  export type HabitEntryWhereInput = {
+    AND?: HabitEntryWhereInput | HabitEntryWhereInput[]
+    OR?: HabitEntryWhereInput[]
+    NOT?: HabitEntryWhereInput | HabitEntryWhereInput[]
+    id?: StringFilter<"HabitEntry"> | string
+    habitId?: StringFilter<"HabitEntry"> | string
+    date?: DateTimeFilter<"HabitEntry"> | Date | string
+    note?: StringNullableFilter<"HabitEntry"> | string | null
+    createdAt?: DateTimeFilter<"HabitEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"HabitEntry"> | Date | string
+    habit?: XOR<HabitRelationFilter, HabitWhereInput>
+  }
+
+  export type HabitEntryOrderByWithRelationInput = {
+    id?: SortOrder
+    habitId?: SortOrder
+    date?: SortOrder
+    note?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    habit?: HabitOrderByWithRelationInput
+  }
+
+  export type HabitEntryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    habitId_date?: HabitEntryHabitIdDateCompoundUniqueInput
+    AND?: HabitEntryWhereInput | HabitEntryWhereInput[]
+    OR?: HabitEntryWhereInput[]
+    NOT?: HabitEntryWhereInput | HabitEntryWhereInput[]
+    habitId?: StringFilter<"HabitEntry"> | string
+    date?: DateTimeFilter<"HabitEntry"> | Date | string
+    note?: StringNullableFilter<"HabitEntry"> | string | null
+    createdAt?: DateTimeFilter<"HabitEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"HabitEntry"> | Date | string
+    habit?: XOR<HabitRelationFilter, HabitWhereInput>
+  }, "id" | "habitId_date">
+
+  export type HabitEntryOrderByWithAggregationInput = {
+    id?: SortOrder
+    habitId?: SortOrder
+    date?: SortOrder
+    note?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: HabitEntryCountOrderByAggregateInput
+    _max?: HabitEntryMaxOrderByAggregateInput
+    _min?: HabitEntryMinOrderByAggregateInput
+  }
+
+  export type HabitEntryScalarWhereWithAggregatesInput = {
+    AND?: HabitEntryScalarWhereWithAggregatesInput | HabitEntryScalarWhereWithAggregatesInput[]
+    OR?: HabitEntryScalarWhereWithAggregatesInput[]
+    NOT?: HabitEntryScalarWhereWithAggregatesInput | HabitEntryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"HabitEntry"> | string
+    habitId?: StringWithAggregatesFilter<"HabitEntry"> | string
+    date?: DateTimeWithAggregatesFilter<"HabitEntry"> | Date | string
+    note?: StringNullableWithAggregatesFilter<"HabitEntry"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"HabitEntry"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"HabitEntry"> | Date | string
+  }
+
   export type CustomStatusCreateInput = {
     id?: string
     name: string
@@ -24911,6 +27286,7 @@ export namespace Prisma {
     recaps?: RecapCreateNestedManyWithoutUserInput
     reminders?: ReminderCreateNestedManyWithoutUserInput
     projectIdeas?: ProjectIdeaCreateNestedManyWithoutUserInput
+    habits?: HabitCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -24929,6 +27305,7 @@ export namespace Prisma {
     recaps?: RecapUncheckedCreateNestedManyWithoutUserInput
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     projectIdeas?: ProjectIdeaUncheckedCreateNestedManyWithoutUserInput
+    habits?: HabitUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -24947,6 +27324,7 @@ export namespace Prisma {
     recaps?: RecapUpdateManyWithoutUserNestedInput
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     projectIdeas?: ProjectIdeaUpdateManyWithoutUserNestedInput
+    habits?: HabitUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -24965,6 +27343,7 @@ export namespace Prisma {
     recaps?: RecapUncheckedUpdateManyWithoutUserNestedInput
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     projectIdeas?: ProjectIdeaUncheckedUpdateManyWithoutUserNestedInput
+    habits?: HabitUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -26601,6 +28980,148 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type HabitCreateInput = {
+    id?: string
+    name: string
+    description?: string | null
+    weeklyTarget?: number
+    preferredDays?: HabitCreatepreferredDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutHabitsInput
+    entries?: HabitEntryCreateNestedManyWithoutHabitInput
+  }
+
+  export type HabitUncheckedCreateInput = {
+    id?: string
+    userId: string
+    name: string
+    description?: string | null
+    weeklyTarget?: number
+    preferredDays?: HabitCreatepreferredDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    entries?: HabitEntryUncheckedCreateNestedManyWithoutHabitInput
+  }
+
+  export type HabitUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyTarget?: IntFieldUpdateOperationsInput | number
+    preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutHabitsNestedInput
+    entries?: HabitEntryUpdateManyWithoutHabitNestedInput
+  }
+
+  export type HabitUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyTarget?: IntFieldUpdateOperationsInput | number
+    preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: HabitEntryUncheckedUpdateManyWithoutHabitNestedInput
+  }
+
+  export type HabitCreateManyInput = {
+    id?: string
+    userId: string
+    name: string
+    description?: string | null
+    weeklyTarget?: number
+    preferredDays?: HabitCreatepreferredDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type HabitUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyTarget?: IntFieldUpdateOperationsInput | number
+    preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HabitUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyTarget?: IntFieldUpdateOperationsInput | number
+    preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HabitEntryCreateInput = {
+    id?: string
+    date: Date | string
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    habit: HabitCreateNestedOneWithoutEntriesInput
+  }
+
+  export type HabitEntryUncheckedCreateInput = {
+    id?: string
+    habitId: string
+    date: Date | string
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type HabitEntryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    habit?: HabitUpdateOneRequiredWithoutEntriesNestedInput
+  }
+
+  export type HabitEntryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    habitId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HabitEntryCreateManyInput = {
+    id?: string
+    habitId: string
+    date: Date | string
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type HabitEntryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HabitEntryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    habitId?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -26860,6 +29381,12 @@ export namespace Prisma {
     none?: ProjectIdeaWhereInput
   }
 
+  export type HabitListRelationFilter = {
+    every?: HabitWhereInput
+    some?: HabitWhereInput
+    none?: HabitWhereInput
+  }
+
   export type WorkspaceOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -26881,6 +29408,10 @@ export namespace Prisma {
   }
 
   export type ProjectIdeaOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type HabitOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -28120,6 +30651,102 @@ export namespace Prisma {
     responseTime?: SortOrder
   }
 
+  export type IntNullableListFilter<$PrismaModel = never> = {
+    equals?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    has?: number | IntFieldRefInput<$PrismaModel> | null
+    hasEvery?: number[] | ListIntFieldRefInput<$PrismaModel>
+    hasSome?: number[] | ListIntFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
+  export type HabitEntryListRelationFilter = {
+    every?: HabitEntryWhereInput
+    some?: HabitEntryWhereInput
+    none?: HabitEntryWhereInput
+  }
+
+  export type HabitEntryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type HabitCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    weeklyTarget?: SortOrder
+    preferredDays?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type HabitAvgOrderByAggregateInput = {
+    weeklyTarget?: SortOrder
+    preferredDays?: SortOrder
+  }
+
+  export type HabitMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    weeklyTarget?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type HabitMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    weeklyTarget?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type HabitSumOrderByAggregateInput = {
+    weeklyTarget?: SortOrder
+    preferredDays?: SortOrder
+  }
+
+  export type HabitRelationFilter = {
+    is?: HabitWhereInput
+    isNot?: HabitWhereInput
+  }
+
+  export type HabitEntryHabitIdDateCompoundUniqueInput = {
+    habitId: string
+    date: Date | string
+  }
+
+  export type HabitEntryCountOrderByAggregateInput = {
+    id?: SortOrder
+    habitId?: SortOrder
+    date?: SortOrder
+    note?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type HabitEntryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    habitId?: SortOrder
+    date?: SortOrder
+    note?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type HabitEntryMinOrderByAggregateInput = {
+    id?: SortOrder
+    habitId?: SortOrder
+    date?: SortOrder
+    note?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type WorkspaceCreateNestedOneWithoutCustomStatusInput = {
     create?: XOR<WorkspaceCreateWithoutCustomStatusInput, WorkspaceUncheckedCreateWithoutCustomStatusInput>
     connectOrCreate?: WorkspaceCreateOrConnectWithoutCustomStatusInput
@@ -28242,6 +30869,13 @@ export namespace Prisma {
     connect?: ProjectIdeaWhereUniqueInput | ProjectIdeaWhereUniqueInput[]
   }
 
+  export type HabitCreateNestedManyWithoutUserInput = {
+    create?: XOR<HabitCreateWithoutUserInput, HabitUncheckedCreateWithoutUserInput> | HabitCreateWithoutUserInput[] | HabitUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: HabitCreateOrConnectWithoutUserInput | HabitCreateOrConnectWithoutUserInput[]
+    createMany?: HabitCreateManyUserInputEnvelope
+    connect?: HabitWhereUniqueInput | HabitWhereUniqueInput[]
+  }
+
   export type WorkspaceUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<WorkspaceCreateWithoutUserInput, WorkspaceUncheckedCreateWithoutUserInput> | WorkspaceCreateWithoutUserInput[] | WorkspaceUncheckedCreateWithoutUserInput[]
     connectOrCreate?: WorkspaceCreateOrConnectWithoutUserInput | WorkspaceCreateOrConnectWithoutUserInput[]
@@ -28282,6 +30916,13 @@ export namespace Prisma {
     connectOrCreate?: ProjectIdeaCreateOrConnectWithoutUserInput | ProjectIdeaCreateOrConnectWithoutUserInput[]
     createMany?: ProjectIdeaCreateManyUserInputEnvelope
     connect?: ProjectIdeaWhereUniqueInput | ProjectIdeaWhereUniqueInput[]
+  }
+
+  export type HabitUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<HabitCreateWithoutUserInput, HabitUncheckedCreateWithoutUserInput> | HabitCreateWithoutUserInput[] | HabitUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: HabitCreateOrConnectWithoutUserInput | HabitCreateOrConnectWithoutUserInput[]
+    createMany?: HabitCreateManyUserInputEnvelope
+    connect?: HabitWhereUniqueInput | HabitWhereUniqueInput[]
   }
 
   export type WorkspaceUpdateManyWithoutUserNestedInput = {
@@ -28368,6 +31009,20 @@ export namespace Prisma {
     deleteMany?: ProjectIdeaScalarWhereInput | ProjectIdeaScalarWhereInput[]
   }
 
+  export type HabitUpdateManyWithoutUserNestedInput = {
+    create?: XOR<HabitCreateWithoutUserInput, HabitUncheckedCreateWithoutUserInput> | HabitCreateWithoutUserInput[] | HabitUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: HabitCreateOrConnectWithoutUserInput | HabitCreateOrConnectWithoutUserInput[]
+    upsert?: HabitUpsertWithWhereUniqueWithoutUserInput | HabitUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: HabitCreateManyUserInputEnvelope
+    set?: HabitWhereUniqueInput | HabitWhereUniqueInput[]
+    disconnect?: HabitWhereUniqueInput | HabitWhereUniqueInput[]
+    delete?: HabitWhereUniqueInput | HabitWhereUniqueInput[]
+    connect?: HabitWhereUniqueInput | HabitWhereUniqueInput[]
+    update?: HabitUpdateWithWhereUniqueWithoutUserInput | HabitUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: HabitUpdateManyWithWhereWithoutUserInput | HabitUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: HabitScalarWhereInput | HabitScalarWhereInput[]
+  }
+
   export type WorkspaceUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<WorkspaceCreateWithoutUserInput, WorkspaceUncheckedCreateWithoutUserInput> | WorkspaceCreateWithoutUserInput[] | WorkspaceUncheckedCreateWithoutUserInput[]
     connectOrCreate?: WorkspaceCreateOrConnectWithoutUserInput | WorkspaceCreateOrConnectWithoutUserInput[]
@@ -28450,6 +31105,20 @@ export namespace Prisma {
     update?: ProjectIdeaUpdateWithWhereUniqueWithoutUserInput | ProjectIdeaUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: ProjectIdeaUpdateManyWithWhereWithoutUserInput | ProjectIdeaUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: ProjectIdeaScalarWhereInput | ProjectIdeaScalarWhereInput[]
+  }
+
+  export type HabitUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<HabitCreateWithoutUserInput, HabitUncheckedCreateWithoutUserInput> | HabitCreateWithoutUserInput[] | HabitUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: HabitCreateOrConnectWithoutUserInput | HabitCreateOrConnectWithoutUserInput[]
+    upsert?: HabitUpsertWithWhereUniqueWithoutUserInput | HabitUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: HabitCreateManyUserInputEnvelope
+    set?: HabitWhereUniqueInput | HabitWhereUniqueInput[]
+    disconnect?: HabitWhereUniqueInput | HabitWhereUniqueInput[]
+    delete?: HabitWhereUniqueInput | HabitWhereUniqueInput[]
+    connect?: HabitWhereUniqueInput | HabitWhereUniqueInput[]
+    update?: HabitUpdateWithWhereUniqueWithoutUserInput | HabitUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: HabitUpdateManyWithWhereWithoutUserInput | HabitUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: HabitScalarWhereInput | HabitScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutWorkspacesInput = {
@@ -29523,6 +32192,85 @@ export namespace Prisma {
     update?: XOR<XOR<ApiEndpointUpdateToOneWithWhereWithoutPingResultsInput, ApiEndpointUpdateWithoutPingResultsInput>, ApiEndpointUncheckedUpdateWithoutPingResultsInput>
   }
 
+  export type HabitCreatepreferredDaysInput = {
+    set: number[]
+  }
+
+  export type UserCreateNestedOneWithoutHabitsInput = {
+    create?: XOR<UserCreateWithoutHabitsInput, UserUncheckedCreateWithoutHabitsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutHabitsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type HabitEntryCreateNestedManyWithoutHabitInput = {
+    create?: XOR<HabitEntryCreateWithoutHabitInput, HabitEntryUncheckedCreateWithoutHabitInput> | HabitEntryCreateWithoutHabitInput[] | HabitEntryUncheckedCreateWithoutHabitInput[]
+    connectOrCreate?: HabitEntryCreateOrConnectWithoutHabitInput | HabitEntryCreateOrConnectWithoutHabitInput[]
+    createMany?: HabitEntryCreateManyHabitInputEnvelope
+    connect?: HabitEntryWhereUniqueInput | HabitEntryWhereUniqueInput[]
+  }
+
+  export type HabitEntryUncheckedCreateNestedManyWithoutHabitInput = {
+    create?: XOR<HabitEntryCreateWithoutHabitInput, HabitEntryUncheckedCreateWithoutHabitInput> | HabitEntryCreateWithoutHabitInput[] | HabitEntryUncheckedCreateWithoutHabitInput[]
+    connectOrCreate?: HabitEntryCreateOrConnectWithoutHabitInput | HabitEntryCreateOrConnectWithoutHabitInput[]
+    createMany?: HabitEntryCreateManyHabitInputEnvelope
+    connect?: HabitEntryWhereUniqueInput | HabitEntryWhereUniqueInput[]
+  }
+
+  export type HabitUpdatepreferredDaysInput = {
+    set?: number[]
+    push?: number | number[]
+  }
+
+  export type UserUpdateOneRequiredWithoutHabitsNestedInput = {
+    create?: XOR<UserCreateWithoutHabitsInput, UserUncheckedCreateWithoutHabitsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutHabitsInput
+    upsert?: UserUpsertWithoutHabitsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutHabitsInput, UserUpdateWithoutHabitsInput>, UserUncheckedUpdateWithoutHabitsInput>
+  }
+
+  export type HabitEntryUpdateManyWithoutHabitNestedInput = {
+    create?: XOR<HabitEntryCreateWithoutHabitInput, HabitEntryUncheckedCreateWithoutHabitInput> | HabitEntryCreateWithoutHabitInput[] | HabitEntryUncheckedCreateWithoutHabitInput[]
+    connectOrCreate?: HabitEntryCreateOrConnectWithoutHabitInput | HabitEntryCreateOrConnectWithoutHabitInput[]
+    upsert?: HabitEntryUpsertWithWhereUniqueWithoutHabitInput | HabitEntryUpsertWithWhereUniqueWithoutHabitInput[]
+    createMany?: HabitEntryCreateManyHabitInputEnvelope
+    set?: HabitEntryWhereUniqueInput | HabitEntryWhereUniqueInput[]
+    disconnect?: HabitEntryWhereUniqueInput | HabitEntryWhereUniqueInput[]
+    delete?: HabitEntryWhereUniqueInput | HabitEntryWhereUniqueInput[]
+    connect?: HabitEntryWhereUniqueInput | HabitEntryWhereUniqueInput[]
+    update?: HabitEntryUpdateWithWhereUniqueWithoutHabitInput | HabitEntryUpdateWithWhereUniqueWithoutHabitInput[]
+    updateMany?: HabitEntryUpdateManyWithWhereWithoutHabitInput | HabitEntryUpdateManyWithWhereWithoutHabitInput[]
+    deleteMany?: HabitEntryScalarWhereInput | HabitEntryScalarWhereInput[]
+  }
+
+  export type HabitEntryUncheckedUpdateManyWithoutHabitNestedInput = {
+    create?: XOR<HabitEntryCreateWithoutHabitInput, HabitEntryUncheckedCreateWithoutHabitInput> | HabitEntryCreateWithoutHabitInput[] | HabitEntryUncheckedCreateWithoutHabitInput[]
+    connectOrCreate?: HabitEntryCreateOrConnectWithoutHabitInput | HabitEntryCreateOrConnectWithoutHabitInput[]
+    upsert?: HabitEntryUpsertWithWhereUniqueWithoutHabitInput | HabitEntryUpsertWithWhereUniqueWithoutHabitInput[]
+    createMany?: HabitEntryCreateManyHabitInputEnvelope
+    set?: HabitEntryWhereUniqueInput | HabitEntryWhereUniqueInput[]
+    disconnect?: HabitEntryWhereUniqueInput | HabitEntryWhereUniqueInput[]
+    delete?: HabitEntryWhereUniqueInput | HabitEntryWhereUniqueInput[]
+    connect?: HabitEntryWhereUniqueInput | HabitEntryWhereUniqueInput[]
+    update?: HabitEntryUpdateWithWhereUniqueWithoutHabitInput | HabitEntryUpdateWithWhereUniqueWithoutHabitInput[]
+    updateMany?: HabitEntryUpdateManyWithWhereWithoutHabitInput | HabitEntryUpdateManyWithWhereWithoutHabitInput[]
+    deleteMany?: HabitEntryScalarWhereInput | HabitEntryScalarWhereInput[]
+  }
+
+  export type HabitCreateNestedOneWithoutEntriesInput = {
+    create?: XOR<HabitCreateWithoutEntriesInput, HabitUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: HabitCreateOrConnectWithoutEntriesInput
+    connect?: HabitWhereUniqueInput
+  }
+
+  export type HabitUpdateOneRequiredWithoutEntriesNestedInput = {
+    create?: XOR<HabitCreateWithoutEntriesInput, HabitUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: HabitCreateOrConnectWithoutEntriesInput
+    upsert?: HabitUpsertWithoutEntriesInput
+    connect?: HabitWhereUniqueInput
+    update?: XOR<XOR<HabitUpdateToOneWithWhereWithoutEntriesInput, HabitUpdateWithoutEntriesInput>, HabitUncheckedUpdateWithoutEntriesInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -30432,6 +33180,38 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type HabitCreateWithoutUserInput = {
+    id?: string
+    name: string
+    description?: string | null
+    weeklyTarget?: number
+    preferredDays?: HabitCreatepreferredDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    entries?: HabitEntryCreateNestedManyWithoutHabitInput
+  }
+
+  export type HabitUncheckedCreateWithoutUserInput = {
+    id?: string
+    name: string
+    description?: string | null
+    weeklyTarget?: number
+    preferredDays?: HabitCreatepreferredDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    entries?: HabitEntryUncheckedCreateNestedManyWithoutHabitInput
+  }
+
+  export type HabitCreateOrConnectWithoutUserInput = {
+    where: HabitWhereUniqueInput
+    create: XOR<HabitCreateWithoutUserInput, HabitUncheckedCreateWithoutUserInput>
+  }
+
+  export type HabitCreateManyUserInputEnvelope = {
+    data: HabitCreateManyUserInput | HabitCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type WorkspaceUpsertWithWhereUniqueWithoutUserInput = {
     where: WorkspaceWhereUniqueInput
     update: XOR<WorkspaceUpdateWithoutUserInput, WorkspaceUncheckedUpdateWithoutUserInput>
@@ -30622,6 +33402,36 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"ProjectIdea"> | Date | string
   }
 
+  export type HabitUpsertWithWhereUniqueWithoutUserInput = {
+    where: HabitWhereUniqueInput
+    update: XOR<HabitUpdateWithoutUserInput, HabitUncheckedUpdateWithoutUserInput>
+    create: XOR<HabitCreateWithoutUserInput, HabitUncheckedCreateWithoutUserInput>
+  }
+
+  export type HabitUpdateWithWhereUniqueWithoutUserInput = {
+    where: HabitWhereUniqueInput
+    data: XOR<HabitUpdateWithoutUserInput, HabitUncheckedUpdateWithoutUserInput>
+  }
+
+  export type HabitUpdateManyWithWhereWithoutUserInput = {
+    where: HabitScalarWhereInput
+    data: XOR<HabitUpdateManyMutationInput, HabitUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type HabitScalarWhereInput = {
+    AND?: HabitScalarWhereInput | HabitScalarWhereInput[]
+    OR?: HabitScalarWhereInput[]
+    NOT?: HabitScalarWhereInput | HabitScalarWhereInput[]
+    id?: StringFilter<"Habit"> | string
+    userId?: StringFilter<"Habit"> | string
+    name?: StringFilter<"Habit"> | string
+    description?: StringNullableFilter<"Habit"> | string | null
+    weeklyTarget?: IntFilter<"Habit"> | number
+    preferredDays?: IntNullableListFilter<"Habit">
+    createdAt?: DateTimeFilter<"Habit"> | Date | string
+    updatedAt?: DateTimeFilter<"Habit"> | Date | string
+  }
+
   export type UserCreateWithoutWorkspacesInput = {
     id?: string
     telegramId: string
@@ -30637,6 +33447,7 @@ export namespace Prisma {
     recaps?: RecapCreateNestedManyWithoutUserInput
     reminders?: ReminderCreateNestedManyWithoutUserInput
     projectIdeas?: ProjectIdeaCreateNestedManyWithoutUserInput
+    habits?: HabitCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutWorkspacesInput = {
@@ -30654,6 +33465,7 @@ export namespace Prisma {
     recaps?: RecapUncheckedCreateNestedManyWithoutUserInput
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     projectIdeas?: ProjectIdeaUncheckedCreateNestedManyWithoutUserInput
+    habits?: HabitUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutWorkspacesInput = {
@@ -31097,6 +33909,7 @@ export namespace Prisma {
     recaps?: RecapUpdateManyWithoutUserNestedInput
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     projectIdeas?: ProjectIdeaUpdateManyWithoutUserNestedInput
+    habits?: HabitUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutWorkspacesInput = {
@@ -31114,6 +33927,7 @@ export namespace Prisma {
     recaps?: RecapUncheckedUpdateManyWithoutUserNestedInput
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     projectIdeas?: ProjectIdeaUncheckedUpdateManyWithoutUserNestedInput
+    habits?: HabitUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TaskUpsertWithWhereUniqueWithoutWorkspaceInput = {
@@ -32948,6 +35762,7 @@ export namespace Prisma {
     recaps?: RecapCreateNestedManyWithoutUserInput
     reminders?: ReminderCreateNestedManyWithoutUserInput
     projectIdeas?: ProjectIdeaCreateNestedManyWithoutUserInput
+    habits?: HabitCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActivityLogsInput = {
@@ -32965,6 +35780,7 @@ export namespace Prisma {
     recaps?: RecapUncheckedCreateNestedManyWithoutUserInput
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     projectIdeas?: ProjectIdeaUncheckedCreateNestedManyWithoutUserInput
+    habits?: HabitUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActivityLogsInput = {
@@ -32998,6 +35814,7 @@ export namespace Prisma {
     recaps?: RecapUpdateManyWithoutUserNestedInput
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     projectIdeas?: ProjectIdeaUpdateManyWithoutUserNestedInput
+    habits?: HabitUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActivityLogsInput = {
@@ -33015,6 +35832,7 @@ export namespace Prisma {
     recaps?: RecapUncheckedUpdateManyWithoutUserNestedInput
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     projectIdeas?: ProjectIdeaUncheckedUpdateManyWithoutUserNestedInput
+    habits?: HabitUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutStandupsInput = {
@@ -33032,6 +35850,7 @@ export namespace Prisma {
     recaps?: RecapCreateNestedManyWithoutUserInput
     reminders?: ReminderCreateNestedManyWithoutUserInput
     projectIdeas?: ProjectIdeaCreateNestedManyWithoutUserInput
+    habits?: HabitCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutStandupsInput = {
@@ -33049,6 +35868,7 @@ export namespace Prisma {
     recaps?: RecapUncheckedCreateNestedManyWithoutUserInput
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     projectIdeas?: ProjectIdeaUncheckedCreateNestedManyWithoutUserInput
+    habits?: HabitUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutStandupsInput = {
@@ -33082,6 +35902,7 @@ export namespace Prisma {
     recaps?: RecapUpdateManyWithoutUserNestedInput
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     projectIdeas?: ProjectIdeaUpdateManyWithoutUserNestedInput
+    habits?: HabitUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStandupsInput = {
@@ -33099,6 +35920,7 @@ export namespace Prisma {
     recaps?: RecapUncheckedUpdateManyWithoutUserNestedInput
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     projectIdeas?: ProjectIdeaUncheckedUpdateManyWithoutUserNestedInput
+    habits?: HabitUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutRecapsInput = {
@@ -33116,6 +35938,7 @@ export namespace Prisma {
     standups?: StandupCreateNestedManyWithoutUserInput
     reminders?: ReminderCreateNestedManyWithoutUserInput
     projectIdeas?: ProjectIdeaCreateNestedManyWithoutUserInput
+    habits?: HabitCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRecapsInput = {
@@ -33133,6 +35956,7 @@ export namespace Prisma {
     standups?: StandupUncheckedCreateNestedManyWithoutUserInput
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
     projectIdeas?: ProjectIdeaUncheckedCreateNestedManyWithoutUserInput
+    habits?: HabitUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRecapsInput = {
@@ -33166,6 +35990,7 @@ export namespace Prisma {
     standups?: StandupUpdateManyWithoutUserNestedInput
     reminders?: ReminderUpdateManyWithoutUserNestedInput
     projectIdeas?: ProjectIdeaUpdateManyWithoutUserNestedInput
+    habits?: HabitUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRecapsInput = {
@@ -33183,6 +36008,7 @@ export namespace Prisma {
     standups?: StandupUncheckedUpdateManyWithoutUserNestedInput
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
     projectIdeas?: ProjectIdeaUncheckedUpdateManyWithoutUserNestedInput
+    habits?: HabitUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutRemindersInput = {
@@ -33200,6 +36026,7 @@ export namespace Prisma {
     standups?: StandupCreateNestedManyWithoutUserInput
     recaps?: RecapCreateNestedManyWithoutUserInput
     projectIdeas?: ProjectIdeaCreateNestedManyWithoutUserInput
+    habits?: HabitCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRemindersInput = {
@@ -33217,6 +36044,7 @@ export namespace Prisma {
     standups?: StandupUncheckedCreateNestedManyWithoutUserInput
     recaps?: RecapUncheckedCreateNestedManyWithoutUserInput
     projectIdeas?: ProjectIdeaUncheckedCreateNestedManyWithoutUserInput
+    habits?: HabitUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRemindersInput = {
@@ -33301,6 +36129,7 @@ export namespace Prisma {
     standups?: StandupUpdateManyWithoutUserNestedInput
     recaps?: RecapUpdateManyWithoutUserNestedInput
     projectIdeas?: ProjectIdeaUpdateManyWithoutUserNestedInput
+    habits?: HabitUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRemindersInput = {
@@ -33318,6 +36147,7 @@ export namespace Prisma {
     standups?: StandupUncheckedUpdateManyWithoutUserNestedInput
     recaps?: RecapUncheckedUpdateManyWithoutUserNestedInput
     projectIdeas?: ProjectIdeaUncheckedUpdateManyWithoutUserNestedInput
+    habits?: HabitUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type WorkspaceUpsertWithoutRemindersInput = {
@@ -33392,6 +36222,7 @@ export namespace Prisma {
     standups?: StandupCreateNestedManyWithoutUserInput
     recaps?: RecapCreateNestedManyWithoutUserInput
     reminders?: ReminderCreateNestedManyWithoutUserInput
+    habits?: HabitCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectIdeasInput = {
@@ -33409,6 +36240,7 @@ export namespace Prisma {
     standups?: StandupUncheckedCreateNestedManyWithoutUserInput
     recaps?: RecapUncheckedCreateNestedManyWithoutUserInput
     reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
+    habits?: HabitUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectIdeasInput = {
@@ -33442,6 +36274,7 @@ export namespace Prisma {
     standups?: StandupUpdateManyWithoutUserNestedInput
     recaps?: RecapUpdateManyWithoutUserNestedInput
     reminders?: ReminderUpdateManyWithoutUserNestedInput
+    habits?: HabitUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectIdeasInput = {
@@ -33459,6 +36292,7 @@ export namespace Prisma {
     standups?: StandupUncheckedUpdateManyWithoutUserNestedInput
     recaps?: RecapUncheckedUpdateManyWithoutUserNestedInput
     reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
+    habits?: HabitUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ApiEndpointCreateWithoutPingResultsInput = {
@@ -33541,6 +36375,208 @@ export namespace Prisma {
     projectName?: NullableStringFieldUpdateOperationsInput | string | null
     lastPingStatus?: NullableIntFieldUpdateOperationsInput | number | null
     lastPingAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserCreateWithoutHabitsInput = {
+    id?: string
+    telegramId: string
+    name?: string | null
+    email?: string | null
+    masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
+    aiSettings?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workspaces?: WorkspaceCreateNestedManyWithoutUserInput
+    activityLogs?: ActivityLogCreateNestedManyWithoutUserInput
+    standups?: StandupCreateNestedManyWithoutUserInput
+    recaps?: RecapCreateNestedManyWithoutUserInput
+    reminders?: ReminderCreateNestedManyWithoutUserInput
+    projectIdeas?: ProjectIdeaCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutHabitsInput = {
+    id?: string
+    telegramId: string
+    name?: string | null
+    email?: string | null
+    masterPasswordHash?: string | null
+    loginPasswordHash?: string | null
+    aiSettings?: JsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workspaces?: WorkspaceUncheckedCreateNestedManyWithoutUserInput
+    activityLogs?: ActivityLogUncheckedCreateNestedManyWithoutUserInput
+    standups?: StandupUncheckedCreateNestedManyWithoutUserInput
+    recaps?: RecapUncheckedCreateNestedManyWithoutUserInput
+    reminders?: ReminderUncheckedCreateNestedManyWithoutUserInput
+    projectIdeas?: ProjectIdeaUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutHabitsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutHabitsInput, UserUncheckedCreateWithoutHabitsInput>
+  }
+
+  export type HabitEntryCreateWithoutHabitInput = {
+    id?: string
+    date: Date | string
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type HabitEntryUncheckedCreateWithoutHabitInput = {
+    id?: string
+    date: Date | string
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type HabitEntryCreateOrConnectWithoutHabitInput = {
+    where: HabitEntryWhereUniqueInput
+    create: XOR<HabitEntryCreateWithoutHabitInput, HabitEntryUncheckedCreateWithoutHabitInput>
+  }
+
+  export type HabitEntryCreateManyHabitInputEnvelope = {
+    data: HabitEntryCreateManyHabitInput | HabitEntryCreateManyHabitInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutHabitsInput = {
+    update: XOR<UserUpdateWithoutHabitsInput, UserUncheckedUpdateWithoutHabitsInput>
+    create: XOR<UserCreateWithoutHabitsInput, UserUncheckedCreateWithoutHabitsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutHabitsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutHabitsInput, UserUncheckedUpdateWithoutHabitsInput>
+  }
+
+  export type UserUpdateWithoutHabitsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    telegramId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSettings?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspaces?: WorkspaceUpdateManyWithoutUserNestedInput
+    activityLogs?: ActivityLogUpdateManyWithoutUserNestedInput
+    standups?: StandupUpdateManyWithoutUserNestedInput
+    recaps?: RecapUpdateManyWithoutUserNestedInput
+    reminders?: ReminderUpdateManyWithoutUserNestedInput
+    projectIdeas?: ProjectIdeaUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutHabitsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    telegramId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    masterPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    loginPasswordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSettings?: JsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspaces?: WorkspaceUncheckedUpdateManyWithoutUserNestedInput
+    activityLogs?: ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+    standups?: StandupUncheckedUpdateManyWithoutUserNestedInput
+    recaps?: RecapUncheckedUpdateManyWithoutUserNestedInput
+    reminders?: ReminderUncheckedUpdateManyWithoutUserNestedInput
+    projectIdeas?: ProjectIdeaUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type HabitEntryUpsertWithWhereUniqueWithoutHabitInput = {
+    where: HabitEntryWhereUniqueInput
+    update: XOR<HabitEntryUpdateWithoutHabitInput, HabitEntryUncheckedUpdateWithoutHabitInput>
+    create: XOR<HabitEntryCreateWithoutHabitInput, HabitEntryUncheckedCreateWithoutHabitInput>
+  }
+
+  export type HabitEntryUpdateWithWhereUniqueWithoutHabitInput = {
+    where: HabitEntryWhereUniqueInput
+    data: XOR<HabitEntryUpdateWithoutHabitInput, HabitEntryUncheckedUpdateWithoutHabitInput>
+  }
+
+  export type HabitEntryUpdateManyWithWhereWithoutHabitInput = {
+    where: HabitEntryScalarWhereInput
+    data: XOR<HabitEntryUpdateManyMutationInput, HabitEntryUncheckedUpdateManyWithoutHabitInput>
+  }
+
+  export type HabitEntryScalarWhereInput = {
+    AND?: HabitEntryScalarWhereInput | HabitEntryScalarWhereInput[]
+    OR?: HabitEntryScalarWhereInput[]
+    NOT?: HabitEntryScalarWhereInput | HabitEntryScalarWhereInput[]
+    id?: StringFilter<"HabitEntry"> | string
+    habitId?: StringFilter<"HabitEntry"> | string
+    date?: DateTimeFilter<"HabitEntry"> | Date | string
+    note?: StringNullableFilter<"HabitEntry"> | string | null
+    createdAt?: DateTimeFilter<"HabitEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"HabitEntry"> | Date | string
+  }
+
+  export type HabitCreateWithoutEntriesInput = {
+    id?: string
+    name: string
+    description?: string | null
+    weeklyTarget?: number
+    preferredDays?: HabitCreatepreferredDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutHabitsInput
+  }
+
+  export type HabitUncheckedCreateWithoutEntriesInput = {
+    id?: string
+    userId: string
+    name: string
+    description?: string | null
+    weeklyTarget?: number
+    preferredDays?: HabitCreatepreferredDaysInput | number[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type HabitCreateOrConnectWithoutEntriesInput = {
+    where: HabitWhereUniqueInput
+    create: XOR<HabitCreateWithoutEntriesInput, HabitUncheckedCreateWithoutEntriesInput>
+  }
+
+  export type HabitUpsertWithoutEntriesInput = {
+    update: XOR<HabitUpdateWithoutEntriesInput, HabitUncheckedUpdateWithoutEntriesInput>
+    create: XOR<HabitCreateWithoutEntriesInput, HabitUncheckedCreateWithoutEntriesInput>
+    where?: HabitWhereInput
+  }
+
+  export type HabitUpdateToOneWithWhereWithoutEntriesInput = {
+    where?: HabitWhereInput
+    data: XOR<HabitUpdateWithoutEntriesInput, HabitUncheckedUpdateWithoutEntriesInput>
+  }
+
+  export type HabitUpdateWithoutEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyTarget?: IntFieldUpdateOperationsInput | number
+    preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutHabitsNestedInput
+  }
+
+  export type HabitUncheckedUpdateWithoutEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyTarget?: IntFieldUpdateOperationsInput | number
+    preferredDays?: HabitUpdatepreferredDaysInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -33681,6 +36717,16 @@ export namespace Prisma {
     status?: $Enums.IdeaStatus
     references?: ProjectIdeaCreatereferencesInput | string[]
     promotedToWorkspaceId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type HabitCreateManyUserInput = {
+    id?: string
+    name: string
+    description?: string | null
+    weeklyTarget?: number
+    preferredDays?: HabitCreatepreferredDaysInput | number[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -33913,6 +36959,38 @@ export namespace Prisma {
     status?: EnumIdeaStatusFieldUpdateOperationsInput | $Enums.IdeaStatus
     references?: ProjectIdeaUpdatereferencesInput | string[]
     promotedToWorkspaceId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HabitUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyTarget?: IntFieldUpdateOperationsInput | number
+    preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: HabitEntryUpdateManyWithoutHabitNestedInput
+  }
+
+  export type HabitUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyTarget?: IntFieldUpdateOperationsInput | number
+    preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    entries?: HabitEntryUncheckedUpdateManyWithoutHabitNestedInput
+  }
+
+  export type HabitUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    weeklyTarget?: IntFieldUpdateOperationsInput | number
+    preferredDays?: HabitUpdatepreferredDaysInput | number[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -34734,6 +37812,38 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type HabitEntryCreateManyHabitInput = {
+    id?: string
+    date: Date | string
+    note?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type HabitEntryUpdateWithoutHabitInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HabitEntryUncheckedUpdateWithoutHabitInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HabitEntryUncheckedUpdateManyWithoutHabitInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
 
 
   /**
@@ -34763,6 +37873,10 @@ export namespace Prisma {
      * @deprecated Use ApiEndpointCountOutputTypeDefaultArgs instead
      */
     export type ApiEndpointCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ApiEndpointCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use HabitCountOutputTypeDefaultArgs instead
+     */
+    export type HabitCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = HabitCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use CustomStatusDefaultArgs instead
      */
@@ -34839,6 +37953,14 @@ export namespace Prisma {
      * @deprecated Use PingResultDefaultArgs instead
      */
     export type PingResultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PingResultDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use HabitDefaultArgs instead
+     */
+    export type HabitArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = HabitDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use HabitEntryDefaultArgs instead
+     */
+    export type HabitEntryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = HabitEntryDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

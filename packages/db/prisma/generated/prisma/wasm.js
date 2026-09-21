@@ -367,6 +367,26 @@ exports.Prisma.PingResultScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.HabitScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  description: 'description',
+  weeklyTarget: 'weeklyTarget',
+  preferredDays: 'preferredDays',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.HabitEntryScalarFieldEnum = {
+  id: 'id',
+  habitId: 'habitId',
+  date: 'date',
+  note: 'note',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -517,7 +537,9 @@ exports.Prisma.ModelName = {
   Recap: 'Recap',
   Reminder: 'Reminder',
   ProjectIdea: 'ProjectIdea',
-  PingResult: 'PingResult'
+  PingResult: 'PingResult',
+  Habit: 'Habit',
+  HabitEntry: 'HabitEntry'
 };
 
 /**

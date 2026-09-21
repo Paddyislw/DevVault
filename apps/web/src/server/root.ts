@@ -13,6 +13,7 @@ import { apiEndpointsRouter } from "./routers/apiEndpoints";
 import { remindersRouter } from "./routers/reminders";
 import { envSetsRouter } from "./routers/envSets";
 import { settingsRouter } from "./routers/settings";
+import { habitsRouter } from "./routers/habits";
 
 export const appRouter = router({
   tasks: tasksRouter,
@@ -28,6 +29,7 @@ export const appRouter = router({
   reminders: remindersRouter,
   envSets: envSetsRouter,
   settings: settingsRouter,
+  habits: habitsRouter,
 });
 
 export type AppRouter = typeof appRouter;

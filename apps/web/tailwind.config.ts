@@ -21,11 +21,23 @@ const config: Config = {
   			'text-ghost': 'var(--text-ghost)',
   			'accent': {
   				DEFAULT: 'var(--accent)',
-  				foreground: 'var(--accent-foreground)'
+  				foreground: 'var(--accent-foreground)',
+  				hover: 'var(--accent-hover)',
+  				subtle: 'var(--accent-subtle)',
+  				muted: 'var(--accent-muted)'
   			},
-  			'danger': 'var(--danger)',
-  			'success': 'var(--success)',
-  			'warning': 'var(--warning)',
+  			'danger': {
+  				DEFAULT: 'var(--danger)',
+  				bg: 'var(--danger-bg)'
+  			},
+  			'success': {
+  				DEFAULT: 'var(--success)',
+  				bg: 'var(--success-bg)'
+  			},
+  			'warning': {
+  				DEFAULT: 'var(--warning)',
+  				bg: 'var(--warning-bg)'
+  			},
   			'border-default': 'var(--border-default)',
   			'border-subtle': 'var(--border-subtle)',
   			'border-strong': 'var(--border-strong)',

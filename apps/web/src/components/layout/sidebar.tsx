@@ -18,6 +18,7 @@ import {
   Zap,
   Bell,
   Key,
+  Target,
 } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
@@ -36,6 +37,7 @@ const NAV_ITEMS = [
   { label: "Snippets", href: "/snippets", icon: Code2 },
   { label: "Notes", href: "/notes", icon: FileText },
   { label: "Env Manager", href: "/env", icon: Key },
+  { label: "Habit Tracker", href: "/habits", icon: Target },
   { label: "Reminders", href: "/reminders", icon: Bell },
   { label: "Activity", href: "/activity", icon: Activity },
   { label: "Vault", href: "/vault", icon: ShieldCheck },
