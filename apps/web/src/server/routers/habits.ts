@@ -38,6 +38,7 @@ export const habitsRouter = router({
       description: h.description,
       weeklyTarget: h.weeklyTarget,
       preferredDays: h.preferredDays,
+      carryForward: h.carryForward,
       createdAt: h.createdAt,
       entries: h.entries.map((e) => ({ date: dateToKey(e.date), note: e.note })),
     }))
@@ -51,6 +52,7 @@ export const habitsRouter = router({
       description: z.string().max(300).optional(),
       weeklyTarget: z.number().int().min(1).max(7),
       preferredDays: z.array(z.number().int().min(0).max(6)).max(7).default([]),
+      carryForward: z.boolean().default(true),
     }))
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.habit.create({
@@ -60,6 +62,7 @@ export const habitsRouter = router({
           description: input.description?.trim() || null,
           weeklyTarget: input.weeklyTarget,
           preferredDays: input.preferredDays,
+          carryForward: input.carryForward,
         },
       })
     }),
@@ -73,6 +76,7 @@ export const habitsRouter = router({
       description: z.string().max(300).nullable().optional(),
       weeklyTarget: z.number().int().min(1).max(7).optional(),
       preferredDays: z.array(z.number().int().min(0).max(6)).max(7).optional(),
+      carryForward: z.boolean().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
       const habit = await ctx.prisma.habit.findUnique({ where: { id: input.id } })

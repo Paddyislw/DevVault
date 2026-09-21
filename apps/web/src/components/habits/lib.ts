@@ -1,9 +1,10 @@
 // components/habits/lib.ts
 //
-// All date math and derived stats (streaks, weekly progress, history) live
-// here as pure functions over the raw habit + entries the server returns.
-// The server stays a dumb persistence layer; this is the single source of
-// truth for "what does this data mean" so UI pieces never disagree.
+// All date math and derived stats live here as pure functions over the raw
+// habits + entries the server returns. The server stays a dumb persistence
+// layer; this is the single source of truth for "what does this data mean"
+// — weekly progress, streaks, carry-forward visibility, history — so the
+// UI components never disagree with each other.
 
 import type { RouterOutputs } from "@/lib/trpc";
 
@@ -18,11 +19,6 @@ export function toDateKey(d: Date): string {
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
-}
-
-export function parseDateKey(key: string): Date {
-  const [y, m, d] = key.split("-").map(Number);
-  return new Date(y, m - 1, d);
 }
 
 /** Monday=0 .. Sunday=6 */
@@ -41,6 +37,10 @@ export function addDays(d: Date, n: number): Date {
   const copy = new Date(d);
   copy.setDate(copy.getDate() + n);
   return copy;
+}
+
+export function addWeeks(weekStart: Date, n: number): Date {
+  return addDays(weekStart, n * 7);
 }
 
 export function getWeekDates(weekStart: Date): Date[] {
@@ -64,98 +64,160 @@ export function getDayStatus(dateKey: string, todayKey: string, completedSet: Se
   return "missed";
 }
 
-export interface WeekBucket {
-  start: Date;
-  keys: string[];
-  count: number;
-  target: number;
-  met: boolean;
-  isCurrent: boolean;
+// ─── Carry-forward visibility ──────────────────────────────────────────────
+
+/** Does this habit show up on the grid for the given week? */
+export function isHabitActiveInWeek(habit: Habit, weekStart: Date): boolean {
+  const creationWeek = startOfWeek(new Date(habit.createdAt));
+  if (weekStart.getTime() < creationWeek.getTime()) return false;
+  if (weekStart.getTime() === creationWeek.getTime()) return true;
+  return habit.carryForward;
 }
 
-export interface HabitStats {
-  todayKey: string;
+/** Earliest week any of the given habits could appear in. */
+export function earliestActiveWeek(habits: Habit[], fallback: Date): Date {
+  if (habits.length === 0) return startOfWeek(fallback);
+  const earliest = habits.reduce(
+    (min, h) => Math.min(min, startOfWeek(new Date(h.createdAt)).getTime()),
+    Infinity,
+  );
+  return new Date(earliest);
+}
+
+// ─── Per-habit, per-week stats ──────────────────────────────────────────────
+
+export interface HabitWeekStats {
+  weekDates: Date[];
   completedSet: Set<string>;
   entryByDate: Map<string, { date: string; note: string | null }>;
-  thisWeekStart: Date;
-  thisWeekDates: Date[];
   completedThisWeek: number;
   weeklyTarget: number;
-  goalMet: boolean;
   remainingDays: number;
-  currentStreak: number;
-  bestStreak: number;
-  /** Ascending, oldest first — from the habit's creation week through this week. */
-  weeks: WeekBucket[];
+  goalMet: boolean;
+  pct: number; // 0..1, capped at 1
 }
 
-export function computeHabitStats(habit: Habit, today: Date = new Date()): HabitStats {
+export function computeHabitWeekStats(habit: Habit, weekStart: Date, todayKey: string): HabitWeekStats {
   const completedSet = new Set(habit.entries.map((e) => e.date));
   const entryByDate = new Map(habit.entries.map((e) => [e.date, e]));
-  const todayKey = toDateKey(today);
-  const thisWeekStart = startOfWeek(today);
-  const thisWeekDates = getWeekDates(thisWeekStart);
-  const thisWeekKeys = thisWeekDates.map(toDateKey);
+  const weekDates = getWeekDates(weekStart);
+  const weekKeys = weekDates.map(toDateKey);
 
-  const completedThisWeek = thisWeekKeys.filter((k) => completedSet.has(k)).length;
+  const completedThisWeek = weekKeys.filter((k) => completedSet.has(k)).length;
+  const remainingDays = weekKeys.filter((k) => k > todayKey).length;
   const goalMet = completedThisWeek >= habit.weeklyTarget;
-  const remainingDays = thisWeekKeys.filter((k) => k > todayKey).length;
 
-  // Bucket every week from the habit's creation through the current week.
-  const createdAt = new Date(habit.createdAt);
-  const firstWeekStart = startOfWeek(createdAt);
-  const weeks: WeekBucket[] = [];
-  for (let cursor = new Date(firstWeekStart); cursor <= thisWeekStart; cursor = addDays(cursor, 7)) {
-    const keys = getWeekDates(cursor).map(toDateKey);
-    const count = keys.filter((k) => completedSet.has(k)).length;
+  return {
+    weekDates,
+    completedSet,
+    entryByDate,
+    completedThisWeek,
+    weeklyTarget: habit.weeklyTarget,
+    remainingDays,
+    goalMet,
+    pct: habit.weeklyTarget > 0 ? Math.min(1, completedThisWeek / habit.weeklyTarget) : 0,
+  };
+}
+
+function weekTotals(habits: Habit[], weekStart: Date, todayKey: string) {
+  const visible = habits.filter((h) => isHabitActiveInWeek(h, weekStart));
+  let totalCompleted = 0;
+  let totalExpected = 0;
+  let onTrackCount = 0;
+
+  for (const h of visible) {
+    const s = computeHabitWeekStats(h, weekStart, todayKey);
+    totalCompleted += s.completedThisWeek;
+    totalExpected += s.weeklyTarget;
+    if (s.completedThisWeek + s.remainingDays >= s.weeklyTarget) onTrackCount += 1;
+  }
+
+  return { visible, totalCompleted, totalExpected, onTrackCount };
+}
+
+// ─── Overall (all-habits) stats for one week ───────────────────────────────
+
+export interface OverallWeekStats {
+  visibleHabits: Habit[];
+  totalCompleted: number;
+  totalExpected: number;
+  overallPct: number; // 0..1
+  onTrackCount: number;
+  todayCompletedCount: number;
+}
+
+export function computeOverallWeekStats(habits: Habit[], weekStart: Date, today: Date): OverallWeekStats {
+  const todayKey = toDateKey(today);
+  const { visible, totalCompleted, totalExpected, onTrackCount } = weekTotals(habits, weekStart, todayKey);
+
+  const todayCompletedCount = visible.filter((h) => h.entries.some((e) => e.date === todayKey)).length;
+
+  return {
+    visibleHabits: visible,
+    totalCompleted,
+    totalExpected,
+    overallPct: totalExpected > 0 ? totalCompleted / totalExpected : 0,
+    onTrackCount,
+    todayCompletedCount,
+  };
+}
+
+// ─── Overall current streak (consecutive weeks fully met) ─────────────────
+
+export function computeOverallStreak(habits: Habit[], today: Date): number {
+  if (habits.length === 0) return 0;
+  const todayKey = toDateKey(today);
+  const currentWeekStart = startOfWeek(today);
+  const firstWeek = earliestActiveWeek(habits, today);
+
+  const weeks: { met: boolean; isCurrent: boolean }[] = [];
+  for (let cursor = new Date(firstWeek); cursor <= currentWeekStart; cursor = addWeeks(cursor, 1)) {
+    const { totalCompleted, totalExpected } = weekTotals(habits, cursor, todayKey);
     weeks.push({
-      start: new Date(cursor),
-      keys,
-      count,
-      target: habit.weeklyTarget,
-      met: count >= habit.weeklyTarget,
-      isCurrent: cursor.getTime() === thisWeekStart.getTime(),
+      met: totalExpected === 0 || totalCompleted >= totalExpected,
+      isCurrent: cursor.getTime() === currentWeekStart.getTime(),
     });
   }
 
-  // Current streak: walk backward from the current week. An in-progress
-  // week counts the moment it hits target, but never *breaks* the streak
-  // while it's still open — only a fully-elapsed miss does that.
-  let currentStreak = 0;
+  let streak = 0;
   for (let i = weeks.length - 1; i >= 0; i--) {
     const w = weeks[i];
     if (w.isCurrent) {
-      if (w.met) currentStreak += 1;
+      if (w.met) streak += 1;
       continue;
     }
-    if (w.met) currentStreak += 1;
+    if (w.met) streak += 1;
     else break;
   }
+  return streak;
+}
 
-  // Best streak: longest run of met weeks anywhere in history.
-  let bestStreak = 0;
-  let run = 0;
-  for (const w of weeks) {
-    if (w.met) {
-      run += 1;
-      bestStreak = Math.max(bestStreak, run);
-    } else if (!w.isCurrent) {
-      run = 0;
-    }
+// ─── Week history (compact summaries for past weeks) ───────────────────────
+
+export interface WeekSummary {
+  weekStart: Date;
+  pct: number;
+  totalCompleted: number;
+  totalExpected: number;
+}
+
+export function computeWeekHistory(habits: Habit[], today: Date, maxWeeks = 8): WeekSummary[] {
+  if (habits.length === 0) return [];
+  const todayKey = toDateKey(today);
+  const currentWeekStart = startOfWeek(today);
+  const firstWeek = earliestActiveWeek(habits, today);
+
+  const summaries: WeekSummary[] = [];
+  for (let cursor = addWeeks(currentWeekStart, -1); cursor >= firstWeek; cursor = addWeeks(cursor, -1)) {
+    const { totalCompleted, totalExpected } = weekTotals(habits, cursor, todayKey);
+    if (totalExpected === 0) continue;
+    summaries.push({
+      weekStart: new Date(cursor),
+      pct: totalCompleted / totalExpected,
+      totalCompleted,
+      totalExpected,
+    });
+    if (summaries.length >= maxWeeks) break;
   }
-
-  return {
-    todayKey,
-    completedSet,
-    entryByDate,
-    thisWeekStart,
-    thisWeekDates,
-    completedThisWeek,
-    weeklyTarget: habit.weeklyTarget,
-    goalMet,
-    remainingDays,
-    currentStreak,
-    bestStreak,
-    weeks,
-  };
+  return summaries;
 }

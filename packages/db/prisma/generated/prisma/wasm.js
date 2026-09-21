@@ -374,6 +374,7 @@ exports.Prisma.HabitScalarFieldEnum = {
   description: 'description',
   weeklyTarget: 'weeklyTarget',
   preferredDays: 'preferredDays',
+  carryForward: 'carryForward',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

@@ -22833,6 +22833,7 @@ export namespace Prisma {
     name: string | null
     description: string | null
     weeklyTarget: number | null
+    carryForward: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -22843,6 +22844,7 @@ export namespace Prisma {
     name: string | null
     description: string | null
     weeklyTarget: number | null
+    carryForward: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -22854,6 +22856,7 @@ export namespace Prisma {
     description: number
     weeklyTarget: number
     preferredDays: number
+    carryForward: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -22876,6 +22879,7 @@ export namespace Prisma {
     name?: true
     description?: true
     weeklyTarget?: true
+    carryForward?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -22886,6 +22890,7 @@ export namespace Prisma {
     name?: true
     description?: true
     weeklyTarget?: true
+    carryForward?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -22897,6 +22902,7 @@ export namespace Prisma {
     description?: true
     weeklyTarget?: true
     preferredDays?: true
+    carryForward?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -22995,6 +23001,7 @@ export namespace Prisma {
     description: string | null
     weeklyTarget: number
     preferredDays: number[]
+    carryForward: boolean
     createdAt: Date
     updatedAt: Date
     _count: HabitCountAggregateOutputType | null
@@ -23025,6 +23032,7 @@ export namespace Prisma {
     description?: boolean
     weeklyTarget?: boolean
     preferredDays?: boolean
+    carryForward?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -23039,6 +23047,7 @@ export namespace Prisma {
     description?: boolean
     weeklyTarget?: boolean
     preferredDays?: boolean
+    carryForward?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -23051,6 +23060,7 @@ export namespace Prisma {
     description?: boolean
     weeklyTarget?: boolean
     preferredDays?: boolean
+    carryForward?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -23077,6 +23087,7 @@ export namespace Prisma {
       description: string | null
       weeklyTarget: number
       preferredDays: number[]
+      carryForward: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["habit"]>
@@ -23480,6 +23491,7 @@ export namespace Prisma {
     readonly description: FieldRef<"Habit", 'String'>
     readonly weeklyTarget: FieldRef<"Habit", 'Int'>
     readonly preferredDays: FieldRef<"Habit", 'Int[]'>
+    readonly carryForward: FieldRef<"Habit", 'Boolean'>
     readonly createdAt: FieldRef<"Habit", 'DateTime'>
     readonly updatedAt: FieldRef<"Habit", 'DateTime'>
   }
@@ -25102,6 +25114,7 @@ export namespace Prisma {
     description: 'description',
     weeklyTarget: 'weeklyTarget',
     preferredDays: 'preferredDays',
+    carryForward: 'carryForward',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -27064,6 +27077,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Habit"> | string | null
     weeklyTarget?: IntFilter<"Habit"> | number
     preferredDays?: IntNullableListFilter<"Habit">
+    carryForward?: BoolFilter<"Habit"> | boolean
     createdAt?: DateTimeFilter<"Habit"> | Date | string
     updatedAt?: DateTimeFilter<"Habit"> | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
@@ -27077,6 +27091,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     weeklyTarget?: SortOrder
     preferredDays?: SortOrder
+    carryForward?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -27093,6 +27108,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Habit"> | string | null
     weeklyTarget?: IntFilter<"Habit"> | number
     preferredDays?: IntNullableListFilter<"Habit">
+    carryForward?: BoolFilter<"Habit"> | boolean
     createdAt?: DateTimeFilter<"Habit"> | Date | string
     updatedAt?: DateTimeFilter<"Habit"> | Date | string
     user?: XOR<UserRelationFilter, UserWhereInput>
@@ -27106,6 +27122,7 @@ export namespace Prisma {
     description?: SortOrderInput | SortOrder
     weeklyTarget?: SortOrder
     preferredDays?: SortOrder
+    carryForward?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: HabitCountOrderByAggregateInput
@@ -27125,6 +27142,7 @@ export namespace Prisma {
     description?: StringNullableWithAggregatesFilter<"Habit"> | string | null
     weeklyTarget?: IntWithAggregatesFilter<"Habit"> | number
     preferredDays?: IntNullableListFilter<"Habit">
+    carryForward?: BoolWithAggregatesFilter<"Habit"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Habit"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Habit"> | Date | string
   }
@@ -28986,6 +29004,7 @@ export namespace Prisma {
     description?: string | null
     weeklyTarget?: number
     preferredDays?: HabitCreatepreferredDaysInput | number[]
+    carryForward?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutHabitsInput
@@ -28999,6 +29018,7 @@ export namespace Prisma {
     description?: string | null
     weeklyTarget?: number
     preferredDays?: HabitCreatepreferredDaysInput | number[]
+    carryForward?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     entries?: HabitEntryUncheckedCreateNestedManyWithoutHabitInput
@@ -29010,6 +29030,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     weeklyTarget?: IntFieldUpdateOperationsInput | number
     preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    carryForward?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutHabitsNestedInput
@@ -29023,6 +29044,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     weeklyTarget?: IntFieldUpdateOperationsInput | number
     preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    carryForward?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     entries?: HabitEntryUncheckedUpdateManyWithoutHabitNestedInput
@@ -29035,6 +29057,7 @@ export namespace Prisma {
     description?: string | null
     weeklyTarget?: number
     preferredDays?: HabitCreatepreferredDaysInput | number[]
+    carryForward?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -29045,6 +29068,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     weeklyTarget?: IntFieldUpdateOperationsInput | number
     preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    carryForward?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -29056,6 +29080,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     weeklyTarget?: IntFieldUpdateOperationsInput | number
     preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    carryForward?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -30676,6 +30701,7 @@ export namespace Prisma {
     description?: SortOrder
     weeklyTarget?: SortOrder
     preferredDays?: SortOrder
+    carryForward?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -30691,6 +30717,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrder
     weeklyTarget?: SortOrder
+    carryForward?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -30701,6 +30728,7 @@ export namespace Prisma {
     name?: SortOrder
     description?: SortOrder
     weeklyTarget?: SortOrder
+    carryForward?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -33186,6 +33214,7 @@ export namespace Prisma {
     description?: string | null
     weeklyTarget?: number
     preferredDays?: HabitCreatepreferredDaysInput | number[]
+    carryForward?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     entries?: HabitEntryCreateNestedManyWithoutHabitInput
@@ -33197,6 +33226,7 @@ export namespace Prisma {
     description?: string | null
     weeklyTarget?: number
     preferredDays?: HabitCreatepreferredDaysInput | number[]
+    carryForward?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     entries?: HabitEntryUncheckedCreateNestedManyWithoutHabitInput
@@ -33428,6 +33458,7 @@ export namespace Prisma {
     description?: StringNullableFilter<"Habit"> | string | null
     weeklyTarget?: IntFilter<"Habit"> | number
     preferredDays?: IntNullableListFilter<"Habit">
+    carryForward?: BoolFilter<"Habit"> | boolean
     createdAt?: DateTimeFilter<"Habit"> | Date | string
     updatedAt?: DateTimeFilter<"Habit"> | Date | string
   }
@@ -36527,6 +36558,7 @@ export namespace Prisma {
     description?: string | null
     weeklyTarget?: number
     preferredDays?: HabitCreatepreferredDaysInput | number[]
+    carryForward?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutHabitsInput
@@ -36539,6 +36571,7 @@ export namespace Prisma {
     description?: string | null
     weeklyTarget?: number
     preferredDays?: HabitCreatepreferredDaysInput | number[]
+    carryForward?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -36565,6 +36598,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     weeklyTarget?: IntFieldUpdateOperationsInput | number
     preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    carryForward?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutHabitsNestedInput
@@ -36577,6 +36611,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     weeklyTarget?: IntFieldUpdateOperationsInput | number
     preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    carryForward?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -36727,6 +36762,7 @@ export namespace Prisma {
     description?: string | null
     weeklyTarget?: number
     preferredDays?: HabitCreatepreferredDaysInput | number[]
+    carryForward?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -36969,6 +37005,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     weeklyTarget?: IntFieldUpdateOperationsInput | number
     preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    carryForward?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     entries?: HabitEntryUpdateManyWithoutHabitNestedInput
@@ -36980,6 +37017,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     weeklyTarget?: IntFieldUpdateOperationsInput | number
     preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    carryForward?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     entries?: HabitEntryUncheckedUpdateManyWithoutHabitNestedInput
@@ -36991,6 +37029,7 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     weeklyTarget?: IntFieldUpdateOperationsInput | number
     preferredDays?: HabitUpdatepreferredDaysInput | number[]
+    carryForward?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

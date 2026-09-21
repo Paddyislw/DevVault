@@ -553,6 +553,7 @@ model Habit {
   description   String?
   weeklyTarget  Int      @default(5) // days per week, 1–7
   preferredDays Int[]    @default([]) // 0=Mon..6=Sun, optional scheduling hint
+  carryForward  Boolean  @default(true) // keep appearing in future weeks
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

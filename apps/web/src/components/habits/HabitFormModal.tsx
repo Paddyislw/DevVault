@@ -4,6 +4,8 @@
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { api } from "@/lib/trpc";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { DAY_LABELS, type Habit } from "./lib";
 
 interface HabitFormModalProps {
@@ -16,9 +18,9 @@ interface HabitFormModalProps {
 export function HabitFormModal({ open, onClose, habit }: HabitFormModalProps) {
   const isEdit = !!habit;
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
   const [weeklyTarget, setWeeklyTarget] = useState(5);
   const [preferredDays, setPreferredDays] = useState<number[]>([]);
+  const [carryForward, setCarryForward] = useState(true);
   const nameRef = useRef<HTMLInputElement>(null);
   const utils = api.useUtils();
 
@@ -41,9 +43,9 @@ export function HabitFormModal({ open, onClose, habit }: HabitFormModalProps) {
   useEffect(() => {
     if (!open) return;
     setName(habit?.name ?? "");
-    setDescription(habit?.description ?? "");
     setWeeklyTarget(habit?.weeklyTarget ?? 5);
     setPreferredDays(habit?.preferredDays ?? []);
+    setCarryForward(habit?.carryForward ?? true);
     setTimeout(() => nameRef.current?.focus(), 50);
   }, [open, habit]);
 
@@ -68,16 +70,16 @@ export function HabitFormModal({ open, onClose, habit }: HabitFormModalProps) {
       update.mutate({
         id: habit!.id,
         name: name.trim(),
-        description: description.trim() || null,
         weeklyTarget,
         preferredDays,
+        carryForward,
       });
     } else {
       create.mutate({
         name: name.trim(),
-        description: description.trim() || undefined,
         weeklyTarget,
         preferredDays,
+        carryForward,
       });
     }
   }
@@ -112,7 +114,7 @@ export function HabitFormModal({ open, onClose, habit }: HabitFormModalProps) {
               <input
                 ref={nameRef}
                 type="text"
-                placeholder="e.g. Read a book"
+                placeholder="e.g. Go to gym"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 maxLength={100}
@@ -121,22 +123,7 @@ export function HabitFormModal({ open, onClose, habit }: HabitFormModalProps) {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <span className="label text-text-secondary">
-                Description{" "}
-                <span className="text-text-ghost normal-case tracking-normal font-normal">(optional)</span>
-              </span>
-              <input
-                type="text"
-                placeholder="What's the target, exactly?"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                maxLength={300}
-                className="rounded border border-border-default bg-surface-0 px-2 py-1.5 text-sm text-text-primary placeholder:text-text-tertiary transition-colors focus:border-border-strong focus:outline-none"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <span className="label text-text-secondary">Weekly target</span>
+              <span className="label text-text-secondary">Target days per week</span>
               <div className="flex gap-1.5">
                 {[1, 2, 3, 4, 5, 6, 7].map((n) => (
                   <button
@@ -177,6 +164,18 @@ export function HabitFormModal({ open, onClose, habit }: HabitFormModalProps) {
                   </button>
                 ))}
               </div>
+            </div>
+
+            <div className="flex items-start justify-between gap-3 rounded-lg border border-border-default bg-surface-0 px-3 py-2.5">
+              <div className="flex flex-col gap-0.5">
+                <Label htmlFor="carry-forward" className="text-[13px] font-medium text-text-primary">
+                  Carry forward
+                </Label>
+                <span className="text-[11px] text-text-ghost">
+                  Automatically continue this habit into next week
+                </span>
+              </div>
+              <Switch id="carry-forward" checked={carryForward} onCheckedChange={setCarryForward} />
             </div>
 
             <div className="flex items-center justify-between pt-1">
